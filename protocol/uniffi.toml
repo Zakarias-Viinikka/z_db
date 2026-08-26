@@ -1,0 +1,5 @@
+[crate-roots]
+protocol = "."
+
+[crates.protocol.bindings.kotlin]
+package_name = "com.hiputer.protocol"
