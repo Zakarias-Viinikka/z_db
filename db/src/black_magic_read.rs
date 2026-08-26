@@ -26,7 +26,7 @@ pub fn read_from_db_ordered(
     query_rows(conn, &sql)
 }
 
-fn query_rows(conn: &Connection, sql: &str) -> Result<Vec<Row>, DbError> {
+pub fn query_rows(conn: &Connection, sql: &str) -> Result<Vec<Row>, DbError> {
     let mut stmt = conn
         .prepare(sql)
         .map_err(|e| DbError::SqlExecuteFail(e.to_string()))?;

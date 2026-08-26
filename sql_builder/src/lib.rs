@@ -252,3 +252,34 @@ impl ToSqlCondition for SelectArgument {
         }
     }
 }
+
+//---
+// fts5
+//---
+//both are untested for now
+pub fn create_fts5_sql_builder(source_table_name: &str, columns: &[String]) -> String {
+    let fts_table_name = format!("fts5_{}", source_table_name);
+    let quoted_table = quote_ident(&fts_table_name);
+    let quoted_source = quote_ident(source_table_name);
+
+    let quoted_columns: Vec<String> = columns.iter().map(|c| quote_ident(c)).collect();
+    let columns_joined = quoted_columns.join(", ");
+
+    format!(
+        "CREATE VIRTUAL TABLE {table} USING fts5({columns}, content={source}, content_rowid='id');",
+        table = quoted_table,
+        columns = columns_joined,
+        source = quoted_source
+    )
+}
+
+pub fn search_fts5_sql_builder(source_table_name: &str, text_to_lookup: &str) -> String {
+    let fts_table_name = quote_ident(&format!("fts5_{}", source_table_name));
+    let quoted_query = quote_sql_string(text_to_lookup);
+
+    format!(
+        "SELECT * FROM {table} WHERE {table} MATCH {query};",
+        table = fts_table_name,
+        query = quoted_query
+    )
+}
