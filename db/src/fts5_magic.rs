@@ -32,6 +32,17 @@ pub fn sync_fts5_row(conn: &Connection, table_name: &str, row_id: &str) -> Resul
     todo!()
 }
 
-pub fn rebuild_fts5_index(conn: &Connection, table_name: &str) -> Result<(), DbError> {
-    todo!()
+pub fn rebuild_fts5_index(conn: &Connection, source_table_name: &str) -> Result<(), DbError> {
+    let fts_table_name = quote_ident(&format!("fts5_{}", source_table_name));
+
+    let sql = format!(
+        "INSERT INTO {table}({table}) VALUES('rebuild');",
+        table = fts_table_name
+    );
+
+    conn.execute(&sql, []).map_err(|e| {
+        DbError::SqlExecuteFail(format!("rebuild_fts5_index failed: {}, sql: {}", e, sql))
+    })?;
+
+    Ok(())
 }

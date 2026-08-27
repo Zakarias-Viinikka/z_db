@@ -12,6 +12,11 @@ pub fn create_table(
     if table_name.is_empty() {
         return Some(DbError::IllegalInput("table_name is empty".to_string()));
     }
+    if table_name.starts_with("fts5_") {
+        return Some(DbError::IllegalInput(
+            "table_name cannot start with reserved prefix 'fts5_'".to_string(),
+        ));
+    }
     let sql = generate_create_table_sql(table_name, &columns);
     let result = conn
         .execute(&sql, [])

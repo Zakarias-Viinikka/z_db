@@ -2,6 +2,7 @@
 
 use db::black_magic;
 use db::black_magic_read;
+use db::fts5_magic;
 use protocol::error::DbError;
 use protocol::payload::*;
 use protocol::row_col;
@@ -311,5 +312,37 @@ impl LiveForever {
         self.db_conn
             .as_ref()
             .ok_or_else(|| DbError::ConnError("Database not connected".to_string()))
+    }
+
+    pub fn create_fts5_table(&self, data: Vec<u8>) -> Vec<u8> {
+        let payload_in = unwrap_or_bail!(CreateFts5TableIn::un_payloadify(&data));
+        let conn = unwrap_or_bail!(self.conn());
+        let source_table_name = &payload_in.source_table_name;
+        let columns = payload_in.columns;
+        match fts5_magic::create_fts5_table(conn, source_table_name, columns) {
+            Ok(_) => ok_serialized(),
+            Err(e) => e.to_payload(),
+        }
+    }
+
+    pub fn search_fts5(&self, data: Vec<u8>) -> Vec<u8> {
+        // pub fn search_fts5(conn: &Connection, table_name: &str, query: &str) -> Result<Vec<Row>, DbError>
+        let payload_in = unwrap_or_bail!(SearchFts5In::un_payloadify(&data));
+        let conn = unwrap_or_bail!(self.conn());
+        let query = &payload_in.text_to_lookup;
+        let table_name = &payload_in.table_name;
+        let result = unwrap_or_bail!(fts5_magic::search_fts5(conn, table_name, query));
+
+        return SearchFts5Out { rows: result }.to_payload();
+    }
+
+    pub fn rebuild_fts5_index(&self, data: Vec<u8>) -> Vec<u8> {
+        let payload_in = unwrap_or_bail!(RebuildFts5In::un_payloadify(&data));
+        let conn = unwrap_or_bail!(self.conn());
+        let table_name = &payload_in.table_name;
+        match fts5_magic::rebuild_fts5_index(conn, table_name) {
+            Ok(_) => ok_serialized(),
+            Err(e) => e.to_payload(),
+        }
     }
 }

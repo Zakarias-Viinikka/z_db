@@ -186,3 +186,22 @@ pub struct CopyTableIn {
     pub source_table_name: String,
     pub new_table_name: String,
 }
+
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct CreateFts5TableIn {
+    pub source_table_name: String,
+    pub columns: Vec<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct SearchFts5In {
+    pub table_name: String,
+    pub text_to_lookup: String,
+}
+
+pub type SearchFts5Out = GetDataOut;
+
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct RebuildFts5In {
+    pub table_name: String,
+}

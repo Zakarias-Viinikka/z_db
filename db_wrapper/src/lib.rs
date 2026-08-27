@@ -1,5 +1,5 @@
 #[cfg(feature = "android")]
-pub mod android_db_mascot;
+pub mod android_mascot;
 
 #[cfg(feature = "web")]
-pub mod web_db_mascot;
+pub mod web_mascot;
