@@ -288,6 +288,8 @@ dependencies = [
  "rusqlite",
  "sqlite-wasm-rs",
  "sqlite-wasm-vfs",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
 ]
 
 [[package]]

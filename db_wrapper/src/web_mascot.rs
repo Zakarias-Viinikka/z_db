@@ -1,4 +1,4 @@
-// db_wrapper/src/web_db_mascot.rs
+// db_wrapper/src/web_mascot.rs
 
 use db::black_magic;
 use db::black_magic_read;
@@ -7,10 +7,12 @@ use protocol::error::DbError;
 use protocol::payload::*;
 use protocol::row_col;
 use protocol::serialization::*;
+use wasm_bindgen::prelude::*;
 
 use sqlite_wasm_rs as ffi;
 use sqlite_wasm_vfs::sahpool::{OpfsSAHPoolCfg, OpfsSAHPoolUtil, install as install_opfs_sahpool};
 
+#[wasm_bindgen]
 pub struct LiveForever {
     db_conn: Option<rusqlite::Connection>,
     sahpool_util: Option<OpfsSAHPoolUtil>,
@@ -26,20 +28,21 @@ macro_rules! unwrap_or_bail {
     };
 }
 
+#[wasm_bindgen]
 impl LiveForever {
-    pub async fn new(conn_name: String) -> Result<LiveForever, DbError> {
+    pub async fn new(conn_name: String) -> Result<LiveForever, JsValue> {
         let sahpool_util =
             install_opfs_sahpool::<ffi::WasmOsCallback>(&OpfsSAHPoolCfg::default(), true)
                 .await
                 .map_err(|e| {
-                    DbError::ConnError(format!("Failed to install OPFS SAH pool: {}", e))
+                    JsValue::from_str(&format!("Failed to install OPFS SAH pool: {}", e))
                 })?;
 
         let db_conn = rusqlite::Connection::open_with_flags(
             &conn_name,
             rusqlite::OpenFlags::SQLITE_OPEN_READ_WRITE | rusqlite::OpenFlags::SQLITE_OPEN_CREATE,
         )
-        .map_err(|e| DbError::ConnError(format!("Failed to open database: {}", e)))?;
+        .map_err(|e| JsValue::from_str(&format!("Failed to open database: {}", e)))?;
 
         Ok(LiveForever {
             db_conn: Some(db_conn),
@@ -291,7 +294,7 @@ impl LiveForever {
         ok_serialized()
     }
 
-    pub fn close_conn(&mut self) -> Vec<u8> {
+    /* pub fn close_conn(&mut self) -> Vec<u8> {
         if let Some(conn) = self.db_conn.take() {
             if let Err((_, err)) = conn.close() {
                 return DbError::ConnError(format!("Failed to close connection: {}", err))
@@ -306,6 +309,25 @@ impl LiveForever {
         }
 
         ok_serialized()
+    }*/
+
+    pub fn close_conn_js(&mut self) -> Result<(), JsValue> {
+        if let Some(conn) = self.db_conn.take() {
+            if let Err((_, err)) = conn.close() {
+                return Err(JsValue::from_str(&format!(
+                    "Failed to close connection: {}",
+                    err
+                )));
+            }
+        }
+
+        if let Some(util) = self.sahpool_util.take() {
+            if let Err(e) = util.pause_vfs() {
+                return Err(JsValue::from_str(&format!("Failed to pause VFS: {}", e)));
+            }
+        }
+
+        Ok(())
     }
 
     fn conn(&self) -> Result<&rusqlite::Connection, DbError> {
