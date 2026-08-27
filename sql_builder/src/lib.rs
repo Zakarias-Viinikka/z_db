@@ -275,11 +275,17 @@ pub fn create_fts5_sql_builder(source_table_name: &str, columns: &[String]) -> S
 
 pub fn search_fts5_sql_builder(source_table_name: &str, text_to_lookup: &str) -> String {
     let fts_table_name = quote_ident(&format!("fts5_{}", source_table_name));
-    let prefix_query = format!("{}*", text_to_lookup);
+    let prefix_query = text_to_lookup
+        .split_whitespace()
+        .map(|word| {
+            let escaped_word = word.replace('"', "\"\"");
+            format!("\"{}\"*", escaped_word)
+        })
+        .collect::<Vec<_>>()
+        .join(" ");
     let quoted_query = quote_sql_string(&prefix_query);
-
     format!(
-        "SELECT rowid, * FROM {table} WHERE {table} MATCH {query};",
+        "SELECT rowid, * FROM {table} WHERE {table} MATCH {query} ORDER BY rank;",
         table = fts_table_name,
         query = quoted_query
     )
