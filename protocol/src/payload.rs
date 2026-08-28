@@ -205,3 +205,5 @@ pub type SearchFts5Out = GetDataOut;
 pub struct RebuildFts5In {
     pub table_name: String,
 }
+
+pub type ForceDropTableIn = DropTableIn;

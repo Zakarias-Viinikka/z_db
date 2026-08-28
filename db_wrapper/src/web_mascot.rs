@@ -74,7 +74,7 @@ impl LiveForever {
         let result = black_magic_read::read_from_db(conn, &get_data_in);
         match result {
             Ok(result) => GetDataOut { rows: result }.to_payload(),
-            Err(e) => e.to_payload(),
+            Err(e) => Err::<(), DbError>(e).to_payload(),
         }
     }
 
@@ -84,7 +84,7 @@ impl LiveForever {
         let result = black_magic_read::read_from_db_ordered(conn, &get_data_ordered_in);
         match result {
             Ok(rows) => GetDataOut { rows }.to_payload(),
-            Err(e) => e.to_payload(),
+            Err(e) => Err::<(), DbError>(e).to_payload(),
         }
     }
 
@@ -103,7 +103,7 @@ impl LiveForever {
         let conn = unwrap_or_bail!(self.conn());
         match black_magic::drop_table(conn, &input.table_name) {
             Ok(()) => ok_serialized(),
-            Err(e) => e.to_payload(),
+            Err(e) => Err::<(), DbError>(e).to_payload(),
         }
     }
 
@@ -343,7 +343,7 @@ impl LiveForever {
         let columns = payload_in.columns;
         match fts5_magic::create_fts5_table(conn, source_table_name, columns) {
             Ok(_) => ok_serialized(),
-            Err(e) => e.to_payload(),
+            Err(e) => Err::<(), DbError>(e).to_payload(),
         }
     }
 
@@ -364,7 +364,17 @@ impl LiveForever {
         let table_name = &payload_in.table_name;
         match fts5_magic::rebuild_fts5_index(conn, table_name) {
             Ok(_) => ok_serialized(),
-            Err(e) => e.to_payload(),
+            Err(e) => Err::<(), DbError>(e).to_payload(),
+        }
+    }
+
+    pub fn force_drop_table(&self, data: Vec<u8>) -> Vec<u8> {
+        let input = unwrap_or_bail!(DropTableIn::un_payloadify(&data));
+        let conn = unwrap_or_bail!(self.conn());
+
+        match black_magic::force_drop_table(conn, &input.table_name) {
+            Ok(()) => ok_serialized(),
+            Err(e) => Err::<(), DbError>(e).to_payload(),
         }
     }
 }

@@ -336,3 +336,16 @@ pub fn copy_table(
 
     Ok(())
 }
+
+pub fn force_drop_table(conn: &rusqlite::Connection, table_name: &str) -> Result<(), DbError> {
+    let sql = format!(
+        "PRAGMA writable_schema=ON; DELETE FROM sqlite_master WHERE name='{}' AND type='table'; PRAGMA writable_schema=OFF;",
+        table_name.replace('\'', "''")
+    );
+
+    conn.execute_batch(&sql).map_err(|e| {
+        DbError::SqlExecuteFail(format!("force_drop_table failed: {}, sql: {}", e, sql))
+    })?;
+
+    Ok(())
+}

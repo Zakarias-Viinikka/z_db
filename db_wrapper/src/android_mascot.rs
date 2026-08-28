@@ -75,7 +75,7 @@ impl LiveForever {
         let conn = self.conn();
         match black_magic::drop_table(conn, &input.table_name) {
             Ok(()) => ok_serialized(),
-            Err(e) => e.to_payload(),
+            Err(e) => Err::<(), DbError>(e).to_payload(),
         }
     }
 
