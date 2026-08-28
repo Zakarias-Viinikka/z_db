@@ -266,7 +266,7 @@ pub fn create_fts5_sql_builder(source_table_name: &str, columns: &[String]) -> S
     let columns_joined = quoted_columns.join(", ");
 
     format!(
-        "CREATE VIRTUAL TABLE {table} USING fts5({columns}, content={source}, content_rowid='id');",
+        "CREATE VIRTUAL TABLE {table} USING fts5({columns}, content={source}, tokenize='trigram');",
         table = quoted_table,
         columns = columns_joined,
         source = quoted_source
@@ -275,15 +275,7 @@ pub fn create_fts5_sql_builder(source_table_name: &str, columns: &[String]) -> S
 
 pub fn search_fts5_sql_builder(source_table_name: &str, text_to_lookup: &str) -> String {
     let fts_table_name = quote_ident(&format!("fts5_{}", source_table_name));
-    let query = text_to_lookup
-        .split_whitespace()
-        .map(|word| {
-            let escaped_word = word.replace('"', "\"\"");
-            format!("\"{}\"", escaped_word)
-        })
-        .collect::<Vec<_>>()
-        .join(" ");
-    let quoted_query = quote_sql_string(&query);
+    let quoted_query = quote_sql_string(text_to_lookup); // only escape single quotes
     format!(
         "SELECT rowid, * FROM {table} WHERE {table} MATCH {query} ORDER BY rank;",
         table = fts_table_name,
