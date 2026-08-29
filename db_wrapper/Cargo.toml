@@ -13,7 +13,7 @@ wasm-bindgen = { version = "0.2.127", optional = true }
 wasm-bindgen-futures = { version = "0.4.77", optional = true }
 
 [features]
-default = ["web"]
+default = ["android"]
 android = []
 web = [
     "sqlite-wasm-rs",

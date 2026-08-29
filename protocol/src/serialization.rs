@@ -68,6 +68,6 @@ pub fn json_str_to_response(json: &str) -> Result<Response, serde_json::Error> {
     serde_json::from_str(json)
 }
 
-/*pub fn i_dont_want_to() -> Vec<u8> {
-    DbError::BadCode("server does not handle this request".to_string()).serialize_wrapper()
-}*/
+pub fn i_dont_want_to() -> Vec<u8> {
+    DbError::BadCode("server does not handle this request".to_string()).to_payload()
+}
