@@ -8,7 +8,7 @@ cd db_wrapper
 cargo ndk -o ./android_output/jniLibs -t arm64-v8a build --release
 
 # 4. Generate Kotlin glue code
-cargo run --bin uniffi-bindgen -- generate \
+cargo run --package protocol --bin uniffi-bindgen -- generate \
     --library ./android_output/jniLibs/arm64-v8a/libdb_wrapper.so \
     --language kotlin \
     --out-dir ./android_output/kotlin \
@@ -22,6 +22,5 @@ cargo run --bin uniffi-bindgen -- generate \
 # mkdir -p "$ANDROID_PROJECT_PATH/app/src/main/jniLibs"
 # cp -r ./android_output/jniLibs/* "$ANDROID_PROJECT_PATH/app/src/main/jniLibs/"
 
-# 6. Copy Kotlin source(s)
-# mkdir -p "$ANDROID_PROJECT_PATH/app/src/main/java/com/z_db/android_mascot/"
-# cp ./android_output/kotlin/com/z_db/android_mascot/*.kt "$ANDROID_PROJECT_PATH/app/src/main/java/com/z_db/android_mascot/"
+# 6. Copy Kotlin source(s) (includes uniffi runtime)
+# cp -r ./android_output/kotlin/* "$ANDROID_PROJECT_PATH/app/src/main/java/"
