@@ -17,10 +17,3 @@ cargo run --package protocol --bin uniffi-bindgen -- generate \
 # --- MOVE STEPS ---
 # TODO: Set your Android project root path and uncomment the lines below.
 # Adjust the package directory if needed (currently com.z_db.android_mascot).
-
-# 5. Copy native binary
-# mkdir -p "$ANDROID_PROJECT_PATH/app/src/main/jniLibs"
-# cp -r ./android_output/jniLibs/* "$ANDROID_PROJECT_PATH/app/src/main/jniLibs/"
-
-# 6. Copy Kotlin source(s) (includes uniffi runtime)
-# cp -r ./android_output/kotlin/* "$ANDROID_PROJECT_PATH/app/src/main/java/"
