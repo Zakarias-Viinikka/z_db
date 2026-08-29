@@ -3,10 +3,10 @@
 # 2. rustup target add aarch64-linux-android
 
 # --- BUILD STEPS ---
-# 4. Build native library for physical device (arm64)
+# 3. Build native library for arm64
 cargo ndk -o ./output_for_android/jniLibs -t arm64-v8a build --release
 
-# 5. Generate Kotlin glue code
+# 4. Generate Kotlin glue code
 cargo run --bin uniffi-bindgen -- generate \
     --library ./output_for_android/jniLibs/arm64-v8a/libprotocol.so \
     --language kotlin \
@@ -14,12 +14,13 @@ cargo run --bin uniffi-bindgen -- generate \
     --config ./uniffi.toml
 
 # --- MOVE STEPS ---
+# TODO: Set your Android project root path and uncomment the lines below.
+# Adjust the package directory if needed (currently com.hiputer.protocol).
 
-# 6. Copy native binary to Android project
-mkdir -p /home/zakke/ProgStuff/android_practice/HiPuter/app/src/main/jniLibs
-cp -r ./output_for_android/jniLibs/* /home/zakke/ProgStuff/android_practice/HiPuter/app/src/main/jniLibs/
+# 5. Copy native binary
+# mkdir -p "$ANDROID_PROJECT_PATH/app/src/main/jniLibs"
+# cp -r ./output_for_android/jniLibs/* "$ANDROID_PROJECT_PATH/app/src/main/jniLibs/"
 
-# 7. Copy Kotlin source to Android project
-# Updated to use the correct 'protocol' package directory
-mkdir -p /home/zakke/ProgStuff/android_practice/HiPuter/app/src/main/java/com/hiputer/protocol/
-cp ./output_for_android/kotlin/com/hiputer/protocol/protocol.kt /home/zakke/ProgStuff/android_practice/HiPuter/app/src/main/java/com/hiputer/protocol/
+# 6. Copy Kotlin source(s)
+# mkdir -p "$ANDROID_PROJECT_PATH/app/src/main/java/com/hiputer/protocol/"
+# cp ./output_for_android/kotlin/com/hiputer/protocol/*.kt "$ANDROID_PROJECT_PATH/app/src/main/java/com/hiputer/protocol/"

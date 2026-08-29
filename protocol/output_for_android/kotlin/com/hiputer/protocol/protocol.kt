@@ -1395,6 +1395,44 @@ public object FfiConverterTypeCopyTableIn: FfiConverterRustBuffer<CopyTableIn> {
 
 
 
+data class CreateFts5TableIn (
+    var `sourceTableName`: kotlin.String
+    , 
+    var `columns`: List<kotlin.String>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeCreateFts5TableIn: FfiConverterRustBuffer<CreateFts5TableIn> {
+    override fun read(buf: ByteBuffer): CreateFts5TableIn {
+        return CreateFts5TableIn(
+            FfiConverterString.read(buf),
+            FfiConverterSequenceString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: CreateFts5TableIn) = (
+            FfiConverterString.allocationSize(value.`sourceTableName`) +
+            FfiConverterSequenceString.allocationSize(value.`columns`)
+    )
+
+    override fun write(value: CreateFts5TableIn, buf: ByteBuffer) {
+            FfiConverterString.write(value.`sourceTableName`, buf)
+            FfiConverterSequenceString.write(value.`columns`, buf)
+    }
+}
+
+
+
 data class CreateIndexIn (
     var `tableName`: kotlin.String
     , 
@@ -1955,6 +1993,39 @@ public object FfiConverterTypeInsertDataOut: FfiConverterRustBuffer<InsertDataOu
 
 
 
+data class RebuildFts5In (
+    var `tableName`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeRebuildFts5In: FfiConverterRustBuffer<RebuildFts5In> {
+    override fun read(buf: ByteBuffer): RebuildFts5In {
+        return RebuildFts5In(
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: RebuildFts5In) = (
+            FfiConverterString.allocationSize(value.`tableName`)
+    )
+
+    override fun write(value: RebuildFts5In, buf: ByteBuffer) {
+            FfiConverterString.write(value.`tableName`, buf)
+    }
+}
+
+
+
 data class RemoveColumnIn (
     var `tableName`: kotlin.String
     , 
@@ -2021,6 +2092,44 @@ public object FfiConverterTypeRow: FfiConverterRustBuffer<Row> {
 
     override fun write(value: Row, buf: ByteBuffer) {
             FfiConverterSequenceTypeCol.write(value.`cols`, buf)
+    }
+}
+
+
+
+data class SearchFts5In (
+    var `tableName`: kotlin.String
+    , 
+    var `textToLookup`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeSearchFts5In: FfiConverterRustBuffer<SearchFts5In> {
+    override fun read(buf: ByteBuffer): SearchFts5In {
+        return SearchFts5In(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: SearchFts5In) = (
+            FfiConverterString.allocationSize(value.`tableName`) +
+            FfiConverterString.allocationSize(value.`textToLookup`)
+    )
+
+    override fun write(value: SearchFts5In, buf: ByteBuffer) {
+            FfiConverterString.write(value.`tableName`, buf)
+            FfiConverterString.write(value.`textToLookup`, buf)
     }
 }
 
