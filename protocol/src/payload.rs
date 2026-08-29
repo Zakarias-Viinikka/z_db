@@ -3,7 +3,7 @@ use crate::new_table;
 use crate::row_col;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, uniffi::Record)]
 pub struct CreateTableIn {
     pub table_name: String,
     pub columns: Vec<new_table::ColumnDef>,
@@ -16,7 +16,7 @@ pub struct CreateTableOut {
     pub result: Option<DbError>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
 pub struct ListTablesOut {
     pub table_names: Vec<String>,
 }
@@ -74,7 +74,7 @@ pub struct InsertDataOut {
 }
 
 // public_data_shapes.rs
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
 pub struct DropTableIn {
     pub table_name: String,
 }

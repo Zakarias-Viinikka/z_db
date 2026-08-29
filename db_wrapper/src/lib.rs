@@ -1,3 +1,5 @@
+uniffi::setup_scaffolding!();
+
 #[cfg(feature = "android")]
 pub mod android_mascot;
 

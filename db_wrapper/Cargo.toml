@@ -12,6 +12,8 @@ sqlite-wasm-vfs = { version = "0.2", optional = true }
 wasm-bindgen = { version = "0.2.127", optional = true }
 wasm-bindgen-futures = { version = "0.4.77", optional = true }
 
+uniffi = { version = "0.32", features = ["cli"] }
+
 [features]
 default = ["android"]
 normal = []

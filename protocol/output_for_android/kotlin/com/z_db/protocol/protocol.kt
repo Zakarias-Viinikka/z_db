@@ -3,7 +3,7 @@
 
 @file:Suppress("NAME_SHADOWING")
 
-package com.hiputer.shared_types
+package com.z_db.protocol
 
 // Common helper code.
 //
@@ -58,7 +58,7 @@ open class RustBuffer : Structure() {
     companion object {
         internal fun alloc(size: ULong = 0UL) = uniffiRustCall() { status ->
             // Note: need to convert the size to a `Long` value to make this work with JVM.
-            UniffiLib.ffi_shared_types_rustbuffer_alloc(size.toLong(), status)
+            UniffiLib.ffi_protocol_rustbuffer_alloc(size.toLong(), status)
         }.also {
             if(it.data == null) {
                throw RuntimeException("RustBuffer.alloc() returned null data pointer (size=${size})")
@@ -74,7 +74,7 @@ open class RustBuffer : Structure() {
         }
 
         internal fun free(buf: RustBuffer.ByValue) = uniffiRustCall() { status ->
-            UniffiLib.ffi_shared_types_rustbuffer_free(buf, status)
+            UniffiLib.ffi_protocol_rustbuffer_free(buf, status)
         }
     }
 
@@ -391,7 +391,7 @@ private fun findLibraryName(componentName: String): String {
     if (libOverride != null) {
         return libOverride
     }
-    return "shared_types"
+    return "protocol"
 }
 
 // Define FFI callback types
@@ -668,15 +668,15 @@ internal interface UniffiForeignFutureCompleteVoid : com.sun.jna.Callback {
 // We now use JNA's "direct mapping" - unclear if same considerations apply exactly.
 internal object IntegrityCheckingUniffiLib {
     init {
-        Native.register(IntegrityCheckingUniffiLib::class.java, findLibraryName(componentName = "shared_types"))
+        Native.register(IntegrityCheckingUniffiLib::class.java, findLibraryName(componentName = "protocol"))
         uniffiCheckContractApiVersion(this)
         uniffiCheckApiChecksums(this)
     }
-    external fun uniffi_shared_types_checksum_func_build_get_data_in_msg(
+    external fun uniffi_protocol_checksum_func_build_get_data_in_msg(
     ): Int
-    external fun uniffi_shared_types_checksum_func_unbuild_get_data_out_response(
+    external fun uniffi_protocol_checksum_func_unbuild_get_data_out_response(
     ): Int
-    external fun ffi_shared_types_uniffi_contract_version(
+    external fun ffi_protocol_uniffi_contract_version(
     ): Int
 
         
@@ -686,116 +686,116 @@ internal object UniffiLib {
     
 
     init {
-        Native.register(UniffiLib::class.java, findLibraryName(componentName = "shared_types"))
+        Native.register(UniffiLib::class.java, findLibraryName(componentName = "protocol"))
         
     }
-    external fun uniffi_shared_types_fn_func_build_get_data_in_msg(`messageId`: Long,`payload`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    external fun uniffi_protocol_fn_func_build_get_data_in_msg(`messageId`: Long,`prePayload`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    external fun uniffi_shared_types_fn_func_unbuild_get_data_out_response(`response`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    external fun uniffi_protocol_fn_func_unbuild_get_data_out_response(`response`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    external fun ffi_shared_types_rustbuffer_alloc(`size`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    external fun ffi_protocol_rustbuffer_alloc(`size`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    external fun ffi_shared_types_rustbuffer_from_bytes(`bytes`: ForeignBytes.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    external fun ffi_protocol_rustbuffer_from_bytes(`bytes`: ForeignBytes.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    external fun ffi_shared_types_rustbuffer_free(`buf`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    external fun ffi_protocol_rustbuffer_free(`buf`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    external fun ffi_shared_types_rustbuffer_reserve(`buf`: RustBuffer.ByValue,`additional`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    external fun ffi_protocol_rustbuffer_reserve(`buf`: RustBuffer.ByValue,`additional`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    external fun ffi_shared_types_rust_future_poll_u8(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    external fun ffi_protocol_rust_future_poll_u8(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_cancel_u8(`handle`: Long,
+    external fun ffi_protocol_rust_future_cancel_u8(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_free_u8(`handle`: Long,
+    external fun ffi_protocol_rust_future_free_u8(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_complete_u8(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    external fun ffi_protocol_rust_future_complete_u8(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): Int
-    external fun ffi_shared_types_rust_future_poll_i8(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    external fun ffi_protocol_rust_future_poll_i8(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_cancel_i8(`handle`: Long,
+    external fun ffi_protocol_rust_future_cancel_i8(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_free_i8(`handle`: Long,
+    external fun ffi_protocol_rust_future_free_i8(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_complete_i8(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    external fun ffi_protocol_rust_future_complete_i8(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): Byte
-    external fun ffi_shared_types_rust_future_poll_u16(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    external fun ffi_protocol_rust_future_poll_u16(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_cancel_u16(`handle`: Long,
+    external fun ffi_protocol_rust_future_cancel_u16(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_free_u16(`handle`: Long,
+    external fun ffi_protocol_rust_future_free_u16(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_complete_u16(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    external fun ffi_protocol_rust_future_complete_u16(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): Int
-    external fun ffi_shared_types_rust_future_poll_i16(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    external fun ffi_protocol_rust_future_poll_i16(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_cancel_i16(`handle`: Long,
+    external fun ffi_protocol_rust_future_cancel_i16(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_free_i16(`handle`: Long,
+    external fun ffi_protocol_rust_future_free_i16(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_complete_i16(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    external fun ffi_protocol_rust_future_complete_i16(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): Short
-    external fun ffi_shared_types_rust_future_poll_u32(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    external fun ffi_protocol_rust_future_poll_u32(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_cancel_u32(`handle`: Long,
+    external fun ffi_protocol_rust_future_cancel_u32(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_free_u32(`handle`: Long,
+    external fun ffi_protocol_rust_future_free_u32(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_complete_u32(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    external fun ffi_protocol_rust_future_complete_u32(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): Int
-    external fun ffi_shared_types_rust_future_poll_i32(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    external fun ffi_protocol_rust_future_poll_i32(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_cancel_i32(`handle`: Long,
+    external fun ffi_protocol_rust_future_cancel_i32(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_free_i32(`handle`: Long,
+    external fun ffi_protocol_rust_future_free_i32(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_complete_i32(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    external fun ffi_protocol_rust_future_complete_i32(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): Int
-    external fun ffi_shared_types_rust_future_poll_u64(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    external fun ffi_protocol_rust_future_poll_u64(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_cancel_u64(`handle`: Long,
+    external fun ffi_protocol_rust_future_cancel_u64(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_free_u64(`handle`: Long,
+    external fun ffi_protocol_rust_future_free_u64(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_complete_u64(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    external fun ffi_protocol_rust_future_complete_u64(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): Long
-    external fun ffi_shared_types_rust_future_poll_i64(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    external fun ffi_protocol_rust_future_poll_i64(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_cancel_i64(`handle`: Long,
+    external fun ffi_protocol_rust_future_cancel_i64(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_free_i64(`handle`: Long,
+    external fun ffi_protocol_rust_future_free_i64(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_complete_i64(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    external fun ffi_protocol_rust_future_complete_i64(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): Long
-    external fun ffi_shared_types_rust_future_poll_f32(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    external fun ffi_protocol_rust_future_poll_f32(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_cancel_f32(`handle`: Long,
+    external fun ffi_protocol_rust_future_cancel_f32(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_free_f32(`handle`: Long,
+    external fun ffi_protocol_rust_future_free_f32(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_complete_f32(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    external fun ffi_protocol_rust_future_complete_f32(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): Float
-    external fun ffi_shared_types_rust_future_poll_f64(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    external fun ffi_protocol_rust_future_poll_f64(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_cancel_f64(`handle`: Long,
+    external fun ffi_protocol_rust_future_cancel_f64(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_free_f64(`handle`: Long,
+    external fun ffi_protocol_rust_future_free_f64(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_complete_f64(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    external fun ffi_protocol_rust_future_complete_f64(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): Double
-    external fun ffi_shared_types_rust_future_poll_rust_buffer(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    external fun ffi_protocol_rust_future_poll_rust_buffer(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_cancel_rust_buffer(`handle`: Long,
+    external fun ffi_protocol_rust_future_cancel_rust_buffer(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_free_rust_buffer(`handle`: Long,
+    external fun ffi_protocol_rust_future_free_rust_buffer(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_complete_rust_buffer(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    external fun ffi_protocol_rust_future_complete_rust_buffer(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    external fun ffi_shared_types_rust_future_poll_void(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    external fun ffi_protocol_rust_future_poll_void(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_cancel_void(`handle`: Long,
+    external fun ffi_protocol_rust_future_cancel_void(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_free_void(`handle`: Long,
+    external fun ffi_protocol_rust_future_free_void(`handle`: Long,
     ): Unit
-    external fun ffi_shared_types_rust_future_complete_void(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    external fun ffi_protocol_rust_future_complete_void(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
 
         
@@ -805,17 +805,17 @@ private fun uniffiCheckContractApiVersion(lib: IntegrityCheckingUniffiLib) {
     // Get the bindings contract version from our ComponentInterface
     val bindings_contract_version = 30
     // Get the scaffolding contract version by calling the into the dylib
-    val scaffolding_contract_version = lib.ffi_shared_types_uniffi_contract_version()
+    val scaffolding_contract_version = lib.ffi_protocol_uniffi_contract_version()
     if (bindings_contract_version != scaffolding_contract_version) {
         throw RuntimeException("UniFFI contract version mismatch: try cleaning and rebuilding your project")
     }
 }
 @Suppress("UNUSED_PARAMETER")
 private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
-    if (lib.uniffi_shared_types_checksum_func_build_get_data_in_msg() != 56941) {
+    if (lib.uniffi_protocol_checksum_func_build_get_data_in_msg() != 17175) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_shared_types_checksum_func_unbuild_get_data_out_response() != 52735) {
+    if (lib.uniffi_protocol_checksum_func_unbuild_get_data_out_response() != 36917) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
 }
@@ -1395,6 +1395,44 @@ public object FfiConverterTypeCopyTableIn: FfiConverterRustBuffer<CopyTableIn> {
 
 
 
+data class CreateFts5TableIn (
+    var `sourceTableName`: kotlin.String
+    , 
+    var `columns`: List<kotlin.String>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeCreateFts5TableIn: FfiConverterRustBuffer<CreateFts5TableIn> {
+    override fun read(buf: ByteBuffer): CreateFts5TableIn {
+        return CreateFts5TableIn(
+            FfiConverterString.read(buf),
+            FfiConverterSequenceString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: CreateFts5TableIn) = (
+            FfiConverterString.allocationSize(value.`sourceTableName`) +
+            FfiConverterSequenceString.allocationSize(value.`columns`)
+    )
+
+    override fun write(value: CreateFts5TableIn, buf: ByteBuffer) {
+            FfiConverterString.write(value.`sourceTableName`, buf)
+            FfiConverterSequenceString.write(value.`columns`, buf)
+    }
+}
+
+
+
 data class CreateIndexIn (
     var `tableName`: kotlin.String
     , 
@@ -1471,6 +1509,44 @@ public object FfiConverterTypeCreateTableFromExportIn: FfiConverterRustBuffer<Cr
 
 
 
+data class CreateTableIn (
+    var `tableName`: kotlin.String
+    , 
+    var `columns`: List<ColumnDef>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeCreateTableIn: FfiConverterRustBuffer<CreateTableIn> {
+    override fun read(buf: ByteBuffer): CreateTableIn {
+        return CreateTableIn(
+            FfiConverterString.read(buf),
+            FfiConverterSequenceTypeColumnDef.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: CreateTableIn) = (
+            FfiConverterString.allocationSize(value.`tableName`) +
+            FfiConverterSequenceTypeColumnDef.allocationSize(value.`columns`)
+    )
+
+    override fun write(value: CreateTableIn, buf: ByteBuffer) {
+            FfiConverterString.write(value.`tableName`, buf)
+            FfiConverterSequenceTypeColumnDef.write(value.`columns`, buf)
+    }
+}
+
+
+
 data class CreateTableOut (
     var `result`: DbException?
     
@@ -1537,6 +1613,39 @@ public object FfiConverterTypeDeleteRowIn: FfiConverterRustBuffer<DeleteRowIn> {
     override fun write(value: DeleteRowIn, buf: ByteBuffer) {
             FfiConverterString.write(value.`tableName`, buf)
             FfiConverterString.write(value.`rowId`, buf)
+    }
+}
+
+
+
+data class DropTableIn (
+    var `tableName`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeDropTableIn: FfiConverterRustBuffer<DropTableIn> {
+    override fun read(buf: ByteBuffer): DropTableIn {
+        return DropTableIn(
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: DropTableIn) = (
+            FfiConverterString.allocationSize(value.`tableName`)
+    )
+
+    override fun write(value: DropTableIn, buf: ByteBuffer) {
+            FfiConverterString.write(value.`tableName`, buf)
     }
 }
 
@@ -1955,6 +2064,72 @@ public object FfiConverterTypeInsertDataOut: FfiConverterRustBuffer<InsertDataOu
 
 
 
+data class ListTablesOut (
+    var `tableNames`: List<kotlin.String>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeListTablesOut: FfiConverterRustBuffer<ListTablesOut> {
+    override fun read(buf: ByteBuffer): ListTablesOut {
+        return ListTablesOut(
+            FfiConverterSequenceString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: ListTablesOut) = (
+            FfiConverterSequenceString.allocationSize(value.`tableNames`)
+    )
+
+    override fun write(value: ListTablesOut, buf: ByteBuffer) {
+            FfiConverterSequenceString.write(value.`tableNames`, buf)
+    }
+}
+
+
+
+data class RebuildFts5In (
+    var `tableName`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeRebuildFts5In: FfiConverterRustBuffer<RebuildFts5In> {
+    override fun read(buf: ByteBuffer): RebuildFts5In {
+        return RebuildFts5In(
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: RebuildFts5In) = (
+            FfiConverterString.allocationSize(value.`tableName`)
+    )
+
+    override fun write(value: RebuildFts5In, buf: ByteBuffer) {
+            FfiConverterString.write(value.`tableName`, buf)
+    }
+}
+
+
+
 data class RemoveColumnIn (
     var `tableName`: kotlin.String
     , 
@@ -2021,6 +2196,44 @@ public object FfiConverterTypeRow: FfiConverterRustBuffer<Row> {
 
     override fun write(value: Row, buf: ByteBuffer) {
             FfiConverterSequenceTypeCol.write(value.`cols`, buf)
+    }
+}
+
+
+
+data class SearchFts5In (
+    var `tableName`: kotlin.String
+    , 
+    var `textToLookup`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeSearchFts5In: FfiConverterRustBuffer<SearchFts5In> {
+    override fun read(buf: ByteBuffer): SearchFts5In {
+        return SearchFts5In(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: SearchFts5In) = (
+            FfiConverterString.allocationSize(value.`tableName`) +
+            FfiConverterString.allocationSize(value.`textToLookup`)
+    )
+
+    override fun write(value: SearchFts5In, buf: ByteBuffer) {
+            FfiConverterString.write(value.`tableName`, buf)
+            FfiConverterString.write(value.`textToLookup`, buf)
     }
 }
 
@@ -2487,49 +2700,310 @@ public object FfiConverterTypeDbError : FfiConverterRustBuffer<DbException> {
 
 
 
-
-enum class Request {
+sealed class Request {
     
-    CREATE_TABLE,
-    LIST_TABLES,
-    GET_DATA,
-    GET_DATA_ORDERED,
-    INSERT_DATA,
-    DROP_TABLE,
-    EDIT_COL_IN_ROW,
-    CHECK_TABLE,
-    DELETE_ROW,
-    SWAP_COLUMNS,
-    CREATE_INDEX,
-    CHECK_INDEX,
-    ADD_COLUMN,
-    REMOVE_COLUMN,
-    EXPORT_DATABASE,
-    EXPORT_TABLES,
-    CREATE_TABLE_FROM_EXPORT,
-    COPY_TABLE;
+    object CreateTable : Request()
+    
+    
+    object ListTables : Request()
+    
+    
+    object GetData : Request()
+    
+    
+    object GetDataOrdered : Request()
+    
+    
+    object InsertData : Request()
+    
+    
+    object DropTable : Request()
+    
+    
+    object EditColInRow : Request()
+    
+    
+    object CheckTable : Request()
+    
+    
+    object DeleteRow : Request()
+    
+    
+    object SwapColumns : Request()
+    
+    
+    object CreateIndex : Request()
+    
+    
+    object CheckIndex : Request()
+    
+    
+    object AddColumn : Request()
+    
+    
+    object RemoveColumn : Request()
+    
+    
+    object ExportDatabase : Request()
+    
+    
+    object ExportTables : Request()
+    
+    
+    object CreateTableFromExport : Request()
+    
+    
+    object CopyTable : Request()
+    
+    
+    data class UniffiDontRenameMyEnums(
+        val v1: kotlin.Boolean) : Request()
+        
+    {
+        
 
+        companion object
+    }
+    
+
+    
+
+    
     
 
 
     companion object
 }
 
-
 /**
  * @suppress
  */
-public object FfiConverterTypeRequest: FfiConverterRustBuffer<Request> {
-    override fun read(buf: ByteBuffer) = try {
-        Request.values()[buf.getInt() - 1]
-    } catch (e: IndexOutOfBoundsException) {
-        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+public object FfiConverterTypeRequest : FfiConverterRustBuffer<Request>{
+    override fun read(buf: ByteBuffer): Request {
+        return when(buf.getInt()) {
+            1 -> Request.CreateTable
+            2 -> Request.ListTables
+            3 -> Request.GetData
+            4 -> Request.GetDataOrdered
+            5 -> Request.InsertData
+            6 -> Request.DropTable
+            7 -> Request.EditColInRow
+            8 -> Request.CheckTable
+            9 -> Request.DeleteRow
+            10 -> Request.SwapColumns
+            11 -> Request.CreateIndex
+            12 -> Request.CheckIndex
+            13 -> Request.AddColumn
+            14 -> Request.RemoveColumn
+            15 -> Request.ExportDatabase
+            16 -> Request.ExportTables
+            17 -> Request.CreateTableFromExport
+            18 -> Request.CopyTable
+            19 -> Request.UniffiDontRenameMyEnums(
+                FfiConverterBoolean.read(buf),
+                )
+            else -> throw RuntimeException("invalid enum value, something is very wrong!!")
+        }
     }
 
-    override fun allocationSize(value: Request) = 4UL
+    override fun allocationSize(value: Request): ULong = when(value) {
+        is Request.CreateTable -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is Request.ListTables -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is Request.GetData -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is Request.GetDataOrdered -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is Request.InsertData -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is Request.DropTable -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is Request.EditColInRow -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is Request.CheckTable -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is Request.DeleteRow -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is Request.SwapColumns -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is Request.CreateIndex -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is Request.CheckIndex -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is Request.AddColumn -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is Request.RemoveColumn -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is Request.ExportDatabase -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is Request.ExportTables -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is Request.CreateTableFromExport -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is Request.CopyTable -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is Request.UniffiDontRenameMyEnums -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterBoolean.allocationSize(value.v1)
+            )
+        }
+    }
 
     override fun write(value: Request, buf: ByteBuffer) {
-        buf.putInt(value.ordinal + 1)
+        when(value) {
+            is Request.CreateTable -> {
+                buf.putInt(1)
+                Unit
+            }
+            is Request.ListTables -> {
+                buf.putInt(2)
+                Unit
+            }
+            is Request.GetData -> {
+                buf.putInt(3)
+                Unit
+            }
+            is Request.GetDataOrdered -> {
+                buf.putInt(4)
+                Unit
+            }
+            is Request.InsertData -> {
+                buf.putInt(5)
+                Unit
+            }
+            is Request.DropTable -> {
+                buf.putInt(6)
+                Unit
+            }
+            is Request.EditColInRow -> {
+                buf.putInt(7)
+                Unit
+            }
+            is Request.CheckTable -> {
+                buf.putInt(8)
+                Unit
+            }
+            is Request.DeleteRow -> {
+                buf.putInt(9)
+                Unit
+            }
+            is Request.SwapColumns -> {
+                buf.putInt(10)
+                Unit
+            }
+            is Request.CreateIndex -> {
+                buf.putInt(11)
+                Unit
+            }
+            is Request.CheckIndex -> {
+                buf.putInt(12)
+                Unit
+            }
+            is Request.AddColumn -> {
+                buf.putInt(13)
+                Unit
+            }
+            is Request.RemoveColumn -> {
+                buf.putInt(14)
+                Unit
+            }
+            is Request.ExportDatabase -> {
+                buf.putInt(15)
+                Unit
+            }
+            is Request.ExportTables -> {
+                buf.putInt(16)
+                Unit
+            }
+            is Request.CreateTableFromExport -> {
+                buf.putInt(17)
+                Unit
+            }
+            is Request.CopyTable -> {
+                buf.putInt(18)
+                Unit
+            }
+            is Request.UniffiDontRenameMyEnums -> {
+                buf.putInt(19)
+                FfiConverterBoolean.write(value.v1, buf)
+                Unit
+            }
+        }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
     }
 }
 
@@ -2906,6 +3380,34 @@ public object FfiConverterSequenceString: FfiConverterRustBuffer<List<kotlin.Str
 /**
  * @suppress
  */
+public object FfiConverterSequenceTypeColumnDef: FfiConverterRustBuffer<List<ColumnDef>> {
+    override fun read(buf: ByteBuffer): List<ColumnDef> {
+        val len = buf.getInt()
+        return List<ColumnDef>(len) {
+            FfiConverterTypeColumnDef.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<ColumnDef>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeColumnDef.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<ColumnDef>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeColumnDef.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterSequenceTypeColumnValue: FfiConverterRustBuffer<List<ColumnValue>> {
     override fun read(buf: ByteBuffer): List<ColumnValue> {
         val len = buf.getInt()
@@ -3067,14 +3569,14 @@ public object FfiConverterSequenceTypeSelectArgument: FfiConverterRustBuffer<Lis
         }
     }
 }
-    @Throws(DbException::class) fun `buildGetDataInMsg`(`messageId`: kotlin.ULong, `payload`: GetDataIn): kotlin.String {
+    @Throws(DbException::class) fun `buildGetDataInMsg`(`messageId`: kotlin.ULong, `prePayload`: GetDataIn): kotlin.String {
             return FfiConverterString.lift(
     uniffiRustCallWithError(DbException) { _status ->
-    UniffiLib.uniffi_shared_types_fn_func_build_get_data_in_msg(
+    UniffiLib.uniffi_protocol_fn_func_build_get_data_in_msg(
     
         
         FfiConverterULong.lower(`messageId`),
-        FfiConverterTypeGetDataIn.lower(`payload`),_status)
+        FfiConverterTypeGetDataIn.lower(`prePayload`),_status)
 }
     )
     }
@@ -3083,7 +3585,7 @@ public object FfiConverterSequenceTypeSelectArgument: FfiConverterRustBuffer<Lis
     @Throws(DbException::class) fun `unbuildGetDataOutResponse`(`response`: kotlin.String): GetDataOutUnbuilt {
             return FfiConverterTypeGetDataOutUnbuilt.lift(
     uniffiRustCallWithError(DbException) { _status ->
-    UniffiLib.uniffi_shared_types_fn_func_unbuild_get_data_out_response(
+    UniffiLib.uniffi_protocol_fn_func_unbuild_get_data_out_response(
     
         
         FfiConverterString.lower(`response`),_status)

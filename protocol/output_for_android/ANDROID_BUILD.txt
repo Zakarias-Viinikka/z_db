@@ -16,12 +16,11 @@ cargo run --bin uniffi-bindgen -- generate \
 
 # --- MOVE STEPS ---
 # TODO: Set your Android project root path and uncomment the lines below.
-# Adjust the package directory if needed (currently com.hiputer.protocol).
+# Adjust the package directory if needed (currently com.z_db.protocol).
 
 # 5. Copy native binary
 # mkdir -p "$ANDROID_PROJECT_PATH/app/src/main/jniLibs"
 # cp -r ./output_for_android/jniLibs/* "$ANDROID_PROJECT_PATH/app/src/main/jniLibs/"
 
-# 6. Copy Kotlin source(s)
-# mkdir -p "$ANDROID_PROJECT_PATH/app/src/main/java/com/hiputer/protocol/"
-# cp ./output_for_android/kotlin/com/hiputer/protocol/*.kt "$ANDROID_PROJECT_PATH/app/src/main/java/com/hiputer/protocol/"
+# 6. Copy Kotlin source(s) (includes uniffi runtime)
+# cp -r ./output_for_android/kotlin/* "$ANDROID_PROJECT_PATH/app/src/main/java/"

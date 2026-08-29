@@ -1,0 +1,5 @@
+[crate-roots]
+db_wrapper = "."
+
+[crates.db_wrapper.bindings.kotlin]
+package_name = "com.z_db.android_mascot"
