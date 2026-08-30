@@ -676,6 +676,12 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_protocol_checksum_func_unbuild_get_data_out_response(
     ): Int
+    external fun uniffi_protocol_checksum_func_col_with_default_value(
+    ): Int
+    external fun uniffi_protocol_checksum_func_default_col(
+    ): Int
+    external fun uniffi_protocol_checksum_func_id_column(
+    ): Int
     external fun ffi_protocol_uniffi_contract_version(
     ): Int
 
@@ -692,6 +698,12 @@ internal object UniffiLib {
     external fun uniffi_protocol_fn_func_build_get_data_in_msg(`messageId`: Long,`prePayload`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun uniffi_protocol_fn_func_unbuild_get_data_out_response(`response`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_protocol_fn_func_col_with_default_value(`columnType`: RustBuffer.ByValue,`defaultValue`: RustBuffer.ByValue,`columnName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_protocol_fn_func_default_col(`columnType`: RustBuffer.ByValue,`columnName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_protocol_fn_func_id_column(uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun ffi_protocol_rustbuffer_alloc(`size`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
@@ -816,6 +828,15 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_protocol_checksum_func_unbuild_get_data_out_response() != 36917) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_protocol_checksum_func_col_with_default_value() != 11182) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_protocol_checksum_func_default_col() != 29143) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_protocol_checksum_func_id_column() != 17812) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
 }
@@ -2533,6 +2554,121 @@ public object FfiConverterTypeCol : FfiConverterRustBuffer<Col>{
 
 
 
+sealed class ColumnType {
+    
+    object Integer : ColumnType()
+    
+    
+    object Text : ColumnType()
+    
+    
+    object Real : ColumnType()
+    
+    
+    object Blob : ColumnType()
+    
+    
+    data class UniFfiDontRenameMyEnums(
+        val v1: kotlin.Boolean) : ColumnType()
+        
+    {
+        
+
+        companion object
+    }
+    
+
+    
+
+    
+    
+
+
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeColumnType : FfiConverterRustBuffer<ColumnType>{
+    override fun read(buf: ByteBuffer): ColumnType {
+        return when(buf.getInt()) {
+            1 -> ColumnType.Integer
+            2 -> ColumnType.Text
+            3 -> ColumnType.Real
+            4 -> ColumnType.Blob
+            5 -> ColumnType.UniFfiDontRenameMyEnums(
+                FfiConverterBoolean.read(buf),
+                )
+            else -> throw RuntimeException("invalid enum value, something is very wrong!!")
+        }
+    }
+
+    override fun allocationSize(value: ColumnType): ULong = when(value) {
+        is ColumnType.Integer -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is ColumnType.Text -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is ColumnType.Real -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is ColumnType.Blob -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is ColumnType.UniFfiDontRenameMyEnums -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterBoolean.allocationSize(value.v1)
+            )
+        }
+    }
+
+    override fun write(value: ColumnType, buf: ByteBuffer) {
+        when(value) {
+            is ColumnType.Integer -> {
+                buf.putInt(1)
+                Unit
+            }
+            is ColumnType.Text -> {
+                buf.putInt(2)
+                Unit
+            }
+            is ColumnType.Real -> {
+                buf.putInt(3)
+                Unit
+            }
+            is ColumnType.Blob -> {
+                buf.putInt(4)
+                Unit
+            }
+            is ColumnType.UniFfiDontRenameMyEnums -> {
+                buf.putInt(5)
+                FfiConverterBoolean.write(value.v1, buf)
+                Unit
+            }
+        }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
+    }
+}
+
+
+
+
+
 
 
 sealed class DbException: kotlin.Exception() {
@@ -3589,6 +3725,41 @@ public object FfiConverterSequenceTypeSelectArgument: FfiConverterRustBuffer<Lis
     
         
         FfiConverterString.lower(`response`),_status)
+}
+    )
+    }
+    
+ fun `colWithDefaultValue`(`columnType`: ColumnType, `defaultValue`: kotlin.String, `columnName`: kotlin.String): ColumnDef {
+            return FfiConverterTypeColumnDef.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_protocol_fn_func_col_with_default_value(
+    
+        
+        FfiConverterTypeColumnType.lower(`columnType`),
+        FfiConverterString.lower(`defaultValue`),
+        FfiConverterString.lower(`columnName`),_status)
+}
+    )
+    }
+    
+ fun `defaultCol`(`columnType`: ColumnType, `columnName`: kotlin.String): ColumnDef {
+            return FfiConverterTypeColumnDef.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_protocol_fn_func_default_col(
+    
+        
+        FfiConverterTypeColumnType.lower(`columnType`),
+        FfiConverterString.lower(`columnName`),_status)
+}
+    )
+    }
+    
+ fun `idColumn`(): ColumnDef {
+            return FfiConverterTypeColumnDef.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_protocol_fn_func_id_column(
+    
+        _status)
 }
     )
     }

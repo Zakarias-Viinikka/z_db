@@ -22,6 +22,7 @@ pub struct ColumnDefBuilder(
     pub bool,       // autoincrement
 );
 
+#[uniffi::export]
 pub fn id_column() -> ColumnDef {
     builder_to_column_def(ColumnDefBuilder(
         "id".to_string(),
@@ -34,6 +35,7 @@ pub fn id_column() -> ColumnDef {
     ))
 }
 
+#[uniffi::export]
 pub fn default_col(column_type: ColumnType, column_name: &str) -> ColumnDef {
     builder_to_column_def(ColumnDefBuilder(
         column_name.to_string(),
@@ -46,6 +48,7 @@ pub fn default_col(column_type: ColumnType, column_name: &str) -> ColumnDef {
     ))
 }
 
+#[uniffi::export]
 pub fn col_with_default_value(
     column_type: ColumnType,
     default_value: String,
@@ -62,11 +65,13 @@ pub fn col_with_default_value(
     ))
 }
 
+#[derive(uniffi::Enum)]
 pub enum ColumnType {
     Integer,
     Text,
     Real,
     Blob,
+    UniFfiDontRenameMyEnums(bool),
 }
 
 pub fn builder_to_column_def(builder: ColumnDefBuilder) -> ColumnDef {
@@ -75,6 +80,7 @@ pub fn builder_to_column_def(builder: ColumnDefBuilder) -> ColumnDef {
         ColumnType::Text => "TEXT".to_string(),
         ColumnType::Real => "REAL".to_string(),
         ColumnType::Blob => "BLOB".to_string(),
+        ColumnType::UniFfiDontRenameMyEnums(_) => "ILLEGAL".to_string(),
     };
 
     ColumnDef {
