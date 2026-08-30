@@ -3,3 +3,4 @@ protocol = "."
 
 [crates.protocol.bindings.kotlin]
 package_name = "com.z_db.protocol"
+android = true
