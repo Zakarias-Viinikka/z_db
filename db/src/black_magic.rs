@@ -1,5 +1,6 @@
 use protocol::error::DbError;
 use protocol::new_table::ColumnDef;
+use protocol::new_table::ForeignKeyDef;
 use protocol::payload::*;
 use protocol::row_col::*;
 use sql_builder::*;
@@ -21,6 +22,29 @@ pub fn create_table(
     let result = conn
         .execute(&sql, [])
         .map_err(|e| DbError::SqlExecuteFail(format!("err: {}, sql: {}", e, sql)));
+    if result.is_ok() { None } else { result.err() }
+}
+
+pub fn create_foreign_table(
+    conn: &rusqlite::Connection,
+    table_name: &str,
+    columns: Vec<ColumnDef>,
+    foreign_keys: Vec<ForeignKeyDef>,
+) -> Option<DbError> {
+    if table_name.is_empty() {
+        return Some(DbError::IllegalInput("table_name is empty".to_string()));
+    }
+    if table_name.starts_with("fts5_") {
+        return Some(DbError::IllegalInput(
+            "table_name cannot start with reserved prefix 'fts5_'".to_string(),
+        ));
+    }
+
+    let sql = generate_create_foreign_table_sql(table_name, &columns, &foreign_keys);
+    let result = conn
+        .execute(&sql, [])
+        .map_err(|e| DbError::SqlExecuteFail(format!("err: {}, sql: {}", e, sql)));
+
     if result.is_ok() { None } else { result.err() }
 }
 

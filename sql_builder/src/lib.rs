@@ -1,4 +1,5 @@
 use protocol::new_table::ColumnDef;
+use protocol::new_table::ForeignKeyDef;
 use protocol::payload::SelectArgument;
 use protocol::row_col;
 
@@ -28,6 +29,54 @@ pub fn generate_create_table_sql(table_name: &str, columns: &[ColumnDef]) -> Str
         "CREATE TABLE IF NOT EXISTS {} ({});",
         quote_ident(table_name),
         col_defs.join(", ")
+    )
+}
+
+pub fn generate_create_foreign_table_sql(
+    table_name: &str,
+    columns: &[ColumnDef],
+    foreign_keys: &[ForeignKeyDef],
+) -> String {
+    let mut col_defs = Vec::new();
+    for col in columns {
+        let mut def = format!("{} {}", quote_ident(&col.name), col.column_type);
+        if col.primary_key {
+            def.push_str(" PRIMARY KEY");
+        }
+        if col.autoincrement {
+            def.push_str(" AUTOINCREMENT");
+        }
+        if col.not_null {
+            def.push_str(" NOT NULL");
+        }
+        if col.unique {
+            def.push_str(" UNIQUE");
+        }
+        if !col.default_value.is_empty() {
+            def.push_str(&format!(" DEFAULT {}", col.default_value));
+        }
+        col_defs.push(def);
+    }
+
+    let fk_defs: Vec<String> = foreign_keys
+        .iter()
+        .map(|fk| {
+            format!(
+                "FOREIGN KEY ({}) REFERENCES {}({})",
+                quote_ident(&fk.column),
+                quote_ident(&fk.referenced_table),
+                quote_ident(&fk.referenced_column)
+            )
+        })
+        .collect();
+
+    let mut all_defs = col_defs;
+    all_defs.extend(fk_defs);
+
+    format!(
+        "CREATE TABLE IF NOT EXISTS {} ({});",
+        quote_ident(table_name),
+        all_defs.join(", ")
     )
 }
 
