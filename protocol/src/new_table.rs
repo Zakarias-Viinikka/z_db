@@ -22,6 +22,35 @@ pub struct ColumnDefBuilder(
     pub bool,       // autoincrement
 );
 
+#[derive(uniffi::Enum)]
+pub enum ColumnType {
+    Integer,
+    Text,
+    Real,
+    Blob,
+    UniFfiDontRenameMyEnums(bool),
+}
+
+pub fn builder_to_column_def(builder: ColumnDefBuilder) -> ColumnDef {
+    let column_type = match builder.1 {
+        ColumnType::Integer => "INTEGER".to_string(),
+        ColumnType::Text => "TEXT".to_string(),
+        ColumnType::Real => "REAL".to_string(),
+        ColumnType::Blob => "BLOB".to_string(),
+        ColumnType::UniFfiDontRenameMyEnums(_) => "ILLEGAL".to_string(),
+    };
+
+    ColumnDef {
+        name: builder.0,
+        column_type,
+        primary_key: builder.2,
+        not_null: builder.3,
+        unique: builder.4,
+        default_value: builder.5,
+        autoincrement: builder.6,
+    }
+}
+
 #[uniffi::export]
 pub fn id_column() -> ColumnDef {
     builder_to_column_def(ColumnDefBuilder(
@@ -65,31 +94,48 @@ pub fn col_with_default_value(
     ))
 }
 
-#[derive(uniffi::Enum)]
-pub enum ColumnType {
-    Integer,
-    Text,
-    Real,
-    Blob,
-    UniFfiDontRenameMyEnums(bool),
+#[uniffi::export]
+pub fn not_null_col(column_type: ColumnType, column_name: &str) -> ColumnDef {
+    builder_to_column_def(ColumnDefBuilder(
+        column_name.to_string(),
+        column_type,
+        false,
+        true,
+        false,
+        "".to_string(),
+        false,
+    ))
 }
 
-pub fn builder_to_column_def(builder: ColumnDefBuilder) -> ColumnDef {
-    let column_type = match builder.1 {
-        ColumnType::Integer => "INTEGER".to_string(),
-        ColumnType::Text => "TEXT".to_string(),
-        ColumnType::Real => "REAL".to_string(),
-        ColumnType::Blob => "BLOB".to_string(),
-        ColumnType::UniFfiDontRenameMyEnums(_) => "ILLEGAL".to_string(),
-    };
-
-    ColumnDef {
-        name: builder.0,
+#[uniffi::export]
+pub fn unique_col(column_type: ColumnType, column_name: &str) -> ColumnDef {
+    builder_to_column_def(ColumnDefBuilder(
+        column_name.to_string(),
         column_type,
-        primary_key: builder.2,
-        not_null: builder.3,
-        unique: builder.4,
-        default_value: builder.5,
-        autoincrement: builder.6,
-    }
+        false,
+        false,
+        true,
+        "".to_string(),
+        false,
+    ))
+}
+
+#[uniffi::export]
+pub fn not_null_unique_col(column_type: ColumnType, column_name: &str) -> ColumnDef {
+    builder_to_column_def(ColumnDefBuilder(
+        column_name.to_string(),
+        column_type,
+        false,
+        true,
+        true,
+        "".to_string(),
+        false,
+    ))
+}
+
+#[derive(uniffi::Record)]
+pub struct ForeignKeyDef {
+    pub column: String,            // which column in this table
+    pub referenced_table: String,  // other table name
+    pub referenced_column: String, // column in other table
 }
