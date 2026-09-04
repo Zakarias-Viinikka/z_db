@@ -1,5 +1,6 @@
 use crate::error::DbError;
 use crate::new_table;
+use crate::new_table::ForeignKeyDef;
 use crate::row_col;
 use serde::{Deserialize, Serialize};
 
@@ -207,3 +208,10 @@ pub struct RebuildFts5In {
 }
 
 pub type ForceDropTableIn = DropTableIn;
+
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct CreateForeignTableIn {
+    pub table_name: String,
+    pub columns: Vec<new_table::ColumnDef>,
+    pub foreign_keys: Vec<ForeignKeyDef>,
+}

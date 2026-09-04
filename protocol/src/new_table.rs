@@ -58,7 +58,7 @@ pub fn id_column() -> ColumnDef {
         ColumnType::Integer,
         true,
         true,
-        true,
+        false,
         "".to_string(),
         true,
     ))
@@ -133,7 +133,7 @@ pub fn not_null_unique_col(column_type: ColumnType, column_name: &str) -> Column
     ))
 }
 
-#[derive(uniffi::Record)]
+#[derive(serde::Deserialize, serde::Serialize, Debug, Clone, uniffi::Record)]
 pub struct ForeignKeyDef {
     pub column: String,            // which column in this table
     pub referenced_table: String,  // other table name

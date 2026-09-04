@@ -682,6 +682,12 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_protocol_checksum_func_id_column(
     ): Int
+    external fun uniffi_protocol_checksum_func_not_null_col(
+    ): Int
+    external fun uniffi_protocol_checksum_func_not_null_unique_col(
+    ): Int
+    external fun uniffi_protocol_checksum_func_unique_col(
+    ): Int
     external fun ffi_protocol_uniffi_contract_version(
     ): Int
 
@@ -704,6 +710,12 @@ internal object UniffiLib {
     external fun uniffi_protocol_fn_func_default_col(`columnType`: RustBuffer.ByValue,`columnName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun uniffi_protocol_fn_func_id_column(uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_protocol_fn_func_not_null_col(`columnType`: RustBuffer.ByValue,`columnName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_protocol_fn_func_not_null_unique_col(`columnType`: RustBuffer.ByValue,`columnName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_protocol_fn_func_unique_col(`columnType`: RustBuffer.ByValue,`columnName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun ffi_protocol_rustbuffer_alloc(`size`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
@@ -837,6 +849,15 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_protocol_checksum_func_id_column() != 17812) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_protocol_checksum_func_not_null_col() != 39240) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_protocol_checksum_func_not_null_unique_col() != 58728) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_protocol_checksum_func_unique_col() != 43470) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
 }
@@ -1416,6 +1437,49 @@ public object FfiConverterTypeCopyTableIn: FfiConverterRustBuffer<CopyTableIn> {
 
 
 
+data class CreateForeignTableIn (
+    var `tableName`: kotlin.String
+    , 
+    var `columns`: List<ColumnDef>
+    , 
+    var `foreignKeys`: List<ForeignKeyDef>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeCreateForeignTableIn: FfiConverterRustBuffer<CreateForeignTableIn> {
+    override fun read(buf: ByteBuffer): CreateForeignTableIn {
+        return CreateForeignTableIn(
+            FfiConverterString.read(buf),
+            FfiConverterSequenceTypeColumnDef.read(buf),
+            FfiConverterSequenceTypeForeignKeyDef.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: CreateForeignTableIn) = (
+            FfiConverterString.allocationSize(value.`tableName`) +
+            FfiConverterSequenceTypeColumnDef.allocationSize(value.`columns`) +
+            FfiConverterSequenceTypeForeignKeyDef.allocationSize(value.`foreignKeys`)
+    )
+
+    override fun write(value: CreateForeignTableIn, buf: ByteBuffer) {
+            FfiConverterString.write(value.`tableName`, buf)
+            FfiConverterSequenceTypeColumnDef.write(value.`columns`, buf)
+            FfiConverterSequenceTypeForeignKeyDef.write(value.`foreignKeys`, buf)
+    }
+}
+
+
+
 data class CreateFts5TableIn (
     var `sourceTableName`: kotlin.String
     , 
@@ -1842,6 +1906,49 @@ public object FfiConverterTypeExportTablesOut: FfiConverterRustBuffer<ExportTabl
 
     override fun write(value: ExportTablesOut, buf: ByteBuffer) {
             FfiConverterSequenceTypeTableExport.write(value.`tables`, buf)
+    }
+}
+
+
+
+data class ForeignKeyDef (
+    var `column`: kotlin.String
+    , 
+    var `referencedTable`: kotlin.String
+    , 
+    var `referencedColumn`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeForeignKeyDef: FfiConverterRustBuffer<ForeignKeyDef> {
+    override fun read(buf: ByteBuffer): ForeignKeyDef {
+        return ForeignKeyDef(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: ForeignKeyDef) = (
+            FfiConverterString.allocationSize(value.`column`) +
+            FfiConverterString.allocationSize(value.`referencedTable`) +
+            FfiConverterString.allocationSize(value.`referencedColumn`)
+    )
+
+    override fun write(value: ForeignKeyDef, buf: ByteBuffer) {
+            FfiConverterString.write(value.`column`, buf)
+            FfiConverterString.write(value.`referencedTable`, buf)
+            FfiConverterString.write(value.`referencedColumn`, buf)
     }
 }
 
@@ -3572,6 +3679,34 @@ public object FfiConverterSequenceTypeColumnValue: FfiConverterRustBuffer<List<C
 /**
  * @suppress
  */
+public object FfiConverterSequenceTypeForeignKeyDef: FfiConverterRustBuffer<List<ForeignKeyDef>> {
+    override fun read(buf: ByteBuffer): List<ForeignKeyDef> {
+        val len = buf.getInt()
+        return List<ForeignKeyDef>(len) {
+            FfiConverterTypeForeignKeyDef.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<ForeignKeyDef>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeForeignKeyDef.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<ForeignKeyDef>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeForeignKeyDef.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterSequenceTypeRow: FfiConverterRustBuffer<List<Row>> {
     override fun read(buf: ByteBuffer): List<Row> {
         val len = buf.getInt()
@@ -3760,6 +3895,42 @@ public object FfiConverterSequenceTypeSelectArgument: FfiConverterRustBuffer<Lis
     UniffiLib.uniffi_protocol_fn_func_id_column(
     
         _status)
+}
+    )
+    }
+    
+ fun `notNullCol`(`columnType`: ColumnType, `columnName`: kotlin.String): ColumnDef {
+            return FfiConverterTypeColumnDef.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_protocol_fn_func_not_null_col(
+    
+        
+        FfiConverterTypeColumnType.lower(`columnType`),
+        FfiConverterString.lower(`columnName`),_status)
+}
+    )
+    }
+    
+ fun `notNullUniqueCol`(`columnType`: ColumnType, `columnName`: kotlin.String): ColumnDef {
+            return FfiConverterTypeColumnDef.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_protocol_fn_func_not_null_unique_col(
+    
+        
+        FfiConverterTypeColumnType.lower(`columnType`),
+        FfiConverterString.lower(`columnName`),_status)
+}
+    )
+    }
+    
+ fun `uniqueCol`(`columnType`: ColumnType, `columnName`: kotlin.String): ColumnDef {
+            return FfiConverterTypeColumnDef.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_protocol_fn_func_unique_col(
+    
+        
+        FfiConverterTypeColumnType.lower(`columnType`),
+        FfiConverterString.lower(`columnName`),_status)
 }
     )
     }

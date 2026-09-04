@@ -10,14 +10,10 @@ pub fn create_table(
     table_name: &str,
     columns: Vec<ColumnDef>,
 ) -> Option<DbError> {
-    if table_name.is_empty() {
-        return Some(DbError::IllegalInput("table_name is empty".to_string()));
+    if let Some(err) = check_for_illegal_table_names(table_name) {
+        return Some(err);
     }
-    if table_name.starts_with("fts5_") {
-        return Some(DbError::IllegalInput(
-            "table_name cannot start with reserved prefix 'fts5_'".to_string(),
-        ));
-    }
+
     let sql = generate_create_table_sql(table_name, &columns);
     let result = conn
         .execute(&sql, [])
@@ -27,17 +23,16 @@ pub fn create_table(
 
 pub fn create_foreign_table(
     conn: &rusqlite::Connection,
-    table_name: &str,
-    columns: Vec<ColumnDef>,
-    foreign_keys: Vec<ForeignKeyDef>,
+    create_foreign_table_in: &CreateForeignTableIn,
 ) -> Option<DbError> {
-    if table_name.is_empty() {
-        return Some(DbError::IllegalInput("table_name is empty".to_string()));
-    }
-    if table_name.starts_with("fts5_") {
-        return Some(DbError::IllegalInput(
-            "table_name cannot start with reserved prefix 'fts5_'".to_string(),
-        ));
+    let (table_name, columns, foreign_keys) = (
+        &create_foreign_table_in.table_name,
+        &create_foreign_table_in.columns,
+        &create_foreign_table_in.foreign_keys,
+    );
+
+    if let Some(err) = check_for_illegal_table_names(table_name) {
+        return Some(err);
     }
 
     let sql = generate_create_foreign_table_sql(table_name, &columns, &foreign_keys);
@@ -46,6 +41,20 @@ pub fn create_foreign_table(
         .map_err(|e| DbError::SqlExecuteFail(format!("err: {}, sql: {}", e, sql)));
 
     if result.is_ok() { None } else { result.err() }
+}
+
+fn check_for_illegal_table_names(name: &str) -> Option<DbError> {
+    if name.is_empty() {
+        return Some(DbError::IllegalInput("table_name is empty".to_string()));
+    }
+
+    if name.starts_with("fts5_") {
+        Some(DbError::IllegalInput(
+            "table_name cannot start with reserved prefix 'fts5_'".to_string(),
+        ))
+    } else {
+        None
+    }
 }
 
 pub fn list_tables(conn: &rusqlite::Connection) -> Result<Vec<String>, DbError> {

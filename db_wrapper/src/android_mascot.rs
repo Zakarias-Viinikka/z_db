@@ -29,6 +29,14 @@ impl LiveForever {
         }
     }
 
+    pub fn create_foreign_table(&self, payload: CreateForeignTableIn) -> Result<(), DbError> {
+        let conn = self.conn()?;
+        match black_magic::create_foreign_table(&conn, &payload) {
+            Some(err) => Err(err),
+            None => Ok(()),
+        }
+    }
+
     pub fn list_tables(&self) -> Result<ListTablesOut, DbError> {
         let conn = self.conn()?;
         let table_names = black_magic::list_tables(&conn)?;
