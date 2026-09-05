@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::error::DbError;
 
-#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Enum)]
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Enum, PartialEq)]
 pub enum Col {
     Null,
     Integer(i64),
@@ -21,7 +21,7 @@ pub fn col_to_string(col: &Col) -> Result<String, DbError> {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record, PartialEq)]
 pub struct Row {
     pub cols: Vec<Col>,
 }
