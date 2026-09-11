@@ -7,7 +7,7 @@ mod tests {
         let sql = search_fts5_sql_builder("users", "alice");
         assert_eq!(
             sql,
-            r#"SELECT rowid, * FROM "fts5_users" WHERE "fts5_users" MATCH 'alice' ORDER BY rank;"#
+            r#"SELECT rowid, * FROM "fts5_users" WHERE "fts5_users" MATCH '"alice"' ORDER BY rank;"#
         );
     }
 
@@ -16,7 +16,7 @@ mod tests {
         let sql = search_fts5_sql_builder("users", "alice smith");
         assert_eq!(
             sql,
-            r#"SELECT rowid, * FROM "fts5_users" WHERE "fts5_users" MATCH 'alice smith' ORDER BY rank;"#
+            r#"SELECT rowid, * FROM "fts5_users" WHERE "fts5_users" MATCH '"alice" "smith"' ORDER BY rank;"#
         );
     }
 
@@ -25,7 +25,7 @@ mod tests {
         let sql = search_fts5_sql_builder("users", "  alice   smith  ");
         assert_eq!(
             sql,
-            r#"SELECT rowid, * FROM "fts5_users" WHERE "fts5_users" MATCH '  alice   smith  ' ORDER BY rank;"#
+            r#"SELECT rowid, * FROM "fts5_users" WHERE "fts5_users" MATCH '"alice" "smith"' ORDER BY rank;"#
         );
     }
 
@@ -34,7 +34,7 @@ mod tests {
         let sql = search_fts5_sql_builder("users", r#"alice "smith""#);
         assert_eq!(
             sql,
-            r#"SELECT rowid, * FROM "fts5_users" WHERE "fts5_users" MATCH 'alice "smith"' ORDER BY rank;"#
+            r#"SELECT rowid, * FROM "fts5_users" WHERE "fts5_users" MATCH '"alice" """smith"""' ORDER BY rank;"#
         );
     }
 
@@ -43,7 +43,7 @@ mod tests {
         let sql = search_fts5_sql_builder("users", "alice's");
         assert_eq!(
             sql,
-            r#"SELECT rowid, * FROM "fts5_users" WHERE "fts5_users" MATCH 'alice''s' ORDER BY rank;"#
+            r#"SELECT rowid, * FROM "fts5_users" WHERE "fts5_users" MATCH '"alice''s"' ORDER BY rank;"#
         );
     }
 

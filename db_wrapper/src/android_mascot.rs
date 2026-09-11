@@ -96,6 +96,7 @@ impl LiveForever {
                 arguments: vec![SelectArgument::XEqualY {
                     x: "id".to_string(),
                     y: row_id.to_string(),
+                    join: None,
                 }],
                 columns_to_read: vec![data.column.clone()],
             };
@@ -195,6 +196,21 @@ impl LiveForever {
     pub fn copy_table(&self, data: CopyTableIn) -> Result<(), DbError> {
         let conn = self.conn()?;
         black_magic::copy_table(&conn, &data.source_table_name, &data.new_table_name)
+    }
+
+    pub fn begin_all_or_nothing(&self) -> Result<(), DbError> {
+        let conn = self.conn()?;
+        db::safety_first::begin_all_or_nothing(&conn)
+    }
+
+    pub fn everything_went_perfectly(&self) -> Result<(), DbError> {
+        let conn = self.conn()?;
+        db::safety_first::everything_went_perfectly(&conn)
+    }
+
+    pub fn regret_everything(&self) -> Result<(), DbError> {
+        let conn = self.conn()?;
+        db::safety_first::regret_everything(&conn)
     }
 }
 

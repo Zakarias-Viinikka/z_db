@@ -8,3 +8,6 @@ pub mod web_mascot;
 
 #[cfg(feature = "normal")]
 pub mod mascot;
+
+#[cfg(feature = "testing")]
+pub mod testing_mascot;

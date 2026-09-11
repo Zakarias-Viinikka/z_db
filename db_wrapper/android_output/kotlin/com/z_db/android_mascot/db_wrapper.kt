@@ -749,6 +749,8 @@ internal object IntegrityCheckingUniffiLib {
     }
     external fun uniffi_db_wrapper_checksum_method_liveforever_add_column(
     ): Int
+    external fun uniffi_db_wrapper_checksum_method_liveforever_begin_all_or_nothing(
+    ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_check_index(
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_check_table(
@@ -769,6 +771,8 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_edit_col_in_row(
     ): Int
+    external fun uniffi_db_wrapper_checksum_method_liveforever_everything_went_perfectly(
+    ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_export_database(
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_export_tables(
@@ -780,6 +784,8 @@ internal object IntegrityCheckingUniffiLib {
     external fun uniffi_db_wrapper_checksum_method_liveforever_insert_data(
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_list_tables(
+    ): Int
+    external fun uniffi_db_wrapper_checksum_method_liveforever_regret_everything(
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_remove_column(
     ): Int
@@ -814,6 +820,8 @@ internal object UniffiLib {
     ): Long
     external fun uniffi_db_wrapper_fn_method_liveforever_add_column(`ptr`: Long,`data`: RustBufferAddColumnIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
+    external fun uniffi_db_wrapper_fn_method_liveforever_begin_all_or_nothing(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
     external fun uniffi_db_wrapper_fn_method_liveforever_check_index(`ptr`: Long,`data`: RustBufferCheckIndexIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBufferCheckIndexOut.ByValue
     external fun uniffi_db_wrapper_fn_method_liveforever_check_table(`ptr`: Long,`data`: RustBufferCheckTableIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -834,6 +842,8 @@ internal object UniffiLib {
     ): Unit
     external fun uniffi_db_wrapper_fn_method_liveforever_edit_col_in_row(`ptr`: Long,`data`: RustBufferEditColInRowIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
+    external fun uniffi_db_wrapper_fn_method_liveforever_everything_went_perfectly(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
     external fun uniffi_db_wrapper_fn_method_liveforever_export_database(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBufferExportDatabaseOut.ByValue
     external fun uniffi_db_wrapper_fn_method_liveforever_export_tables(`ptr`: Long,`data`: RustBufferExportTablesIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -846,6 +856,8 @@ internal object UniffiLib {
     ): Unit
     external fun uniffi_db_wrapper_fn_method_liveforever_list_tables(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBufferListTablesOut.ByValue
+    external fun uniffi_db_wrapper_fn_method_liveforever_regret_everything(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
     external fun uniffi_db_wrapper_fn_method_liveforever_remove_column(`ptr`: Long,`data`: RustBufferRemoveColumnIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     external fun uniffi_db_wrapper_fn_method_liveforever_swap_columns(`ptr`: Long,`data`: RustBufferSwapColumnsIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -972,6 +984,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_db_wrapper_checksum_method_liveforever_add_column() != 64117) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if (lib.uniffi_db_wrapper_checksum_method_liveforever_begin_all_or_nothing() != 18291) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if (lib.uniffi_db_wrapper_checksum_method_liveforever_check_index() != 38564) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -1002,6 +1017,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_db_wrapper_checksum_method_liveforever_edit_col_in_row() != 13066) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if (lib.uniffi_db_wrapper_checksum_method_liveforever_everything_went_perfectly() != 29733) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if (lib.uniffi_db_wrapper_checksum_method_liveforever_export_database() != 41889) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -1018,6 +1036,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_db_wrapper_checksum_method_liveforever_list_tables() != 59841) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_db_wrapper_checksum_method_liveforever_regret_everything() != 37180) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_db_wrapper_checksum_method_liveforever_remove_column() != 59222) {
@@ -1343,6 +1364,8 @@ public interface LiveForeverInterface {
     
     fun `addColumn`(`data`: AddColumnIn)
     
+    fun `beginAllOrNothing`()
+    
     fun `checkIndex`(`data`: CheckIndexIn): CheckIndexOut
     
     fun `checkTable`(`data`: CheckTableIn): CheckTableOut
@@ -1363,6 +1386,8 @@ public interface LiveForeverInterface {
     
     fun `editColInRow`(`data`: EditColInRowIn)
     
+    fun `everythingWentPerfectly`()
+    
     fun `exportDatabase`(): ExportDatabaseOut
     
     fun `exportTables`(`data`: ExportTablesIn): ExportTablesOut
@@ -1374,6 +1399,8 @@ public interface LiveForeverInterface {
     fun `insertData`(`data`: InsertDataIn)
     
     fun `listTables`(): ListTablesOut
+    
+    fun `regretEverything`()
     
     fun `removeColumn`(`data`: RemoveColumnIn)
     
@@ -1501,6 +1528,19 @@ open class LiveForever: Disposable, AutoCloseable, LiveForeverInterface
         it,
         
         FfiConverterTypeAddColumnIn.lower(`data`),_status)
+}
+    }
+    
+    
+
+    
+    @Throws(DbException::class)override fun `beginAllOrNothing`()
+        = 
+    callWithHandle {
+    uniffiRustCallWithError(DbExceptionExternalErrorHandler) { _status ->
+    UniffiLib.uniffi_db_wrapper_fn_method_liveforever_begin_all_or_nothing(
+        it,
+        _status)
 }
     }
     
@@ -1649,6 +1689,19 @@ open class LiveForever: Disposable, AutoCloseable, LiveForeverInterface
     
 
     
+    @Throws(DbException::class)override fun `everythingWentPerfectly`()
+        = 
+    callWithHandle {
+    uniffiRustCallWithError(DbExceptionExternalErrorHandler) { _status ->
+    UniffiLib.uniffi_db_wrapper_fn_method_liveforever_everything_went_perfectly(
+        it,
+        _status)
+}
+    }
+    
+    
+
+    
     @Throws(DbException::class)override fun `exportDatabase`(): ExportDatabaseOut {
             return FfiConverterTypeExportDatabaseOut.lift(
     callWithHandle {
@@ -1733,6 +1786,19 @@ open class LiveForever: Disposable, AutoCloseable, LiveForeverInterface
     }
     )
     }
+    
+
+    
+    @Throws(DbException::class)override fun `regretEverything`()
+        = 
+    callWithHandle {
+    uniffiRustCallWithError(DbExceptionExternalErrorHandler) { _status ->
+    UniffiLib.uniffi_db_wrapper_fn_method_liveforever_regret_everything(
+        it,
+        _status)
+}
+    }
+    
     
 
     

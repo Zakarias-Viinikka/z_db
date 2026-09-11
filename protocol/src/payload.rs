@@ -22,16 +22,54 @@ pub struct ListTablesOut {
     pub table_names: Vec<String>,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, uniffi::Enum)]
+pub enum JoinType {
+    And,
+    Or,
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, uniffi::Enum)]
 pub enum SelectArgument {
-    XEqualY { x: String, y: String },
-    XNotEqualY { x: String, y: String },
-    XGreaterThanY { x: String, y: String },
-    XLessThanY { x: String, y: String },
-    XGreaterThanOrEqualY { x: String, y: String },
-    XLessThanOrEqualY { x: String, y: String },
-    XLikeY { x: String, y: String },
-    XInY { x: String, y: Vec<String> },
+    XEqualY {
+        x: String,
+        y: String,
+        join: Option<JoinType>,
+    },
+    XNotEqualY {
+        x: String,
+        y: String,
+        join: Option<JoinType>,
+    },
+    XGreaterThanY {
+        x: String,
+        y: String,
+        join: Option<JoinType>,
+    },
+    XLessThanY {
+        x: String,
+        y: String,
+        join: Option<JoinType>,
+    },
+    XGreaterThanOrEqualY {
+        x: String,
+        y: String,
+        join: Option<JoinType>,
+    },
+    XLessThanOrEqualY {
+        x: String,
+        y: String,
+        join: Option<JoinType>,
+    },
+    XLikeY {
+        x: String,
+        y: String,
+        join: Option<JoinType>,
+    },
+    XInY {
+        x: String,
+        y: Vec<String>,
+        join: Option<JoinType>,
+    },
     All,
 }
 
@@ -215,3 +253,41 @@ pub struct CreateForeignTableIn {
     pub columns: Vec<new_table::ColumnDef>,
     pub foreign_keys: Vec<ForeignKeyDef>,
 }
+
+// Describes the filters for one column, used when counting rows.
+// To count rows where "name" is "x":
+// ```
+// ColumnFilter {
+//     col_name: "name".into(),
+//     arguments: vec![SelectArgument::XEqualY {
+//         x: "name".into(),
+//         y: "x".into(),
+//         join: None,
+//     }],
+//     join: None,
+// }
+// ```
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct ColumnFilter {
+    pub col_name: String,
+    pub arguments: Vec<SelectArgument>,
+    pub join: Option<JoinType>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct CountRowsIn {
+    pub table_name: String,
+    pub filters: Vec<ColumnFilter>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct CountRowsOut {
+    pub count: u64,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct CountAllRowsIn {
+    pub table_name: String,
+}
+
+pub type CountAllRowsOut = CountRowsOut;

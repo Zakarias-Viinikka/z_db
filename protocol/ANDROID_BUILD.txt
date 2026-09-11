@@ -1,4 +1,4 @@
-cd protocol
+cd ~/ProgStuff/z_db/protocol
 # --- PRE-BUILD STEPS ---
 # 1. cargo install cargo-ndk
 # 2. rustup target add aarch64-linux-android

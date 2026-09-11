@@ -6,9 +6,9 @@ use sql_builder::*;
 
 pub fn read_from_db(conn: &Connection, ctx: &payload::GetDataIn) -> Result<Vec<Row>, DbError> {
     let table_name = &ctx.table_name;
-    let arguments: Vec<String> = ctx.arguments.iter().map(|x| x.to_sql_condition()).collect();
     let columns_to_read = &ctx.columns_to_read;
-    let sql = generate_read_from_table_sql(table_name, &arguments, columns_to_read);
+    let where_clause = to_sql_condition(&ctx.arguments);
+    let sql = generate_read_from_table_sql(table_name, &where_clause, columns_to_read);
     query_rows(conn, &sql)
         .map_err(|e| DbError::SqlExecuteFail(format!("read_from_db failed: {:?}, sql: {}", e, sql)))
 }
@@ -18,11 +18,10 @@ pub fn read_from_db_ordered(
     ctx: &payload::GetDataOrderedIn,
 ) -> Result<Vec<Row>, DbError> {
     let table_name = &ctx.table_name;
-    let arguments: Vec<String> = ctx.arguments.iter().map(|x| x.to_sql_condition()).collect();
     let columns_to_read = &ctx.columns_to_read;
     let order_by = &ctx.order_by;
-
-    let sql = generate_get_data_by_order_sql(table_name, &arguments, columns_to_read, order_by);
+    let where_clause = to_sql_condition(&ctx.arguments);
+    let sql = generate_get_data_by_order_sql(table_name, &where_clause, columns_to_read, order_by);
     query_rows(conn, &sql)
 }
 

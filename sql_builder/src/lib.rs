@@ -1,5 +1,6 @@
 use protocol::new_table::ColumnDef;
 use protocol::new_table::ForeignKeyDef;
+use protocol::payload::JoinType;
 use protocol::payload::SelectArgument;
 use protocol::row_col;
 
@@ -158,7 +159,7 @@ pub fn generate_update_sql_typed(
 
 pub fn generate_read_from_table_sql(
     table_name: impl AsRef<str>,
-    arguments: &[impl AsRef<str>],
+    where_clause: impl AsRef<str>,
     columns_to_read: &[impl AsRef<str>],
 ) -> String {
     let valid_columns: Vec<&str> = columns_to_read
@@ -177,29 +178,17 @@ pub fn generate_read_from_table_sql(
             .join(", ")
     };
 
-    let valid_conditions: Vec<&str> = arguments
-        .iter()
-        .filter(|a| !a.as_ref().is_empty())
-        .map(|a| a.as_ref())
-        .collect();
-
-    let where_clause = if valid_conditions.is_empty() {
-        String::new()
-    } else {
-        format!(" WHERE {}", valid_conditions.join(" AND "))
-    };
-
     format!(
         "SELECT {} FROM {}{};",
         columns,
         quote_ident(table_name.as_ref()),
-        where_clause
+        where_clause.as_ref()
     )
 }
 
 pub fn generate_get_data_by_order_sql(
     table_name: impl AsRef<str>,
-    arguments: &[impl AsRef<str>],
+    where_clause: impl AsRef<str>,
     columns_to_read: &[impl AsRef<str>],
     order_by: &str,
 ) -> String {
@@ -219,23 +208,11 @@ pub fn generate_get_data_by_order_sql(
             .join(", ")
     };
 
-    let valid_conditions: Vec<&str> = arguments
-        .iter()
-        .filter(|a| !a.as_ref().is_empty())
-        .map(|a| a.as_ref())
-        .collect();
-
-    let where_clause = if valid_conditions.is_empty() {
-        String::new()
-    } else {
-        format!(" WHERE {}", valid_conditions.join(" AND "))
-    };
-
     format!(
         "SELECT {} FROM {}{} ORDER BY {};",
         columns,
         quote_ident(table_name.as_ref()),
-        where_clause,
+        where_clause.as_ref(),
         order_by
     )
 }
@@ -265,40 +242,64 @@ pub fn quote_sql_string(s: &str) -> String {
     format!("'{}'", s.replace('\'', "''"))
 }
 
-pub trait ToSqlCondition {
-    fn to_sql_condition(&self) -> String;
-}
+pub fn to_sql_condition(arguments: &[SelectArgument]) -> String {
+    let mut parts: Vec<String> = Vec::new();
 
-impl ToSqlCondition for SelectArgument {
-    fn to_sql_condition(&self) -> String {
-        match self {
-            SelectArgument::XEqualY { x, y } => {
-                format!("{} = {}", quote_ident(x), quote_sql_string(y))
+    for arg in arguments {
+        let (join, condition) = match arg {
+            SelectArgument::XEqualY { x, y, join } => (
+                *join,
+                format!("{} = {}", quote_ident(x), quote_sql_string(y)),
+            ),
+            SelectArgument::XNotEqualY { x, y, join } => (
+                *join,
+                format!("{} != {}", quote_ident(x), quote_sql_string(y)),
+            ),
+            SelectArgument::XGreaterThanY { x, y, join } => (
+                *join,
+                format!("{} > {}", quote_ident(x), quote_sql_string(y)),
+            ),
+            SelectArgument::XLessThanY { x, y, join } => (
+                *join,
+                format!("{} < {}", quote_ident(x), quote_sql_string(y)),
+            ),
+            SelectArgument::XGreaterThanOrEqualY { x, y, join } => (
+                *join,
+                format!("{} >= {}", quote_ident(x), quote_sql_string(y)),
+            ),
+            SelectArgument::XLessThanOrEqualY { x, y, join } => (
+                *join,
+                format!("{} <= {}", quote_ident(x), quote_sql_string(y)),
+            ),
+            SelectArgument::XLikeY { x, y, join } => (
+                *join,
+                format!("{} LIKE {}", quote_ident(x), quote_sql_string(y)),
+            ),
+            SelectArgument::XInY { x, y, join } => {
+                let values: Vec<String> = y.iter().map(|v| quote_sql_string(v)).collect();
+                (
+                    *join,
+                    format!("{} IN ({})", quote_ident(x), values.join(", ")),
+                )
             }
-            SelectArgument::XNotEqualY { x, y } => {
-                format!("{} != {}", quote_ident(x), quote_sql_string(y))
-            }
-            SelectArgument::XGreaterThanY { x, y } => {
-                format!("{} > {}", quote_ident(x), quote_sql_string(y))
-            }
-            SelectArgument::XLessThanY { x, y } => {
-                format!("{} < {}", quote_ident(x), quote_sql_string(y))
-            }
-            SelectArgument::XGreaterThanOrEqualY { x, y } => {
-                format!("{} >= {}", quote_ident(x), quote_sql_string(y))
-            }
-            SelectArgument::XLessThanOrEqualY { x, y } => {
-                format!("{} <= {}", quote_ident(x), quote_sql_string(y))
-            }
-            SelectArgument::XLikeY { x, y } => {
-                format!("{} LIKE {}", quote_ident(x), quote_sql_string(y))
-            }
-            SelectArgument::XInY { x, y } => {
-                let quoted_values: Vec<String> = y.iter().map(|v| quote_sql_string(v)).collect();
-                format!("{} IN ({})", quote_ident(x), quoted_values.join(", "))
-            }
-            SelectArgument::All => String::new(),
+            SelectArgument::All => (None, String::new()),
+        };
+
+        if condition.is_empty() {
+            continue;
         }
+
+        match join {
+            Some(JoinType::And) => parts.push(format!("AND {}", condition)),
+            Some(JoinType::Or) => parts.push(format!("OR {}", condition)),
+            None => parts.push(condition),
+        }
+    }
+
+    if parts.is_empty() {
+        String::new()
+    } else {
+        format!(" WHERE {}", parts.join(" "))
     }
 }
 
@@ -338,4 +339,8 @@ pub fn search_fts5_sql_builder(source_table_name: &str, text_to_lookup: &str) ->
         table = fts_table_name,
         query = quoted_query
     )
+}
+
+pub fn generate_count_all_rows_sql(table_name: &str) -> String {
+    format!("SELECT COUNT(*) FROM {};", quote_ident(table_name))
 }

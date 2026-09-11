@@ -60,7 +60,7 @@ fn check_for_illegal_table_names(name: &str) -> Option<DbError> {
 pub fn list_tables(conn: &rusqlite::Connection) -> Result<Vec<String>, DbError> {
     let sql = generate_read_from_table_sql(
         "sqlite_master",
-        &["type = 'table'", "name NOT LIKE 'sqlite_%'"],
+        " WHERE type = 'table' AND name NOT LIKE 'sqlite_%'",
         &["name"],
     );
 
