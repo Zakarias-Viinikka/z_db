@@ -7,7 +7,7 @@ pub trait Convert: Serialize + DeserializeOwned {
     }
 
     fn un_payloadify(data: &[u8]) -> Result<Self, DummyError> {
-        bincode::deserialize(data).map_err(|e| DummyError(e.to_string()))
+        bincode::deserialize(data).map_err(|e| DummyError::Msg(e.to_string()))
     }
 }
 

@@ -1,0 +1,6 @@
+[crate-roots]
+db_wrapper_macro_explained = "."
+
+[crates.db_wrapper_macro_explained.bindings.kotlin]
+package_name = "com.z_db.macro_explained"
+android = true

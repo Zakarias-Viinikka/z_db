@@ -12,7 +12,7 @@ fn setup_table(conn: &Connection) {
         new_table::not_null_col(new_table::ColumnType::Text, "name"),
         new_table::not_null_col(new_table::ColumnType::Integer, "age"),
     ];
-    assert!(black_magic::create_table(conn, "users", columns).is_none());
+    assert!(black_magic::create_table(conn, "users", columns).is_ok());
 }
 
 fn insert(conn: &Connection, name: &str, age: i64) {

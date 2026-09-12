@@ -3,6 +3,10 @@ name = "db_wrapper_macro_explained"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+crate-type = ["rlib", "cdylib"]
+
 [dependencies]
 serde = { version = "1", features = ["derive"] }
 bincode = "1"
+uniffi = { version = "0.32.1", features = ["cli"] }

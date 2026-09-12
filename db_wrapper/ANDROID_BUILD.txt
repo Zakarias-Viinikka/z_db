@@ -1,4 +1,4 @@
-cd db_wrapper
+cd ~/ProgStuff/z_db/db_wrapper
 # --- PRE-BUILD STEPS ---
 # 1. cargo install cargo-ndk
 # 2. rustup target add aarch64-linux-android

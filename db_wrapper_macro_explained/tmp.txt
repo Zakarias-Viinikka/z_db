@@ -1,0 +1,5 @@
+// this macro does a lot. and it's using nested macros.
+// either check the docs or expand the macro instead of looking at the src code
+// or do whatever you want.
+// in zed you can do ctrl + shift + p and type "ExpandMacroRecursively",
+// for others editors idk how they do it.

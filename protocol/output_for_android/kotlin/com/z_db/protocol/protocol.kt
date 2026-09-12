@@ -836,28 +836,28 @@ private fun uniffiCheckContractApiVersion(lib: IntegrityCheckingUniffiLib) {
 }
 @Suppress("UNUSED_PARAMETER")
 private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
-    if (lib.uniffi_protocol_checksum_func_build_get_data_in_msg() != 17175) {
+    if ((lib.uniffi_protocol_checksum_func_build_get_data_in_msg() and 0xFFFF) != 17175) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_protocol_checksum_func_unbuild_get_data_out_response() != 36917) {
+    if ((lib.uniffi_protocol_checksum_func_unbuild_get_data_out_response() and 0xFFFF) != 36917) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_protocol_checksum_func_col_with_default_value() != 11182) {
+    if ((lib.uniffi_protocol_checksum_func_col_with_default_value() and 0xFFFF) != 11182) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_protocol_checksum_func_default_col() != 29143) {
+    if ((lib.uniffi_protocol_checksum_func_default_col() and 0xFFFF) != 29143) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_protocol_checksum_func_id_column() != 17812) {
+    if ((lib.uniffi_protocol_checksum_func_id_column() and 0xFFFF) != 17812) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_protocol_checksum_func_not_null_col() != 39240) {
+    if ((lib.uniffi_protocol_checksum_func_not_null_col() and 0xFFFF) != 39240) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_protocol_checksum_func_not_null_unique_col() != 58728) {
+    if ((lib.uniffi_protocol_checksum_func_not_null_unique_col() and 0xFFFF) != 58728) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_protocol_checksum_func_unique_col() != 43470) {
+    if ((lib.uniffi_protocol_checksum_func_unique_col() and 0xFFFF) != 43470) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
 }

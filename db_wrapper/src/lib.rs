@@ -11,3 +11,5 @@ pub mod mascot;
 
 #[cfg(feature = "testing")]
 pub mod testing_mascot;
+
+pub mod macro_core;

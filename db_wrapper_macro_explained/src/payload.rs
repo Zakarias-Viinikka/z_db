@@ -1,19 +1,35 @@
 use serde::{Serialize, Deserialize};
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DummyError(pub String);
+#[derive(Debug, Serialize, Deserialize, uniffi::Error)]
+pub enum DummyError {
+    Msg(String),
+}
 
-#[derive(Serialize, Deserialize)]
+impl std::fmt::Display for DummyError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            DummyError::Msg(s) => write!(f, "{s}"),
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, uniffi::Record)]
 pub struct GetThingIn {
     pub id: u32,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, uniffi::Record)]
 pub struct GetThingOut {
     pub value: String,
 }
 
-// stand-in for something like black_magic::table_shape
-pub fn db_get_thing(conn: &str, id: u32) -> Result<String, DummyError> {
-    Ok(format!("{conn} says thing #{id}"))
+#[derive(Serialize, Deserialize, uniffi::Record)]
+pub struct GetCombinedIn {
+    pub id: u32,
+}
+
+#[derive(Serialize, Deserialize, uniffi::Record)]
+pub struct CombinedOut {
+    pub value: String,
+    pub other: u32,
 }
