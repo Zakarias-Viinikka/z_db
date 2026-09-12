@@ -12,8 +12,6 @@ pub struct CreateTableIn {
 
 #[derive(Serialize, Deserialize, Debug, uniffi::Record)]
 pub struct CreateTableOut {
-    //this used to be Result<(), DbError>
-    // but uniffi didn't like that so i changed it to option
     pub result: Option<DbError>,
 }
 
@@ -30,53 +28,31 @@ pub enum JoinType {
 
 #[derive(Serialize, Deserialize, Debug, Clone, uniffi::Enum)]
 pub enum SelectArgument {
-    XEqualY {
-        x: String,
-        y: String,
-        join: Option<JoinType>,
-    },
-    XNotEqualY {
-        x: String,
-        y: String,
-        join: Option<JoinType>,
-    },
-    XGreaterThanY {
-        x: String,
-        y: String,
-        join: Option<JoinType>,
-    },
-    XLessThanY {
-        x: String,
-        y: String,
-        join: Option<JoinType>,
-    },
-    XGreaterThanOrEqualY {
-        x: String,
-        y: String,
-        join: Option<JoinType>,
-    },
-    XLessThanOrEqualY {
-        x: String,
-        y: String,
-        join: Option<JoinType>,
-    },
-    XLikeY {
-        x: String,
-        y: String,
-        join: Option<JoinType>,
-    },
-    XInY {
-        x: String,
-        y: Vec<String>,
-        join: Option<JoinType>,
-    },
+    XEqualY { x: String, y: String },
+    XNotEqualY { x: String, y: String },
+    XGreaterThanY { x: String, y: String },
+    XLessThanY { x: String, y: String },
+    XGreaterThanOrEqualY { x: String, y: String },
+    XLessThanOrEqualY { x: String, y: String },
+    XLikeY { x: String, y: String },
+    XInY { x: String, y: Vec<String> },
     All,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Enum)]
+pub enum SelectArguments {
+    Single(SelectArgument),
+    Two {
+        first: SelectArgument,
+        join: JoinType,
+        second: SelectArgument,
+    },
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
 pub struct GetDataIn {
     pub table_name: String,
-    pub arguments: Vec<SelectArgument>,
+    pub arguments: SelectArguments,
     pub columns_to_read: Vec<String>,
 }
 
@@ -88,7 +64,7 @@ pub struct GetDataOut {
 #[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
 pub struct GetDataOrderedIn {
     pub table_name: String,
-    pub arguments: Vec<SelectArgument>,
+    pub arguments: SelectArguments,
     pub columns_to_read: Vec<String>,
     pub order_by: String,
 }
@@ -107,12 +83,9 @@ pub struct InsertDataIn {
 
 #[derive(Serialize, Deserialize, Debug, uniffi::Record)]
 pub struct InsertDataOut {
-    //this used to be Result<(), DbError>
-    // but uniffi didn't like that so i changed it to option
     pub result: Option<DbError>,
 }
 
-// public_data_shapes.rs
 #[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
 pub struct DropTableIn {
     pub table_name: String,
@@ -259,18 +232,17 @@ pub struct CreateForeignTableIn {
 // ```
 // ColumnFilter {
 //     col_name: "name".into(),
-//     arguments: vec![SelectArgument::XEqualY {
+//     arguments: SelectArguments::Single(SelectArgument::XEqualY {
 //         x: "name".into(),
 //         y: "x".into(),
-//         join: None,
-//     }],
+//     }),
 //     join: None,
 // }
 // ```
 #[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
 pub struct ColumnFilter {
     pub col_name: String,
-    pub arguments: Vec<SelectArgument>,
+    pub arguments: SelectArguments,
     pub join: Option<JoinType>,
 }
 

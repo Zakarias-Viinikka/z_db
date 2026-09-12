@@ -33,7 +33,7 @@ fn insert(conn: &Connection, name: &str, age: i64) {
     .unwrap();
 }
 
-fn read(conn: &Connection, args: Vec<SelectArgument>) -> Vec<Row> {
+fn read(conn: &Connection, args: SelectArguments) -> Vec<Row> {
     black_magic_read::read_from_db(
         conn,
         &GetDataIn {
@@ -50,7 +50,7 @@ fn read_ordered(conn: &Connection, order_by: &str) -> Vec<String> {
         conn,
         &GetDataOrderedIn {
             table_name: "users".into(),
-            arguments: vec![SelectArgument::All],
+            arguments: SelectArguments::Single(SelectArgument::All),
             columns_to_read: vec!["name".into()],
             order_by: order_by.into(),
         },
@@ -61,7 +61,6 @@ fn read_ordered(conn: &Connection, order_by: &str) -> Vec<String> {
     .collect()
 }
 
-// Smoke test: fetch everything and count everything.
 #[test]
 fn fetch_all_and_count_all() {
     let conn = Connection::open_in_memory().unwrap();
@@ -71,7 +70,7 @@ fn fetch_all_and_count_all() {
     insert(&conn, "carol", 30);
     insert(&conn, "dave", 40);
 
-    let result = read(&conn, vec![SelectArgument::All]).len();
+    let result = read(&conn, SelectArguments::Single(SelectArgument::All)).len();
     let expected = 4;
     assert_eq!(result, expected);
 
@@ -87,7 +86,6 @@ fn fetch_all_and_count_all() {
     assert_eq!(result, expected);
 }
 
-// AND should narrow results compared to one filter alone.
 #[test]
 fn and_join_narrows_results() {
     let conn = Connection::open_in_memory().unwrap();
@@ -99,11 +97,10 @@ fn and_join_narrows_results() {
 
     let result = read(
         &conn,
-        vec![SelectArgument::XEqualY {
+        SelectArguments::Single(SelectArgument::XEqualY {
             x: "age".into(),
             y: "30".into(),
-            join: None,
-        }],
+        }),
     )
     .len();
     let expected = 2;
@@ -111,25 +108,23 @@ fn and_join_narrows_results() {
 
     let result = read(
         &conn,
-        vec![
-            SelectArgument::XEqualY {
+        SelectArguments::Two {
+            first: SelectArgument::XEqualY {
                 x: "age".into(),
                 y: "30".into(),
-                join: None,
             },
-            SelectArgument::XEqualY {
+            join: JoinType::And,
+            second: SelectArgument::XEqualY {
                 x: "name".into(),
                 y: "alice".into(),
-                join: Some(JoinType::And),
             },
-        ],
+        },
     )
     .len();
     let expected = 1;
     assert_eq!(result, expected);
 }
 
-// OR should broaden results compared to AND.
 #[test]
 fn or_join_broadens_results() {
     let conn = Connection::open_in_memory().unwrap();
@@ -141,18 +136,17 @@ fn or_join_broadens_results() {
 
     let result = read(
         &conn,
-        vec![
-            SelectArgument::XEqualY {
+        SelectArguments::Two {
+            first: SelectArgument::XEqualY {
                 x: "age".into(),
                 y: "25".into(),
-                join: None,
             },
-            SelectArgument::XEqualY {
+            join: JoinType::And,
+            second: SelectArgument::XEqualY {
                 x: "name".into(),
                 y: "dave".into(),
-                join: Some(JoinType::And),
             },
-        ],
+        },
     )
     .len();
     let expected = 0;
@@ -160,25 +154,23 @@ fn or_join_broadens_results() {
 
     let result = read(
         &conn,
-        vec![
-            SelectArgument::XEqualY {
+        SelectArguments::Two {
+            first: SelectArgument::XEqualY {
                 x: "age".into(),
                 y: "25".into(),
-                join: None,
             },
-            SelectArgument::XEqualY {
+            join: JoinType::Or,
+            second: SelectArgument::XEqualY {
                 x: "name".into(),
                 y: "dave".into(),
-                join: Some(JoinType::Or),
             },
-        ],
+        },
     )
     .len();
     let expected = 2;
     assert_eq!(result, expected);
 }
 
-// Ordered read should return rows in the requested order.
 #[test]
 fn ordered_read() {
     let conn = Connection::open_in_memory().unwrap();
@@ -197,7 +189,6 @@ fn ordered_read() {
     assert_eq!(result, expected);
 }
 
-// count_rows with a filter should match what a read returns.
 #[test]
 fn count_rows_with_filters() {
     let conn = Connection::open_in_memory().unwrap();
@@ -209,11 +200,10 @@ fn count_rows_with_filters() {
 
     let result = read(
         &conn,
-        vec![SelectArgument::XEqualY {
+        SelectArguments::Single(SelectArgument::XEqualY {
             x: "age".into(),
             y: "30".into(),
-            join: None,
-        }],
+        }),
     )
     .len();
     let expected = 2;
@@ -225,11 +215,10 @@ fn count_rows_with_filters() {
             table_name: "users".into(),
             filters: vec![ColumnFilter {
                 col_name: "age".into(),
-                arguments: vec![SelectArgument::XEqualY {
+                arguments: SelectArguments::Single(SelectArgument::XEqualY {
                     x: "age".into(),
                     y: "30".into(),
-                    join: None,
-                }],
+                }),
                 join: None,
             }],
         },

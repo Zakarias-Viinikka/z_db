@@ -1,6 +1,5 @@
 use protocol::error::DbError;
 use protocol::new_table::ColumnDef;
-use protocol::new_table::ForeignKeyDef;
 use protocol::payload::*;
 use protocol::row_col::*;
 use sql_builder::*;

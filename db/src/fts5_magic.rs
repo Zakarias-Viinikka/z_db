@@ -23,10 +23,6 @@ pub fn search_fts5(conn: &Connection, table_name: &str, query: &str) -> Result<V
         .map_err(|e| DbError::SqlExecuteFail(format!("search_fts5 failed: {:?}, sql: {}", e, sql)))
 }
 
-pub fn drop_fts5_table(conn: &Connection, table_name: &str) -> Result<(), DbError> {
-    todo!()
-}
-
 pub fn sync_fts5_row(conn: &Connection, table_name: &str, row_id: &str) -> Result<(), DbError> {
     todo!()
 }

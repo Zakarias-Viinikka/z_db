@@ -1,3 +1,4 @@
+#![cfg(feature = "testing")]
 use db_wrapper::testing_mascot::LiveForever;
 use protocol::error::DbError;
 use protocol::new_table::{self, ColumnDef, ColumnType};

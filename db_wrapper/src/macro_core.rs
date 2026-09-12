@@ -117,11 +117,10 @@ macro_rules! create_the_entire_universe {
                 let get_value = |row_id: &str| -> Result<::protocol::row_col::Col, ::protocol::error::DbError> {
                     let get_data_in = GetDataIn {
                         table_name: input.table_name.clone(),
-                        arguments: vec![SelectArgument::XEqualY {
+                        arguments: SelectArguments::Single(SelectArgument::XEqualY {
                             x: "id".to_string(),
                             y: row_id.to_string(),
-                            join: None,
-                        }],
+                        }),
                         columns_to_read: vec![input.column.clone()],
                     };
 
@@ -230,7 +229,7 @@ macro_rules! create_the_entire_universe {
 
                     let get_in = GetDataIn {
                         table_name: table_name.clone(),
-                        arguments: vec![SelectArgument::All],
+                        arguments: SelectArguments::Single(SelectArgument::All),
                         columns_to_read: Vec::new(),
                     };
 

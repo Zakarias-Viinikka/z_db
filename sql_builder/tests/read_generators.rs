@@ -1,82 +1,74 @@
-use protocol::payload::{JoinType, SelectArgument};
+use protocol::payload::{JoinType, SelectArgument, SelectArguments};
 use sql_builder::{generate_get_data_by_order_sql, generate_read_from_table_sql, to_sql_condition};
 
-fn arg_eq(col: &str, val: &str, join: Option<JoinType>) -> SelectArgument {
+fn arg_eq(col: &str, val: &str) -> SelectArgument {
     SelectArgument::XEqualY {
         x: col.into(),
         y: val.into(),
-        join,
     }
 }
 
-fn arg_not_eq(col: &str, val: &str, join: Option<JoinType>) -> SelectArgument {
+fn arg_not_eq(col: &str, val: &str) -> SelectArgument {
     SelectArgument::XNotEqualY {
         x: col.into(),
         y: val.into(),
-        join,
     }
 }
 
-fn arg_greater(col: &str, val: &str, join: Option<JoinType>) -> SelectArgument {
+fn arg_greater(col: &str, val: &str) -> SelectArgument {
     SelectArgument::XGreaterThanY {
         x: col.into(),
         y: val.into(),
-        join,
     }
 }
 
-fn arg_less(col: &str, val: &str, join: Option<JoinType>) -> SelectArgument {
+fn arg_less(col: &str, val: &str) -> SelectArgument {
     SelectArgument::XLessThanY {
         x: col.into(),
         y: val.into(),
-        join,
     }
 }
 
-fn arg_greater_or_eq(col: &str, val: &str, join: Option<JoinType>) -> SelectArgument {
+fn arg_greater_or_eq(col: &str, val: &str) -> SelectArgument {
     SelectArgument::XGreaterThanOrEqualY {
         x: col.into(),
         y: val.into(),
-        join,
     }
 }
 
-fn arg_less_or_eq(col: &str, val: &str, join: Option<JoinType>) -> SelectArgument {
+fn arg_less_or_eq(col: &str, val: &str) -> SelectArgument {
     SelectArgument::XLessThanOrEqualY {
         x: col.into(),
         y: val.into(),
-        join,
     }
 }
 
-fn arg_like(col: &str, val: &str, join: Option<JoinType>) -> SelectArgument {
+fn arg_like(col: &str, val: &str) -> SelectArgument {
     SelectArgument::XLikeY {
         x: col.into(),
         y: val.into(),
-        join,
     }
 }
 
-fn arg_in(col: &str, vals: &[&str], join: Option<JoinType>) -> SelectArgument {
+fn arg_in(col: &str, vals: &[&str]) -> SelectArgument {
     SelectArgument::XInY {
         x: col.into(),
         y: vals.iter().map(|s| s.to_string()).collect(),
-        join,
     }
 }
 
 // --- to_sql_condition ---
 
 #[test]
-fn to_sql_condition_empty_returns_empty_string() {
-    let result = to_sql_condition(&[]);
+fn to_sql_condition_single_all_returns_empty_string() {
+    let result = to_sql_condition(&SelectArguments::Single(SelectArgument::All));
     let expected = "";
     assert_eq!(result, expected);
 }
 
 #[test]
 fn to_sql_condition_single_condition() {
-    let result = to_sql_condition(&[arg_eq("name", "x", None)]);
+    let result = to_sql_condition(&SelectArguments::Single(arg_eq("name", "x")));
     let expected = " WHERE \"name\" = 'x'";
     assert_eq!(result, expected);
 }
@@ -84,43 +76,67 @@ fn to_sql_condition_single_condition() {
 #[test]
 fn to_sql_condition_all_operators() {
     let cases = vec![
-        (arg_eq("c", "v", None), " WHERE \"c\" = 'v'"),
-        (arg_not_eq("c", "v", None), " WHERE \"c\" != 'v'"),
-        (arg_greater("c", "v", None), " WHERE \"c\" > 'v'"),
-        (arg_less("c", "v", None), " WHERE \"c\" < 'v'"),
-        (arg_greater_or_eq("c", "v", None), " WHERE \"c\" >= 'v'"),
-        (arg_less_or_eq("c", "v", None), " WHERE \"c\" <= 'v'"),
-        (arg_like("c", "v", None), " WHERE \"c\" LIKE 'v'"),
-        (arg_in("c", &["a", "b"], None), " WHERE \"c\" IN ('a', 'b')"),
+        (arg_eq("c", "v"), " WHERE \"c\" = 'v'"),
+        (arg_not_eq("c", "v"), " WHERE \"c\" != 'v'"),
+        (arg_greater("c", "v"), " WHERE \"c\" > 'v'"),
+        (arg_less("c", "v"), " WHERE \"c\" < 'v'"),
+        (arg_greater_or_eq("c", "v"), " WHERE \"c\" >= 'v'"),
+        (arg_less_or_eq("c", "v"), " WHERE \"c\" <= 'v'"),
+        (arg_like("c", "v"), " WHERE \"c\" LIKE 'v'"),
+        (arg_in("c", &["a", "b"]), " WHERE \"c\" IN ('a', 'b')"),
     ];
 
     for (arg, expected) in cases {
-        let result = to_sql_condition(&[arg]);
+        let result = to_sql_condition(&SelectArguments::Single(arg));
         assert_eq!(result, expected);
     }
 }
 
 #[test]
-fn to_sql_condition_joins() {
-    let args = vec![
-        arg_eq("a", "1", None),
-        arg_eq("b", "2", Some(JoinType::And)),
-        arg_eq("c", "3", Some(JoinType::Or)),
-    ];
+fn to_sql_condition_two_with_and() {
+    let args = SelectArguments::Two {
+        first: arg_eq("a", "1"),
+        join: JoinType::And,
+        second: arg_eq("b", "2"),
+    };
     let result = to_sql_condition(&args);
-    let expected = " WHERE \"a\" = '1' AND \"b\" = '2' OR \"c\" = '3'";
+    let expected = " WHERE \"a\" = '1' AND \"b\" = '2'";
     assert_eq!(result, expected);
 }
 
 #[test]
-fn to_sql_condition_all_is_skipped() {
-    let args = vec![
-        arg_eq("a", "1", None),
-        SelectArgument::All,
-        arg_not_eq("b", "2", Some(JoinType::And)),
-    ];
+fn to_sql_condition_two_with_or() {
+    let args = SelectArguments::Two {
+        first: arg_eq("a", "1"),
+        join: JoinType::Or,
+        second: arg_eq("b", "2"),
+    };
     let result = to_sql_condition(&args);
-    let expected = " WHERE \"a\" = '1' AND \"b\" != '2'";
+    let expected = " WHERE \"a\" = '1' OR \"b\" = '2'";
+    assert_eq!(result, expected);
+}
+
+#[test]
+fn to_sql_condition_two_with_all_first() {
+    let args = SelectArguments::Two {
+        first: SelectArgument::All,
+        join: JoinType::And,
+        second: arg_eq("b", "2"),
+    };
+    let result = to_sql_condition(&args);
+    let expected = " WHERE \"b\" = '2'";
+    assert_eq!(result, expected);
+}
+
+#[test]
+fn to_sql_condition_two_with_all_second() {
+    let args = SelectArguments::Two {
+        first: arg_eq("a", "1"),
+        join: JoinType::And,
+        second: SelectArgument::All,
+    };
+    let result = to_sql_condition(&args);
+    let expected = " WHERE \"a\" = '1'";
     assert_eq!(result, expected);
 }
 

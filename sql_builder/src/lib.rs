@@ -1,7 +1,7 @@
 use protocol::new_table::ColumnDef;
 use protocol::new_table::ForeignKeyDef;
 use protocol::payload::JoinType;
-use protocol::payload::SelectArgument;
+use protocol::payload::{SelectArgument, SelectArguments};
 use protocol::row_col;
 
 // Builds CREATE TABLE SQL from a caller-supplied column list (replaces the old Table/Column version).
@@ -242,64 +242,66 @@ pub fn quote_sql_string(s: &str) -> String {
     format!("'{}'", s.replace('\'', "''"))
 }
 
-pub fn to_sql_condition(arguments: &[SelectArgument]) -> String {
-    let mut parts: Vec<String> = Vec::new();
-
-    for arg in arguments {
-        let (join, condition) = match arg {
-            SelectArgument::XEqualY { x, y, join } => (
-                *join,
-                format!("{} = {}", quote_ident(x), quote_sql_string(y)),
-            ),
-            SelectArgument::XNotEqualY { x, y, join } => (
-                *join,
-                format!("{} != {}", quote_ident(x), quote_sql_string(y)),
-            ),
-            SelectArgument::XGreaterThanY { x, y, join } => (
-                *join,
-                format!("{} > {}", quote_ident(x), quote_sql_string(y)),
-            ),
-            SelectArgument::XLessThanY { x, y, join } => (
-                *join,
-                format!("{} < {}", quote_ident(x), quote_sql_string(y)),
-            ),
-            SelectArgument::XGreaterThanOrEqualY { x, y, join } => (
-                *join,
-                format!("{} >= {}", quote_ident(x), quote_sql_string(y)),
-            ),
-            SelectArgument::XLessThanOrEqualY { x, y, join } => (
-                *join,
-                format!("{} <= {}", quote_ident(x), quote_sql_string(y)),
-            ),
-            SelectArgument::XLikeY { x, y, join } => (
-                *join,
-                format!("{} LIKE {}", quote_ident(x), quote_sql_string(y)),
-            ),
-            SelectArgument::XInY { x, y, join } => {
-                let values: Vec<String> = y.iter().map(|v| quote_sql_string(v)).collect();
-                (
-                    *join,
-                    format!("{} IN ({})", quote_ident(x), values.join(", ")),
-                )
+pub fn to_sql_condition(arguments: &SelectArguments) -> String {
+    match arguments {
+        SelectArguments::Single(arg) => match render_condition(arg) {
+            Some(cond) => format!(" WHERE {}", cond),
+            None => String::new(),
+        },
+        SelectArguments::Two {
+            first,
+            join,
+            second,
+        } => {
+            let a = render_condition(first).unwrap_or_default();
+            let b = render_condition(second).unwrap_or_default();
+            if a.is_empty() {
+                if b.is_empty() {
+                    String::new()
+                } else {
+                    format!(" WHERE {}", b)
+                }
+            } else if b.is_empty() {
+                format!(" WHERE {}", a)
+            } else {
+                let joiner = match join {
+                    JoinType::And => "AND",
+                    JoinType::Or => "OR",
+                };
+                format!(" WHERE {} {} {}", a, joiner, b)
             }
-            SelectArgument::All => (None, String::new()),
-        };
-
-        if condition.is_empty() {
-            continue;
-        }
-
-        match join {
-            Some(JoinType::And) => parts.push(format!("AND {}", condition)),
-            Some(JoinType::Or) => parts.push(format!("OR {}", condition)),
-            None => parts.push(condition),
         }
     }
+}
 
-    if parts.is_empty() {
-        String::new()
-    } else {
-        format!(" WHERE {}", parts.join(" "))
+fn render_condition(arg: &SelectArgument) -> Option<String> {
+    match arg {
+        SelectArgument::XEqualY { x, y } => {
+            Some(format!("{} = {}", quote_ident(x), quote_sql_string(y)))
+        }
+        SelectArgument::XNotEqualY { x, y } => {
+            Some(format!("{} != {}", quote_ident(x), quote_sql_string(y)))
+        }
+        SelectArgument::XGreaterThanY { x, y } => {
+            Some(format!("{} > {}", quote_ident(x), quote_sql_string(y)))
+        }
+        SelectArgument::XLessThanY { x, y } => {
+            Some(format!("{} < {}", quote_ident(x), quote_sql_string(y)))
+        }
+        SelectArgument::XGreaterThanOrEqualY { x, y } => {
+            Some(format!("{} >= {}", quote_ident(x), quote_sql_string(y)))
+        }
+        SelectArgument::XLessThanOrEqualY { x, y } => {
+            Some(format!("{} <= {}", quote_ident(x), quote_sql_string(y)))
+        }
+        SelectArgument::XLikeY { x, y } => {
+            Some(format!("{} LIKE {}", quote_ident(x), quote_sql_string(y)))
+        }
+        SelectArgument::XInY { x, y } => {
+            let values: Vec<String> = y.iter().map(|v| quote_sql_string(v)).collect();
+            Some(format!("{} IN ({})", quote_ident(x), values.join(", ")))
+        }
+        SelectArgument::All => None,
     }
 }
 

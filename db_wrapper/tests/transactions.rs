@@ -1,3 +1,4 @@
+#![cfg(feature = "testing")]
 use db_wrapper::testing_mascot::LiveForever;
 use protocol::new_table;
 use protocol::payload::*;
