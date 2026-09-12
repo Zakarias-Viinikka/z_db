@@ -9,52 +9,45 @@ pub fn create_table(
     conn: &rusqlite::Connection,
     table_name: &str,
     columns: Vec<ColumnDef>,
-) -> Option<DbError> {
-    if let Some(err) = check_for_illegal_table_names(table_name) {
-        return Some(err);
-    }
+) -> Result<(), DbError> {
+    check_for_illegal_table_names(table_name)?;
 
     let sql = generate_create_table_sql(table_name, &columns);
-    let result = conn
-        .execute(&sql, [])
-        .map_err(|e| DbError::SqlExecuteFail(format!("err: {}, sql: {}", e, sql)));
-    if result.is_ok() { None } else { result.err() }
+    conn.execute(&sql, [])
+        .map_err(|e| DbError::SqlExecuteFail(format!("err: {}, sql: {}", e, sql)))?;
+    Ok(())
 }
 
 pub fn create_foreign_table(
     conn: &rusqlite::Connection,
     create_foreign_table_in: &CreateForeignTableIn,
-) -> Option<DbError> {
+) -> Result<(), DbError> {
     let (table_name, columns, foreign_keys) = (
         &create_foreign_table_in.table_name,
         &create_foreign_table_in.columns,
         &create_foreign_table_in.foreign_keys,
     );
 
-    if let Some(err) = check_for_illegal_table_names(table_name) {
-        return Some(err);
-    }
+    check_for_illegal_table_names(table_name)?;
 
     let sql = generate_create_foreign_table_sql(table_name, &columns, &foreign_keys);
-    let result = conn
-        .execute(&sql, [])
-        .map_err(|e| DbError::SqlExecuteFail(format!("err: {}, sql: {}", e, sql)));
-
-    if result.is_ok() { None } else { result.err() }
+    conn.execute(&sql, [])
+        .map_err(|e| DbError::SqlExecuteFail(format!("err: {}, sql: {}", e, sql)))?;
+    Ok(())
 }
 
-fn check_for_illegal_table_names(name: &str) -> Option<DbError> {
+fn check_for_illegal_table_names(name: &str) -> Result<(), DbError> {
     if name.is_empty() {
-        return Some(DbError::IllegalInput("table_name is empty".to_string()));
+        return Err(DbError::IllegalInput("table_name is empty".to_string()));
     }
 
     if name.starts_with("fts5_") {
-        Some(DbError::IllegalInput(
+        return Err(DbError::IllegalInput(
             "table_name cannot start with reserved prefix 'fts5_'".to_string(),
-        ))
-    } else {
-        None
+        ));
     }
+
+    Ok(())
 }
 
 pub fn list_tables(conn: &rusqlite::Connection) -> Result<Vec<String>, DbError> {
@@ -328,10 +321,7 @@ pub fn create_table_from_export(
         });
     }
 
-    let result = create_table(conn, table_name, columns);
-    if let Some(err) = result {
-        return Err(err);
-    }
+    create_table(conn, table_name, columns)?;
 
     for row in &table_export.rows {
         let mut values = Vec::new();
