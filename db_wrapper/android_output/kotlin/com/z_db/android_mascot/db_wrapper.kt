@@ -41,6 +41,8 @@ import uniffi.protocol.CheckTableOut
 import uniffi.protocol.CopyTableIn
 import uniffi.protocol.CountAllRowsIn
 import uniffi.protocol.CountRowsOut
+import uniffi.protocol.CreateForeignTableIn
+import uniffi.protocol.CreateFts5TableIn
 import uniffi.protocol.CreateIndexIn
 import uniffi.protocol.CreateTableFromExportIn
 import uniffi.protocol.CreateTableIn
@@ -58,6 +60,8 @@ import uniffi.protocol.FfiConverterTypeCheckTableOut
 import uniffi.protocol.FfiConverterTypeCopyTableIn
 import uniffi.protocol.FfiConverterTypeCountAllRowsIn
 import uniffi.protocol.FfiConverterTypeCountRowsOut
+import uniffi.protocol.FfiConverterTypeCreateForeignTableIn
+import uniffi.protocol.FfiConverterTypeCreateFts5TableIn
 import uniffi.protocol.FfiConverterTypeCreateIndexIn
 import uniffi.protocol.FfiConverterTypeCreateTableFromExportIn
 import uniffi.protocol.FfiConverterTypeCreateTableIn
@@ -72,14 +76,18 @@ import uniffi.protocol.FfiConverterTypeGetDataOrderedIn
 import uniffi.protocol.FfiConverterTypeGetDataOut
 import uniffi.protocol.FfiConverterTypeInsertDataIn
 import uniffi.protocol.FfiConverterTypeListTablesOut
+import uniffi.protocol.FfiConverterTypeRebuildFts5In
 import uniffi.protocol.FfiConverterTypeRemoveColumnIn
+import uniffi.protocol.FfiConverterTypeSearchFts5In
 import uniffi.protocol.FfiConverterTypeSwapColumnsIn
 import uniffi.protocol.GetDataIn
 import uniffi.protocol.GetDataOrderedIn
 import uniffi.protocol.GetDataOut
 import uniffi.protocol.InsertDataIn
 import uniffi.protocol.ListTablesOut
+import uniffi.protocol.RebuildFts5In
 import uniffi.protocol.RemoveColumnIn
+import uniffi.protocol.SearchFts5In
 import uniffi.protocol.SwapColumnsIn
 import uniffi.protocol.RustBuffer as RustBufferAddColumnIn
 import uniffi.protocol.RustBuffer as RustBufferCheckIndexIn
@@ -89,6 +97,8 @@ import uniffi.protocol.RustBuffer as RustBufferCheckTableOut
 import uniffi.protocol.RustBuffer as RustBufferCopyTableIn
 import uniffi.protocol.RustBuffer as RustBufferCountAllRowsIn
 import uniffi.protocol.RustBuffer as RustBufferCountRowsOut
+import uniffi.protocol.RustBuffer as RustBufferCreateForeignTableIn
+import uniffi.protocol.RustBuffer as RustBufferCreateFts5TableIn
 import uniffi.protocol.RustBuffer as RustBufferCreateIndexIn
 import uniffi.protocol.RustBuffer as RustBufferCreateTableFromExportIn
 import uniffi.protocol.RustBuffer as RustBufferCreateTableIn
@@ -103,7 +113,9 @@ import uniffi.protocol.RustBuffer as RustBufferGetDataOrderedIn
 import uniffi.protocol.RustBuffer as RustBufferGetDataOut
 import uniffi.protocol.RustBuffer as RustBufferInsertDataIn
 import uniffi.protocol.RustBuffer as RustBufferListTablesOut
+import uniffi.protocol.RustBuffer as RustBufferRebuildFts5In
 import uniffi.protocol.RustBuffer as RustBufferRemoveColumnIn
+import uniffi.protocol.RustBuffer as RustBufferSearchFts5In
 import uniffi.protocol.RustBuffer as RustBufferSwapColumnsIn
 
 // This is a helper for safely working with byte buffers returned from the Rust code.
@@ -759,6 +771,10 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_count_all_rows(
     ): Int
+    external fun uniffi_db_wrapper_checksum_method_liveforever_create_foreign_table(
+    ): Int
+    external fun uniffi_db_wrapper_checksum_method_liveforever_create_fts5_table(
+    ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_create_index(
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_create_table(
@@ -775,6 +791,8 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_export_tables(
     ): Int
+    external fun uniffi_db_wrapper_checksum_method_liveforever_force_drop_table(
+    ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_get_data(
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_get_data_ordered(
@@ -783,9 +801,13 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_list_tables(
     ): Int
+    external fun uniffi_db_wrapper_checksum_method_liveforever_rebuild_fts5_index(
+    ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_regret_everything(
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_remove_column(
+    ): Int
+    external fun uniffi_db_wrapper_checksum_method_liveforever_search_fts5(
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_swap_columns(
     ): Int
@@ -828,6 +850,10 @@ internal object UniffiLib {
     ): Unit
     external fun uniffi_db_wrapper_fn_method_liveforever_count_all_rows(`ptr`: Long,`data`: RustBufferCountAllRowsIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBufferCountRowsOut.ByValue
+    external fun uniffi_db_wrapper_fn_method_liveforever_create_foreign_table(`ptr`: Long,`data`: RustBufferCreateForeignTableIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_db_wrapper_fn_method_liveforever_create_fts5_table(`ptr`: Long,`data`: RustBufferCreateFts5TableIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
     external fun uniffi_db_wrapper_fn_method_liveforever_create_index(`ptr`: Long,`data`: RustBufferCreateIndexIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     external fun uniffi_db_wrapper_fn_method_liveforever_create_table(`ptr`: Long,`data`: RustBufferCreateTableIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -844,6 +870,8 @@ internal object UniffiLib {
     ): Unit
     external fun uniffi_db_wrapper_fn_method_liveforever_export_tables(`ptr`: Long,`data`: RustBufferExportTablesIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBufferExportTablesOut.ByValue
+    external fun uniffi_db_wrapper_fn_method_liveforever_force_drop_table(`ptr`: Long,`data`: RustBufferDropTableIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
     external fun uniffi_db_wrapper_fn_method_liveforever_get_data(`ptr`: Long,`data`: RustBufferGetDataIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBufferGetDataOut.ByValue
     external fun uniffi_db_wrapper_fn_method_liveforever_get_data_ordered(`ptr`: Long,`data`: RustBufferGetDataOrderedIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -852,10 +880,14 @@ internal object UniffiLib {
     ): Unit
     external fun uniffi_db_wrapper_fn_method_liveforever_list_tables(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBufferListTablesOut.ByValue
+    external fun uniffi_db_wrapper_fn_method_liveforever_rebuild_fts5_index(`ptr`: Long,`data`: RustBufferRebuildFts5In.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
     external fun uniffi_db_wrapper_fn_method_liveforever_regret_everything(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     external fun uniffi_db_wrapper_fn_method_liveforever_remove_column(`ptr`: Long,`data`: RustBufferRemoveColumnIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
+    external fun uniffi_db_wrapper_fn_method_liveforever_search_fts5(`ptr`: Long,`data`: RustBufferSearchFts5In.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBufferGetDataOut.ByValue
     external fun uniffi_db_wrapper_fn_method_liveforever_swap_columns(`ptr`: Long,`data`: RustBufferSwapColumnsIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     external fun ffi_db_wrapper_rustbuffer_alloc(`size`: Long,uniffi_out_err: UniffiRustCallStatus, 
@@ -995,6 +1027,12 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if ((lib.uniffi_db_wrapper_checksum_method_liveforever_count_all_rows() and 0xFFFF) != 37156) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if ((lib.uniffi_db_wrapper_checksum_method_liveforever_create_foreign_table() and 0xFFFF) != 17456) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_db_wrapper_checksum_method_liveforever_create_fts5_table() and 0xFFFF) != 50441) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if ((lib.uniffi_db_wrapper_checksum_method_liveforever_create_index() and 0xFFFF) != 42700) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -1019,6 +1057,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if ((lib.uniffi_db_wrapper_checksum_method_liveforever_export_tables() and 0xFFFF) != 24452) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if ((lib.uniffi_db_wrapper_checksum_method_liveforever_force_drop_table() and 0xFFFF) != 37357) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if ((lib.uniffi_db_wrapper_checksum_method_liveforever_get_data() and 0xFFFF) != 52530) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -1031,10 +1072,16 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if ((lib.uniffi_db_wrapper_checksum_method_liveforever_list_tables() and 0xFFFF) != 59841) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if ((lib.uniffi_db_wrapper_checksum_method_liveforever_rebuild_fts5_index() and 0xFFFF) != 28229) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if ((lib.uniffi_db_wrapper_checksum_method_liveforever_regret_everything() and 0xFFFF) != 37180) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_db_wrapper_checksum_method_liveforever_remove_column() and 0xFFFF) != 59222) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_db_wrapper_checksum_method_liveforever_search_fts5() and 0xFFFF) != 24292) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_db_wrapper_checksum_method_liveforever_swap_columns() and 0xFFFF) != 41881) {
@@ -1367,6 +1414,10 @@ public interface LiveForeverInterface {
     
     fun `countAllRows`(`data`: CountAllRowsIn): CountRowsOut
     
+    fun `createForeignTable`(`data`: CreateForeignTableIn)
+    
+    fun `createFts5Table`(`data`: CreateFts5TableIn)
+    
     fun `createIndex`(`data`: CreateIndexIn)
     
     fun `createTable`(`data`: CreateTableIn)
@@ -1383,6 +1434,8 @@ public interface LiveForeverInterface {
     
     fun `exportTables`(`data`: ExportTablesIn): ExportTablesOut
     
+    fun `forceDropTable`(`data`: DropTableIn)
+    
     fun `getData`(`data`: GetDataIn): GetDataOut
     
     fun `getDataOrdered`(`data`: GetDataOrderedIn): GetDataOut
@@ -1391,9 +1444,13 @@ public interface LiveForeverInterface {
     
     fun `listTables`(): ListTablesOut
     
+    fun `rebuildFts5Index`(`data`: RebuildFts5In)
+    
     fun `regretEverything`()
     
     fun `removeColumn`(`data`: RemoveColumnIn)
+    
+    fun `searchFts5`(`data`: SearchFts5In): GetDataOut
     
     fun `swapColumns`(`data`: SwapColumnsIn)
     
@@ -1597,6 +1654,34 @@ open class LiveForever: Disposable, AutoCloseable, LiveForeverInterface
     
 
     
+    @Throws(DbException::class)override fun `createForeignTable`(`data`: CreateForeignTableIn)
+        = 
+    callWithHandle {
+    uniffiRustCallWithError(DbExceptionExternalErrorHandler) { _status ->
+    UniffiLib.uniffi_db_wrapper_fn_method_liveforever_create_foreign_table(
+        it,
+        
+        FfiConverterTypeCreateForeignTableIn.lower(`data`),_status)
+}
+    }
+    
+    
+
+    
+    @Throws(DbException::class)override fun `createFts5Table`(`data`: CreateFts5TableIn)
+        = 
+    callWithHandle {
+    uniffiRustCallWithError(DbExceptionExternalErrorHandler) { _status ->
+    UniffiLib.uniffi_db_wrapper_fn_method_liveforever_create_fts5_table(
+        it,
+        
+        FfiConverterTypeCreateFts5TableIn.lower(`data`),_status)
+}
+    }
+    
+    
+
+    
     @Throws(DbException::class)override fun `createIndex`(`data`: CreateIndexIn)
         = 
     callWithHandle {
@@ -1709,6 +1794,20 @@ open class LiveForever: Disposable, AutoCloseable, LiveForeverInterface
     
 
     
+    @Throws(DbException::class)override fun `forceDropTable`(`data`: DropTableIn)
+        = 
+    callWithHandle {
+    uniffiRustCallWithError(DbExceptionExternalErrorHandler) { _status ->
+    UniffiLib.uniffi_db_wrapper_fn_method_liveforever_force_drop_table(
+        it,
+        
+        FfiConverterTypeDropTableIn.lower(`data`),_status)
+}
+    }
+    
+    
+
+    
     @Throws(DbException::class)override fun `getData`(`data`: GetDataIn): GetDataOut {
             return FfiConverterTypeGetDataOut.lift(
     callWithHandle {
@@ -1767,6 +1866,20 @@ open class LiveForever: Disposable, AutoCloseable, LiveForeverInterface
     
 
     
+    @Throws(DbException::class)override fun `rebuildFts5Index`(`data`: RebuildFts5In)
+        = 
+    callWithHandle {
+    uniffiRustCallWithError(DbExceptionExternalErrorHandler) { _status ->
+    UniffiLib.uniffi_db_wrapper_fn_method_liveforever_rebuild_fts5_index(
+        it,
+        
+        FfiConverterTypeRebuildFts5In.lower(`data`),_status)
+}
+    }
+    
+    
+
+    
     @Throws(DbException::class)override fun `regretEverything`()
         = 
     callWithHandle {
@@ -1791,6 +1904,21 @@ open class LiveForever: Disposable, AutoCloseable, LiveForeverInterface
 }
     }
     
+    
+
+    
+    @Throws(DbException::class)override fun `searchFts5`(`data`: SearchFts5In): GetDataOut {
+            return FfiConverterTypeGetDataOut.lift(
+    callWithHandle {
+    uniffiRustCallWithError(DbExceptionExternalErrorHandler) { _status ->
+    UniffiLib.uniffi_db_wrapper_fn_method_liveforever_search_fts5(
+        it,
+        
+        FfiConverterTypeSearchFts5In.lower(`data`),_status)
+}
+    }
+    )
+    }
     
 
     
@@ -1844,6 +1972,14 @@ public object FfiConverterTypeLiveForever: FfiConverter<LiveForever, Long> {
         buf.putLong(lower(value))
     }
 }
+
+
+
+
+
+
+
+
 
 
 

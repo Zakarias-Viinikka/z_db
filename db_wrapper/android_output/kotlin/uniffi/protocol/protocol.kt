@@ -1364,7 +1364,7 @@ public object FfiConverterTypeColumnDef: FfiConverterRustBuffer<ColumnDef> {
 data class ColumnFilter (
     var `colName`: kotlin.String
     , 
-    var `arguments`: List<SelectArgument>
+    var `arguments`: SelectArguments
     , 
     var `join`: JoinType?
     
@@ -1384,20 +1384,20 @@ public object FfiConverterTypeColumnFilter: FfiConverterRustBuffer<ColumnFilter>
     override fun read(buf: ByteBuffer): ColumnFilter {
         return ColumnFilter(
             FfiConverterString.read(buf),
-            FfiConverterSequenceTypeSelectArgument.read(buf),
+            FfiConverterTypeSelectArguments.read(buf),
             FfiConverterOptionalTypeJoinType.read(buf),
         )
     }
 
     override fun allocationSize(value: ColumnFilter) = (
             FfiConverterString.allocationSize(value.`colName`) +
-            FfiConverterSequenceTypeSelectArgument.allocationSize(value.`arguments`) +
+            FfiConverterTypeSelectArguments.allocationSize(value.`arguments`) +
             FfiConverterOptionalTypeJoinType.allocationSize(value.`join`)
     )
 
     override fun write(value: ColumnFilter, buf: ByteBuffer) {
             FfiConverterString.write(value.`colName`, buf)
-            FfiConverterSequenceTypeSelectArgument.write(value.`arguments`, buf)
+            FfiConverterTypeSelectArguments.write(value.`arguments`, buf)
             FfiConverterOptionalTypeJoinType.write(value.`join`, buf)
     }
 }
@@ -2104,7 +2104,7 @@ public object FfiConverterTypeForeignKeyDef: FfiConverterRustBuffer<ForeignKeyDe
 data class GetDataIn (
     var `tableName`: kotlin.String
     , 
-    var `arguments`: List<SelectArgument>
+    var `arguments`: SelectArguments
     , 
     var `columnsToRead`: List<kotlin.String>
     
@@ -2124,20 +2124,20 @@ public object FfiConverterTypeGetDataIn: FfiConverterRustBuffer<GetDataIn> {
     override fun read(buf: ByteBuffer): GetDataIn {
         return GetDataIn(
             FfiConverterString.read(buf),
-            FfiConverterSequenceTypeSelectArgument.read(buf),
+            FfiConverterTypeSelectArguments.read(buf),
             FfiConverterSequenceString.read(buf),
         )
     }
 
     override fun allocationSize(value: GetDataIn) = (
             FfiConverterString.allocationSize(value.`tableName`) +
-            FfiConverterSequenceTypeSelectArgument.allocationSize(value.`arguments`) +
+            FfiConverterTypeSelectArguments.allocationSize(value.`arguments`) +
             FfiConverterSequenceString.allocationSize(value.`columnsToRead`)
     )
 
     override fun write(value: GetDataIn, buf: ByteBuffer) {
             FfiConverterString.write(value.`tableName`, buf)
-            FfiConverterSequenceTypeSelectArgument.write(value.`arguments`, buf)
+            FfiConverterTypeSelectArguments.write(value.`arguments`, buf)
             FfiConverterSequenceString.write(value.`columnsToRead`, buf)
     }
 }
@@ -2147,7 +2147,7 @@ public object FfiConverterTypeGetDataIn: FfiConverterRustBuffer<GetDataIn> {
 data class GetDataOrderedIn (
     var `tableName`: kotlin.String
     , 
-    var `arguments`: List<SelectArgument>
+    var `arguments`: SelectArguments
     , 
     var `columnsToRead`: List<kotlin.String>
     , 
@@ -2169,7 +2169,7 @@ public object FfiConverterTypeGetDataOrderedIn: FfiConverterRustBuffer<GetDataOr
     override fun read(buf: ByteBuffer): GetDataOrderedIn {
         return GetDataOrderedIn(
             FfiConverterString.read(buf),
-            FfiConverterSequenceTypeSelectArgument.read(buf),
+            FfiConverterTypeSelectArguments.read(buf),
             FfiConverterSequenceString.read(buf),
             FfiConverterString.read(buf),
         )
@@ -2177,14 +2177,14 @@ public object FfiConverterTypeGetDataOrderedIn: FfiConverterRustBuffer<GetDataOr
 
     override fun allocationSize(value: GetDataOrderedIn) = (
             FfiConverterString.allocationSize(value.`tableName`) +
-            FfiConverterSequenceTypeSelectArgument.allocationSize(value.`arguments`) +
+            FfiConverterTypeSelectArguments.allocationSize(value.`arguments`) +
             FfiConverterSequenceString.allocationSize(value.`columnsToRead`) +
             FfiConverterString.allocationSize(value.`orderBy`)
     )
 
     override fun write(value: GetDataOrderedIn, buf: ByteBuffer) {
             FfiConverterString.write(value.`tableName`, buf)
-            FfiConverterSequenceTypeSelectArgument.write(value.`arguments`, buf)
+            FfiConverterTypeSelectArguments.write(value.`arguments`, buf)
             FfiConverterSequenceString.write(value.`columnsToRead`, buf)
             FfiConverterString.write(value.`orderBy`, buf)
     }
@@ -3439,8 +3439,7 @@ sealed class SelectArgument {
     
     data class XEqualY(
         val `x`: kotlin.String, 
-        val `y`: kotlin.String, 
-        val `join`: uniffi.protocol.JoinType?) : SelectArgument()
+        val `y`: kotlin.String) : SelectArgument()
         
     {
         
@@ -3450,8 +3449,7 @@ sealed class SelectArgument {
     
     data class XNotEqualY(
         val `x`: kotlin.String, 
-        val `y`: kotlin.String, 
-        val `join`: uniffi.protocol.JoinType?) : SelectArgument()
+        val `y`: kotlin.String) : SelectArgument()
         
     {
         
@@ -3461,8 +3459,7 @@ sealed class SelectArgument {
     
     data class XGreaterThanY(
         val `x`: kotlin.String, 
-        val `y`: kotlin.String, 
-        val `join`: uniffi.protocol.JoinType?) : SelectArgument()
+        val `y`: kotlin.String) : SelectArgument()
         
     {
         
@@ -3472,8 +3469,7 @@ sealed class SelectArgument {
     
     data class XLessThanY(
         val `x`: kotlin.String, 
-        val `y`: kotlin.String, 
-        val `join`: uniffi.protocol.JoinType?) : SelectArgument()
+        val `y`: kotlin.String) : SelectArgument()
         
     {
         
@@ -3483,8 +3479,7 @@ sealed class SelectArgument {
     
     data class XGreaterThanOrEqualY(
         val `x`: kotlin.String, 
-        val `y`: kotlin.String, 
-        val `join`: uniffi.protocol.JoinType?) : SelectArgument()
+        val `y`: kotlin.String) : SelectArgument()
         
     {
         
@@ -3494,8 +3489,7 @@ sealed class SelectArgument {
     
     data class XLessThanOrEqualY(
         val `x`: kotlin.String, 
-        val `y`: kotlin.String, 
-        val `join`: uniffi.protocol.JoinType?) : SelectArgument()
+        val `y`: kotlin.String) : SelectArgument()
         
     {
         
@@ -3505,8 +3499,7 @@ sealed class SelectArgument {
     
     data class XLikeY(
         val `x`: kotlin.String, 
-        val `y`: kotlin.String, 
-        val `join`: uniffi.protocol.JoinType?) : SelectArgument()
+        val `y`: kotlin.String) : SelectArgument()
         
     {
         
@@ -3516,8 +3509,7 @@ sealed class SelectArgument {
     
     data class XInY(
         val `x`: kotlin.String, 
-        val `y`: List<kotlin.String>, 
-        val `join`: uniffi.protocol.JoinType?) : SelectArgument()
+        val `y`: List<kotlin.String>) : SelectArgument()
         
     {
         
@@ -3547,42 +3539,34 @@ public object FfiConverterTypeSelectArgument : FfiConverterRustBuffer<SelectArgu
             1 -> SelectArgument.XEqualY(
                 FfiConverterString.read(buf),
                 FfiConverterString.read(buf),
-                FfiConverterOptionalTypeJoinType.read(buf),
                 )
             2 -> SelectArgument.XNotEqualY(
                 FfiConverterString.read(buf),
                 FfiConverterString.read(buf),
-                FfiConverterOptionalTypeJoinType.read(buf),
                 )
             3 -> SelectArgument.XGreaterThanY(
                 FfiConverterString.read(buf),
                 FfiConverterString.read(buf),
-                FfiConverterOptionalTypeJoinType.read(buf),
                 )
             4 -> SelectArgument.XLessThanY(
                 FfiConverterString.read(buf),
                 FfiConverterString.read(buf),
-                FfiConverterOptionalTypeJoinType.read(buf),
                 )
             5 -> SelectArgument.XGreaterThanOrEqualY(
                 FfiConverterString.read(buf),
                 FfiConverterString.read(buf),
-                FfiConverterOptionalTypeJoinType.read(buf),
                 )
             6 -> SelectArgument.XLessThanOrEqualY(
                 FfiConverterString.read(buf),
                 FfiConverterString.read(buf),
-                FfiConverterOptionalTypeJoinType.read(buf),
                 )
             7 -> SelectArgument.XLikeY(
                 FfiConverterString.read(buf),
                 FfiConverterString.read(buf),
-                FfiConverterOptionalTypeJoinType.read(buf),
                 )
             8 -> SelectArgument.XInY(
                 FfiConverterString.read(buf),
                 FfiConverterSequenceString.read(buf),
-                FfiConverterOptionalTypeJoinType.read(buf),
                 )
             9 -> SelectArgument.All
             else -> throw RuntimeException("invalid enum value, something is very wrong!!")
@@ -3596,7 +3580,6 @@ public object FfiConverterTypeSelectArgument : FfiConverterRustBuffer<SelectArgu
                 4UL
                 + FfiConverterString.allocationSize(value.`x`)
                 + FfiConverterString.allocationSize(value.`y`)
-                + FfiConverterOptionalTypeJoinType.allocationSize(value.`join`)
             )
         }
         is SelectArgument.XNotEqualY -> {
@@ -3605,7 +3588,6 @@ public object FfiConverterTypeSelectArgument : FfiConverterRustBuffer<SelectArgu
                 4UL
                 + FfiConverterString.allocationSize(value.`x`)
                 + FfiConverterString.allocationSize(value.`y`)
-                + FfiConverterOptionalTypeJoinType.allocationSize(value.`join`)
             )
         }
         is SelectArgument.XGreaterThanY -> {
@@ -3614,7 +3596,6 @@ public object FfiConverterTypeSelectArgument : FfiConverterRustBuffer<SelectArgu
                 4UL
                 + FfiConverterString.allocationSize(value.`x`)
                 + FfiConverterString.allocationSize(value.`y`)
-                + FfiConverterOptionalTypeJoinType.allocationSize(value.`join`)
             )
         }
         is SelectArgument.XLessThanY -> {
@@ -3623,7 +3604,6 @@ public object FfiConverterTypeSelectArgument : FfiConverterRustBuffer<SelectArgu
                 4UL
                 + FfiConverterString.allocationSize(value.`x`)
                 + FfiConverterString.allocationSize(value.`y`)
-                + FfiConverterOptionalTypeJoinType.allocationSize(value.`join`)
             )
         }
         is SelectArgument.XGreaterThanOrEqualY -> {
@@ -3632,7 +3612,6 @@ public object FfiConverterTypeSelectArgument : FfiConverterRustBuffer<SelectArgu
                 4UL
                 + FfiConverterString.allocationSize(value.`x`)
                 + FfiConverterString.allocationSize(value.`y`)
-                + FfiConverterOptionalTypeJoinType.allocationSize(value.`join`)
             )
         }
         is SelectArgument.XLessThanOrEqualY -> {
@@ -3641,7 +3620,6 @@ public object FfiConverterTypeSelectArgument : FfiConverterRustBuffer<SelectArgu
                 4UL
                 + FfiConverterString.allocationSize(value.`x`)
                 + FfiConverterString.allocationSize(value.`y`)
-                + FfiConverterOptionalTypeJoinType.allocationSize(value.`join`)
             )
         }
         is SelectArgument.XLikeY -> {
@@ -3650,7 +3628,6 @@ public object FfiConverterTypeSelectArgument : FfiConverterRustBuffer<SelectArgu
                 4UL
                 + FfiConverterString.allocationSize(value.`x`)
                 + FfiConverterString.allocationSize(value.`y`)
-                + FfiConverterOptionalTypeJoinType.allocationSize(value.`join`)
             )
         }
         is SelectArgument.XInY -> {
@@ -3659,7 +3636,6 @@ public object FfiConverterTypeSelectArgument : FfiConverterRustBuffer<SelectArgu
                 4UL
                 + FfiConverterString.allocationSize(value.`x`)
                 + FfiConverterSequenceString.allocationSize(value.`y`)
-                + FfiConverterOptionalTypeJoinType.allocationSize(value.`join`)
             )
         }
         is SelectArgument.All -> {
@@ -3676,60 +3652,143 @@ public object FfiConverterTypeSelectArgument : FfiConverterRustBuffer<SelectArgu
                 buf.putInt(1)
                 FfiConverterString.write(value.`x`, buf)
                 FfiConverterString.write(value.`y`, buf)
-                FfiConverterOptionalTypeJoinType.write(value.`join`, buf)
                 Unit
             }
             is SelectArgument.XNotEqualY -> {
                 buf.putInt(2)
                 FfiConverterString.write(value.`x`, buf)
                 FfiConverterString.write(value.`y`, buf)
-                FfiConverterOptionalTypeJoinType.write(value.`join`, buf)
                 Unit
             }
             is SelectArgument.XGreaterThanY -> {
                 buf.putInt(3)
                 FfiConverterString.write(value.`x`, buf)
                 FfiConverterString.write(value.`y`, buf)
-                FfiConverterOptionalTypeJoinType.write(value.`join`, buf)
                 Unit
             }
             is SelectArgument.XLessThanY -> {
                 buf.putInt(4)
                 FfiConverterString.write(value.`x`, buf)
                 FfiConverterString.write(value.`y`, buf)
-                FfiConverterOptionalTypeJoinType.write(value.`join`, buf)
                 Unit
             }
             is SelectArgument.XGreaterThanOrEqualY -> {
                 buf.putInt(5)
                 FfiConverterString.write(value.`x`, buf)
                 FfiConverterString.write(value.`y`, buf)
-                FfiConverterOptionalTypeJoinType.write(value.`join`, buf)
                 Unit
             }
             is SelectArgument.XLessThanOrEqualY -> {
                 buf.putInt(6)
                 FfiConverterString.write(value.`x`, buf)
                 FfiConverterString.write(value.`y`, buf)
-                FfiConverterOptionalTypeJoinType.write(value.`join`, buf)
                 Unit
             }
             is SelectArgument.XLikeY -> {
                 buf.putInt(7)
                 FfiConverterString.write(value.`x`, buf)
                 FfiConverterString.write(value.`y`, buf)
-                FfiConverterOptionalTypeJoinType.write(value.`join`, buf)
                 Unit
             }
             is SelectArgument.XInY -> {
                 buf.putInt(8)
                 FfiConverterString.write(value.`x`, buf)
                 FfiConverterSequenceString.write(value.`y`, buf)
-                FfiConverterOptionalTypeJoinType.write(value.`join`, buf)
                 Unit
             }
             is SelectArgument.All -> {
                 buf.putInt(9)
+                Unit
+            }
+        }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
+    }
+}
+
+
+
+
+
+sealed class SelectArguments {
+    
+    data class Single(
+        val v1: uniffi.protocol.SelectArgument) : SelectArguments()
+        
+    {
+        
+
+        companion object
+    }
+    
+    data class Two(
+        val `first`: uniffi.protocol.SelectArgument, 
+        val `join`: uniffi.protocol.JoinType, 
+        val `second`: uniffi.protocol.SelectArgument) : SelectArguments()
+        
+    {
+        
+
+        companion object
+    }
+    
+
+    
+
+    
+    
+
+
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeSelectArguments : FfiConverterRustBuffer<SelectArguments>{
+    override fun read(buf: ByteBuffer): SelectArguments {
+        return when(buf.getInt()) {
+            1 -> SelectArguments.Single(
+                FfiConverterTypeSelectArgument.read(buf),
+                )
+            2 -> SelectArguments.Two(
+                FfiConverterTypeSelectArgument.read(buf),
+                FfiConverterTypeJoinType.read(buf),
+                FfiConverterTypeSelectArgument.read(buf),
+                )
+            else -> throw RuntimeException("invalid enum value, something is very wrong!!")
+        }
+    }
+
+    override fun allocationSize(value: SelectArguments): ULong = when(value) {
+        is SelectArguments.Single -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterTypeSelectArgument.allocationSize(value.v1)
+            )
+        }
+        is SelectArguments.Two -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterTypeSelectArgument.allocationSize(value.`first`)
+                + FfiConverterTypeJoinType.allocationSize(value.`join`)
+                + FfiConverterTypeSelectArgument.allocationSize(value.`second`)
+            )
+        }
+    }
+
+    override fun write(value: SelectArguments, buf: ByteBuffer) {
+        when(value) {
+            is SelectArguments.Single -> {
+                buf.putInt(1)
+                FfiConverterTypeSelectArgument.write(value.v1, buf)
+                Unit
+            }
+            is SelectArguments.Two -> {
+                buf.putInt(2)
+                FfiConverterTypeSelectArgument.write(value.`first`, buf)
+                FfiConverterTypeJoinType.write(value.`join`, buf)
+                FfiConverterTypeSelectArgument.write(value.`second`, buf)
                 Unit
             }
         }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
@@ -4082,34 +4141,6 @@ public object FfiConverterSequenceTypeCol: FfiConverterRustBuffer<List<Col>> {
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterTypeCol.write(it, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
-public object FfiConverterSequenceTypeSelectArgument: FfiConverterRustBuffer<List<SelectArgument>> {
-    override fun read(buf: ByteBuffer): List<SelectArgument> {
-        val len = buf.getInt()
-        return List<SelectArgument>(len) {
-            FfiConverterTypeSelectArgument.read(buf)
-        }
-    }
-
-    override fun allocationSize(value: List<SelectArgument>): ULong {
-        val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypeSelectArgument.allocationSize(it) }.sum()
-        return sizeForLength + sizeForItems
-    }
-
-    override fun write(value: List<SelectArgument>, buf: ByteBuffer) {
-        buf.putInt(value.size)
-        value.iterator().forEach {
-            FfiConverterTypeSelectArgument.write(it, buf)
         }
     }
 }
