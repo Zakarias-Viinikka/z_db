@@ -222,42 +222,6 @@ pub fn table_shape(
 
     Ok(columns)
 }
-pub fn add_column(
-    conn: &rusqlite::Connection,
-    table_name: &str,
-    column: ColumnDef,
-) -> Result<(), DbError> {
-    if table_name.is_empty() {
-        return Err(DbError::IllegalInput("table_name is empty".to_string()));
-    }
-
-    if column.primary_key {
-        return Err(DbError::IllegalInput(
-            "ADD COLUMN does not support PRIMARY KEY".to_string(),
-        ));
-    }
-    if column.autoincrement {
-        return Err(DbError::IllegalInput(
-            "ADD COLUMN does not support AUTOINCREMENT".to_string(),
-        ));
-    }
-    if column.unique {
-        return Err(DbError::IllegalInput(
-            "ADD COLUMN does not support UNIQUE".to_string(),
-        ));
-    }
-    if column.not_null && column.default_value.is_empty() {
-        return Err(DbError::IllegalInput(
-            "NOT NULL column requires a DEFAULT value when adding to an existing table".to_string(),
-        ));
-    }
-
-    let sql = generate_add_column_sql(table_name, &column);
-    conn.execute(&sql, [])
-        .map_err(|e| DbError::SqlExecuteFail(format!("add_column failed: {}, sql: {}", e, sql)))?;
-
-    Ok(())
-}
 
 pub fn remove_column(
     conn: &rusqlite::Connection,

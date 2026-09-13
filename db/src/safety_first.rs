@@ -18,3 +18,7 @@ pub fn regret_everything(conn: &Connection) -> Result<(), DbError> {
         .map_err(|e| DbError::SqlExecuteFail(format!("regret_everything failed: {}", e)))?;
     Ok(())
 }
+
+pub fn are_we_in_middle_of_transaction(conn: &Connection) -> bool {
+    !conn.is_autocommit()
+}

@@ -170,6 +170,23 @@ pub struct RemoveColumnIn {
     pub column_name: String,
 }
 
+// Where an edited column's data comes from when the table gets rebuilt.
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Enum)]
+pub enum ColumnSource {
+    SameName,
+    FromColumn(String),
+    Expression(String),
+    UseDefault,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct FundamentallyEditExistingColIn {
+    pub table_name: String,
+    pub column_name: String,
+    pub new_column: new_table::ColumnDef,
+    pub source: ColumnSource,
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
 pub struct ExportTablesIn {
     pub table_names: Vec<String>,

@@ -193,25 +193,7 @@ macro_rules! create_the_entire_universe {
             ) -> method_return_type!(()) {
                 let input: AddColumnIn = decode_input!(data);
                 let conn = unwrap_or_bail!(self.get_conn());
-                unwrap_or_bail!(::db::black_magic::add_column(
-                    &*conn,
-                    &input.table_name,
-                    input.column,
-                ));
-                return_nothing!()
-            }
-
-            pub fn remove_column(
-                &self,
-                data: method_input_type!(RemoveColumnIn),
-            ) -> method_return_type!(()) {
-                let input: RemoveColumnIn = decode_input!(data);
-                let conn = unwrap_or_bail!(self.get_conn());
-                unwrap_or_bail!(::db::black_magic::remove_column(
-                    &*conn,
-                    &input.table_name,
-                    &input.column_name,
-                ));
+                unwrap_or_bail!(::db::migration::add_column(&*conn, input));
                 return_nothing!()
             }
 
@@ -352,6 +334,26 @@ macro_rules! create_the_entire_universe {
                 let input: DropTableIn = decode_input!(data);
                 let conn = unwrap_or_bail!(self.get_conn());
                 unwrap_or_bail!(::db::black_magic::force_drop_table(&*conn, &input.table_name));
+                return_nothing!()
+            }
+
+            pub fn remove_column(
+                &self,
+                data: method_input_type!(RemoveColumnIn),
+            ) -> method_return_type!(()) {
+                let input: RemoveColumnIn = decode_input!(data);
+                let conn = unwrap_or_bail!(self.get_conn());
+                unwrap_or_bail!(::db::migration::make_col_disappear(&*conn, input));
+                return_nothing!()
+            }
+
+            pub fn fundamentally_edit_existing_col(
+                &self,
+                data: method_input_type!(FundamentallyEditExistingColIn),
+            ) -> method_return_type!(()) {
+                let input: FundamentallyEditExistingColIn = decode_input!(data);
+                let conn = unwrap_or_bail!(self.get_conn());
+                unwrap_or_bail!(::db::migration::fundamentally_edit_existing_col(&*conn, input));
                 return_nothing!()
             }
         }

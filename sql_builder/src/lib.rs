@@ -6,6 +6,19 @@ use protocol::row_col;
 
 // Builds CREATE TABLE SQL from a caller-supplied column list (replaces the old Table/Column version).
 pub fn generate_create_table_sql(table_name: &str, columns: &[ColumnDef]) -> String {
+    generate_create_table_sql_with_unique_groups(table_name, columns, &[], &[])
+}
+
+// Same as generate_create_table_sql, but also takes:
+// - groups of column names that should become composite UNIQUE(...) table constraints
+// - a composite primary key column list, for PRIMARY KEY(...) spanning multiple columns
+//   (a single-column PK still goes through each ColumnDef's `primary_key` flag)
+pub fn generate_create_table_sql_with_unique_groups(
+    table_name: &str,
+    columns: &[ColumnDef],
+    unique_groups: &[Vec<String>],
+    primary_key_group: &[String],
+) -> String {
     let mut col_defs = Vec::new();
     for col in columns {
         let mut def = format!("{} {}", quote_ident(&col.name), col.column_type);
@@ -26,6 +39,25 @@ pub fn generate_create_table_sql(table_name: &str, columns: &[ColumnDef]) -> Str
         }
         col_defs.push(def);
     }
+
+    if !primary_key_group.is_empty() {
+        let cols = primary_key_group
+            .iter()
+            .map(|c| quote_ident(c))
+            .collect::<Vec<_>>()
+            .join(", ");
+        col_defs.push(format!("PRIMARY KEY ({})", cols));
+    }
+
+    for group in unique_groups {
+        let cols = group
+            .iter()
+            .map(|c| quote_ident(c))
+            .collect::<Vec<_>>()
+            .join(", ");
+        col_defs.push(format!("UNIQUE ({})", cols));
+    }
+
     format!(
         "CREATE TABLE IF NOT EXISTS {} ({});",
         quote_ident(table_name),

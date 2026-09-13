@@ -1,0 +1,11 @@
+[package]
+name = "msg_build_n_debuild_helper"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+protocol = { path = "../protocol" }
+uniffi = { version = "0.32", features = ["cli"] }
