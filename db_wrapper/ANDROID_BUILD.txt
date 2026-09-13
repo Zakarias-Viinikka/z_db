@@ -5,7 +5,7 @@ cd ~/ProgStuff/z_db/db_wrapper
 
 # --- BUILD STEPS ---
 # 3. Build native library for arm64
-cargo ndk -o ./android_output/jniLibs -t arm64-v8a build --release
+cargo ndk -o ./android_output/jniLibs -t arm64-v8a build --release --features android
 
 # 4. Generate Kotlin glue code
 cargo run --package protocol --bin uniffi-bindgen -- generate \
@@ -13,7 +13,3 @@ cargo run --package protocol --bin uniffi-bindgen -- generate \
     --language kotlin \
     --out-dir ./android_output/kotlin \
     --config ./uniffi.toml
-
-# --- MOVE STEPS ---
-# TODO: Set your Android project root path and uncomment the lines below.
-# Adjust the package directory if needed (currently com.z_db.android_mascot).
