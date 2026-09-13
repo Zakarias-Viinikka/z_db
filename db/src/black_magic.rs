@@ -10,10 +10,31 @@ pub fn create_table(
     columns: Vec<ColumnDef>,
 ) -> Result<(), DbError> {
     check_for_illegal_table_names(table_name)?;
+    check_if_table_exists(conn, table_name)?;
 
     let sql = generate_create_table_sql(table_name, &columns);
     conn.execute(&sql, [])
         .map_err(|e| DbError::SqlExecuteFail(format!("err: {}, sql: {}", e, sql)))?;
+    Ok(())
+}
+
+fn check_if_table_exists(conn: &rusqlite::Connection, table_name: &str) -> Result<(), DbError> {
+    let exists_sql = "SELECT 1 FROM sqlite_master WHERE type='table' AND name=? LIMIT 1";
+    let mut stmt = conn
+        .prepare(exists_sql)
+        .map_err(|e| DbError::SqlExecuteFail(e.to_string()))?;
+
+    let exists = stmt
+        .exists([table_name])
+        .map_err(|e| DbError::SqlExecuteFail(e.to_string()))?;
+
+    if exists {
+        return Err(DbError::IllegalInput(format!(
+            "Table already exists: {}",
+            table_name
+        )));
+    }
+
     Ok(())
 }
 
