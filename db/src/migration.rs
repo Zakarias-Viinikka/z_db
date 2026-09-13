@@ -606,10 +606,24 @@ pub fn check_if_col_unique(
     table_name: &str,
     column_name: &str,
 ) -> Result<bool, DbError> {
-    let unique_cols = unique_columns_in_table(conn, table_name)?;
-    Ok(unique_cols
+    // inline UNIQUE constraints (origin "u")
+    let inline_unique = unique_columns_in_table(conn, table_name)?;
+    if inline_unique
         .iter()
-        .any(|c| c.eq_ignore_ascii_case(column_name)))
+        .any(|c| c.eq_ignore_ascii_case(column_name))
+    {
+        return Ok(true);
+    }
+
+    // explicit CREATE UNIQUE INDEX (origin "c")
+    let explicit = get_state_of_indexed_for_entire_table(conn, table_name)?;
+    for (_, cols, is_unique) in explicit {
+        if is_unique && cols.iter().any(|c| c.eq_ignore_ascii_case(column_name)) {
+            return Ok(true);
+        }
+    }
+
+    Ok(false)
 }
 
 pub fn col_is_autoincrement(
