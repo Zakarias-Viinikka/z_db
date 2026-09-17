@@ -189,6 +189,22 @@ pub fn generate_update_sql_typed(
     )
 }
 
+pub fn generate_update_sql_where(
+    table_name: &str,
+    where_clause: &SelectArguments,
+    column: &str,
+    new_value: &row_col::Col,
+) -> String {
+    let value_literal = col_to_sql_literal(new_value);
+    format!(
+        "UPDATE {} SET {} = {}{};",
+        quote_ident(table_name),
+        quote_ident(column),
+        value_literal,
+        to_sql_condition(where_clause)
+    )
+}
+
 pub fn generate_read_from_table_sql(
     table_name: impl AsRef<str>,
     where_clause: impl AsRef<str>,

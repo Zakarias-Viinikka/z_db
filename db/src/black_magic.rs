@@ -139,6 +139,20 @@ pub fn edit_col_in_row(
     Ok(())
 }
 
+pub fn edit_col_in_row_where(
+    conn: &rusqlite::Connection,
+    table_name: &str,
+    where_clause: &SelectArguments,
+    column: &str,
+    new_value: &Col,
+) -> Result<(), DbError> {
+    let sql = generate_update_sql_where(table_name, where_clause, column, new_value);
+    conn.execute(&sql, []).map_err(|e| {
+        DbError::SqlExecuteFail(format!("edit_col_in_row_where failed: {}, sql: {}", e, sql))
+    })?;
+    Ok(())
+}
+
 pub fn delete_row(
     conn: &rusqlite::Connection,
     table_name: &str,
@@ -345,13 +359,36 @@ pub fn copy_table(
 }
 
 pub fn force_drop_table(conn: &rusqlite::Connection, table_name: &str) -> Result<(), DbError> {
-    let sql = format!(
-        "PRAGMA writable_schema=ON; DELETE FROM sqlite_master WHERE name='{}' AND type='table'; PRAGMA writable_schema=OFF;",
-        table_name.replace('\'', "''")
+    let escaped = table_name.replace('\'', "''");
+
+    // 1. Try a real DROP TABLE first — this cleans up associated autoindexes.
+    let drop_sql = format!(
+        "DROP TABLE IF EXISTS \"{}\";",
+        table_name.replace('"', "\"\"")
+    );
+    conn.execute_batch(&drop_sql).map_err(|e| {
+        DbError::SqlExecuteFail(format!(
+            "force_drop_table (real drop) failed: {}, sql: {}",
+            e, drop_sql
+        ))
+    })?;
+
+    // 2. If a table row still exists (because the schema was already malformed),
+    //    fall through to the sqlite_master surgery. Also remove any orphan
+    //    autoindex rows for that table.
+    let cleanup_sql = format!(
+        "PRAGMA writable_schema=ON; \
+         DELETE FROM sqlite_master WHERE name = '{}' AND type = 'table'; \
+         DELETE FROM sqlite_master WHERE type = 'index' AND tbl_name = '{}'; \
+         PRAGMA writable_schema=OFF;",
+        escaped, escaped
     );
 
-    conn.execute_batch(&sql).map_err(|e| {
-        DbError::SqlExecuteFail(format!("force_drop_table failed: {}, sql: {}", e, sql))
+    conn.execute_batch(&cleanup_sql).map_err(|e| {
+        DbError::SqlExecuteFail(format!(
+            "force_drop_table (cleanup) failed: {}, sql: {}",
+            e, cleanup_sql
+        ))
     })?;
 
     Ok(())

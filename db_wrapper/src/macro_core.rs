@@ -97,6 +97,22 @@ macro_rules! create_the_entire_universe {
                 return_nothing!()
             }
 
+            pub fn edit_col_in_row_where(
+                &self,
+                data: method_input_type!(EditColInRowWhereIn),
+            ) -> method_return_type!(()) {
+                let input: EditColInRowWhereIn = decode_input!(data);
+                let conn = unwrap_or_bail!(self.get_conn());
+                unwrap_or_bail!(::db::black_magic::edit_col_in_row_where(
+                    &*conn,
+                    &input.table_name,
+                    &input.where_clause,
+                    &input.column,
+                    &input.new_value,
+                ));
+                return_nothing!()
+            }
+
             pub fn check_table(
                 &self,
                 data: method_input_type!(CheckTableIn),

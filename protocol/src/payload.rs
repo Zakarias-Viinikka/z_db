@@ -100,6 +100,14 @@ pub struct EditColInRowIn {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct EditColInRowWhereIn {
+    pub table_name: String,
+    pub where_clause: SelectArguments,
+    pub column: String,
+    pub new_value: row_col::Col,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
 pub struct CheckTableIn {
     pub table_name: String,
 }
