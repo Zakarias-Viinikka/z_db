@@ -3,4 +3,4 @@ pub mod black_magic_extension;
 pub mod black_magic_read;
 pub mod fts5_magic;
 pub mod migration;
-pub mod safety_first;
+pub mod transactions;

@@ -1,5 +1,5 @@
 [workspace]
 resolver = "3" 
-members = ["db","db_wrapper", "db_wrapper_macro_explained", "msg_build_n_debuild_helper",
+members = ["db","db_wrapper", "db_wrapper_macro_explained", "migration_helper", "migration_template", "msg_build_n_debuild_helper",
     "protocol", "sql_builder",
 ]

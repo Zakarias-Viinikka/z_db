@@ -112,7 +112,7 @@ pub struct CheckTableIn {
     pub table_name: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record, PartialEq)]
 pub struct TableColumnInfo {
     pub cid: i64,
     pub name: String,
@@ -122,7 +122,7 @@ pub struct TableColumnInfo {
     pub primary_key: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record, PartialEq)]
 pub struct CheckTableOut {
     pub columns: Vec<TableColumnInfo>,
 }

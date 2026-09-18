@@ -12,9 +12,9 @@ use crate::black_magic::table_shape;
 
 macro_rules! start_transaction_if_not_in_one {
     ($conn:expr) => {{
-        let started_here = !crate::safety_first::are_we_in_middle_of_transaction($conn);
+        let started_here = !crate::transactions::are_we_in_middle_of_transaction($conn);
         if started_here {
-            crate::safety_first::begin_all_or_nothing($conn)?;
+            crate::transactions::begin_all_or_nothing($conn)?;
         }
         started_here
     }};
@@ -25,13 +25,13 @@ macro_rules! end_transaction_if_in_one {
         match $result {
             Ok(v) => {
                 if $started_here {
-                    crate::safety_first::everything_went_perfectly($conn)?;
+                    crate::transactions::everything_went_perfectly($conn)?;
                 }
                 Ok(v)
             }
             Err(e) => {
                 if $started_here {
-                    let _ = crate::safety_first::regret_everything($conn);
+                    let _ = crate::transactions::regret_everything($conn);
                 }
                 Err(e)
             }
@@ -643,7 +643,11 @@ pub fn col_is_autoincrement(
         return Ok(None);
     };
 
-    if !create_sql.to_uppercase().contains("AUTOINCREMENT") {
+    let upper = create_sql.to_uppercase();
+    let has_autoincrement = upper
+        .split(|c: char| !c.is_alphanumeric())
+        .any(|token| token == "AUTOINCREMENT");
+    if !has_autoincrement {
         return Ok(None);
     }
 

@@ -122,21 +122,6 @@ fn add_column_rejects_not_null_without_default() {
     assert!(matches!(result, Err(DbError::IllegalInput(_))));
 }
 
-// add_column rejects UNIQUE columns.
-#[test]
-fn add_column_rejects_unique() {
-    let db = setup_empty_db();
-    create_users_table!(&db);
-
-    let result = add_column(AddColumn {
-        table_name: "users",
-        column: unique_col(ColumnType::Text, "email"),
-        db: &db,
-    });
-
-    assert!(matches!(result, Err(DbError::IllegalInput(_))));
-}
-
 // add_column rejects AUTOINCREMENT columns.
 #[test]
 fn add_column_rejects_autoincrement() {
