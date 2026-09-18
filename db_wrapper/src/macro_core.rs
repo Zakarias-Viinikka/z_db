@@ -269,19 +269,19 @@ macro_rules! create_the_entire_universe {
 
             pub fn begin_all_or_nothing(&self) -> method_return_type!(()) {
                 let conn = unwrap_or_bail!(self.get_conn());
-                unwrap_or_bail!(::db::safety_first::begin_all_or_nothing(&*conn));
+                unwrap_or_bail!(::db::transactions::begin_all_or_nothing(&*conn));
                 return_nothing!()
             }
 
             pub fn everything_went_perfectly(&self) -> method_return_type!(()) {
                 let conn = unwrap_or_bail!(self.get_conn());
-                unwrap_or_bail!(::db::safety_first::everything_went_perfectly(&*conn));
+                unwrap_or_bail!(::db::transactions::everything_went_perfectly(&*conn));
                 return_nothing!()
             }
 
             pub fn regret_everything(&self) -> method_return_type!(()) {
                 let conn = unwrap_or_bail!(self.get_conn());
-                unwrap_or_bail!(::db::safety_first::regret_everything(&*conn));
+                unwrap_or_bail!(::db::transactions::regret_everything(&*conn));
                 return_nothing!()
             }
 
