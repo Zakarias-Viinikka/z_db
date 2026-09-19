@@ -16,7 +16,7 @@ uniffi = { version = "0.32", features = ["cli"] }
 
 [features]
 default = ["testing"]
-normal = []
+native = []
 android = []
 testing = []
 web = [

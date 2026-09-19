@@ -6,7 +6,7 @@ pub mod android_mascot;
 #[cfg(feature = "web")]
 pub mod web_mascot;
 
-#[cfg(feature = "normal")]
+#[cfg(feature = "native")]
 pub mod mascot;
 
 #[cfg(feature = "testing")]
