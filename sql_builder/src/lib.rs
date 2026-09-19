@@ -394,3 +394,43 @@ pub fn search_fts5_sql_builder(source_table_name: &str, text_to_lookup: &str) ->
 pub fn generate_count_all_rows_sql(table_name: &str) -> String {
     format!("SELECT COUNT(*) FROM {};", quote_ident(table_name))
 }
+//these are the sql builders for syncing a specific row
+pub fn fts5_insert_sql_builder(
+    source_table_name: &str,
+    row_id: &str,
+    column_name: &str,
+    value: &str,
+) -> String {
+    let fts_table = quote_ident(&format!("fts5_{}", source_table_name));
+    let column = quote_ident(column_name);
+    let rowid_col = quote_ident("rowid");
+
+    format!(
+        "INSERT INTO {table}({rowid_col}, {col}) VALUES({rowid}, {val});",
+        table = fts_table,
+        rowid_col = rowid_col,
+        col = column,
+        rowid = row_id,
+        val = quote_sql_string(value),
+    )
+}
+
+pub fn fts5_delete_sql_builder(
+    source_table_name: &str,
+    row_id: &str,
+    column_name: &str,
+    value: &str,
+) -> String {
+    let fts_table = quote_ident(&format!("fts5_{}", source_table_name));
+    let column = quote_ident(column_name);
+    let rowid_col = quote_ident("rowid");
+
+    format!(
+        "INSERT INTO {table}({table}, {rowid_col}, {col}) VALUES('delete', {rowid}, {val});",
+        table = fts_table,
+        rowid_col = rowid_col,
+        col = column,
+        rowid = row_id,
+        val = quote_sql_string(value),
+    )
+}

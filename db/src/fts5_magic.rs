@@ -23,8 +23,34 @@ pub fn search_fts5(conn: &Connection, table_name: &str, query: &str) -> Result<V
         .map_err(|e| DbError::SqlExecuteFail(format!("search_fts5 failed: {:?}, sql: {}", e, sql)))
 }
 
-pub fn sync_fts5_row(conn: &Connection, table_name: &str, row_id: &str) -> Result<(), DbError> {
-    todo!()
+use protocol::payload::SyncFts5RowIn;
+
+pub fn sync_fts5_row(conn: &Connection, input: &SyncFts5RowIn) -> Result<(), DbError> {
+    if let Some(old) = &input.old_value {
+        let sql = fts5_delete_sql_builder(
+            &input.source_table_name,
+            &input.row_id,
+            &input.column_name,
+            old,
+        );
+        conn.execute(&sql, []).map_err(|e| {
+            DbError::SqlExecuteFail(format!("fts5 delete failed: {}, sql: {}", e, sql))
+        })?;
+    }
+
+    if let Some(new) = &input.new_value {
+        let sql = fts5_insert_sql_builder(
+            &input.source_table_name,
+            &input.row_id,
+            &input.column_name,
+            new,
+        );
+        conn.execute(&sql, []).map_err(|e| {
+            DbError::SqlExecuteFail(format!("fts5 insert failed: {}, sql: {}", e, sql))
+        })?;
+    }
+
+    Ok(())
 }
 
 pub fn rebuild_fts5_index(conn: &Connection, source_table_name: &str) -> Result<(), DbError> {

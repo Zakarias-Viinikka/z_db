@@ -243,6 +243,15 @@ pub struct RebuildFts5In {
     pub table_name: String,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct SyncFts5RowIn {
+    pub source_table_name: String,
+    pub row_id: String,
+    pub column_name: String,
+    pub old_value: Option<String>,
+    pub new_value: Option<String>,
+}
+
 pub type ForceDropTableIn = DropTableIn;
 
 #[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]

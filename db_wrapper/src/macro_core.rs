@@ -343,6 +343,16 @@ macro_rules! create_the_entire_universe {
                 return_nothing!()
             }
 
+            pub fn sync_fts5_row(
+                &self,
+                data: method_input_type!(SyncFts5RowIn),
+            ) -> method_return_type!(()) {
+                let input: SyncFts5RowIn = decode_input!(data);
+                let conn = unwrap_or_bail!(self.get_conn());
+                unwrap_or_bail!(::db::fts5_magic::sync_fts5_row(&*conn, &input));
+                return_nothing!()
+            }
+
             pub fn force_drop_table(
                 &self,
                 data: method_input_type!(DropTableIn),
