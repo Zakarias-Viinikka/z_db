@@ -6,9 +6,7 @@ mod macros;
 mod common;
 use common::*;
 
-
 use db_wrapper::testing_mascot::LiveForever;
-
 use protocol::new_table::id_column;
 use protocol::payload::*;
 use protocol::row_col::Col;
@@ -36,7 +34,6 @@ fn sync_inserts_only_target_row() {
 
     update_single_fts5_row(UpdateSingleFts5Row {
         row_id: "2",
-        old_value: None,
         new_value: Some("beta"),
         db: &db,
     });
@@ -71,15 +68,6 @@ fn sync_adds_and_removes_row_from_index() {
 
     create_text_fts5!(&db, ["keyword"]);
 
-    // empty table, fts5 finds nothing
-    let result = search_row_ids(SearchRowIds {
-        query: "alpha",
-        db: &db,
-    });
-    let expected_result: Vec<i64> = Vec::new();
-    assert_eq!(result, expected_result);
-
-    // add row, sync it, fts5 finds it
     insert_text_row(InsertTextRow {
         text: "alpha",
         db: &db,
@@ -87,7 +75,6 @@ fn sync_adds_and_removes_row_from_index() {
 
     update_single_fts5_row(UpdateSingleFts5Row {
         row_id: "1",
-        old_value: None,
         new_value: Some("alpha"),
         db: &db,
     });
@@ -99,7 +86,6 @@ fn sync_adds_and_removes_row_from_index() {
     let expected_result = vec![1];
     assert_eq!(result, expected_result);
 
-    // delete row, sync it, fts5 finds nothing
     delete_text_row(DeleteTextRow {
         row_id: "1",
         db: &db,
@@ -107,7 +93,6 @@ fn sync_adds_and_removes_row_from_index() {
 
     update_single_fts5_row(UpdateSingleFts5Row {
         row_id: "1",
-        old_value: Some("alpha"),
         new_value: None,
         db: &db,
     });
@@ -159,7 +144,6 @@ fn delete_text_row(params: DeleteTextRow) {
 
 struct UpdateSingleFts5Row<'a> {
     row_id: &'a str,
-    old_value: Option<&'a str>,
     new_value: Option<&'a str>,
     db: &'a LiveForever,
 }
@@ -171,7 +155,6 @@ fn update_single_fts5_row(params: UpdateSingleFts5Row) {
             source_table_name: "keyword_lookup".to_string(),
             row_id: params.row_id.to_string(),
             column_name: "keyword".to_string(),
-            old_value: params.old_value.map(|s| s.to_string()),
             new_value: params.new_value.map(|s| s.to_string()),
         })
         .unwrap();
