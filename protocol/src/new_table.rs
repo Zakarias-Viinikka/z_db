@@ -1,7 +1,7 @@
 #![warn(unused)]
 #![allow(dead_code)]
 
-#[derive(serde::Deserialize, serde::Serialize, Debug, Clone, uniffi::Record)]
+#[derive(serde::Deserialize, serde::Serialize, Debug, Clone, uniffi::Record, PartialEq)]
 pub struct ColumnDef {
     pub name: String,          // name
     pub column_type: String,   // column type
