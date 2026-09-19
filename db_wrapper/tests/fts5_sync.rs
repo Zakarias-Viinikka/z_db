@@ -12,11 +12,14 @@ use protocol::payload::*;
 use protocol::row_col::Col;
 
 #[test]
-fn sync_inserts_only_target_row() {
+fn fts5_stays_in_sync_through_insert_update_delete() {
     let db = setup!();
 
     create_text_table!(&db, [id_column(), not_null_text_col("keyword"),]);
 
+    create_text_fts5!(&db, ["keyword"]);
+
+    // insert syncs
     insert_text_row(InsertTextRow {
         text: "alpha",
         db: &db,
@@ -30,14 +33,6 @@ fn sync_inserts_only_target_row() {
         db: &db,
     }); //id 3
 
-    create_text_fts5!(&db, ["keyword"]);
-
-    update_single_fts5_row(UpdateSingleFts5Row {
-        row_id: "2",
-        new_value: Some("beta"),
-        db: &db,
-    });
-
     let result = search_row_ids(SearchRowIds {
         query: "beta",
         db: &db,
@@ -45,55 +40,30 @@ fn sync_inserts_only_target_row() {
     let expected_result = vec![2];
     assert_eq!(result, expected_result);
 
+    // update syncs
+    update_text_row(UpdateTextRow {
+        row_id: "2",
+        new_value: "delta",
+        db: &db,
+    });
+
     let result = search_row_ids(SearchRowIds {
-        query: "alpha",
+        query: "beta",
         db: &db,
     });
     let expected_result: Vec<i64> = Vec::new();
     assert_eq!(result, expected_result);
 
     let result = search_row_ids(SearchRowIds {
-        query: "gamma",
+        query: "delta",
         db: &db,
     });
-    let expected_result: Vec<i64> = Vec::new();
-    assert_eq!(result, expected_result);
-}
-
-#[test]
-fn sync_adds_and_removes_row_from_index() {
-    let db = setup!();
-
-    create_text_table!(&db, [id_column(), not_null_text_col("keyword"),]);
-
-    create_text_fts5!(&db, ["keyword"]);
-
-    insert_text_row(InsertTextRow {
-        text: "alpha",
-        db: &db,
-    }); //id 1
-
-    update_single_fts5_row(UpdateSingleFts5Row {
-        row_id: "1",
-        new_value: Some("alpha"),
-        db: &db,
-    });
-
-    let result = search_row_ids(SearchRowIds {
-        query: "alpha",
-        db: &db,
-    });
-    let expected_result = vec![1];
+    let expected_result = vec![2];
     assert_eq!(result, expected_result);
 
+    // delete syncs
     delete_text_row(DeleteTextRow {
         row_id: "1",
-        db: &db,
-    });
-
-    update_single_fts5_row(UpdateSingleFts5Row {
-        row_id: "1",
-        new_value: None,
         db: &db,
     });
 
@@ -127,6 +97,24 @@ fn insert_text_row(params: InsertTextRow) {
         .unwrap();
 }
 
+struct UpdateTextRow<'a> {
+    row_id: &'a str,
+    new_value: &'a str,
+    db: &'a LiveForever,
+}
+
+fn update_text_row(params: UpdateTextRow) {
+    params
+        .db
+        .edit_col_in_row(EditColInRowIn {
+            table_name: "keyword_lookup".to_string(),
+            row_id: params.row_id.to_string(),
+            column: "keyword".to_string(),
+            new_value: Col::Text(params.new_value.to_string()),
+        })
+        .unwrap();
+}
+
 struct DeleteTextRow<'a> {
     row_id: &'a str,
     db: &'a LiveForever,
@@ -138,24 +126,6 @@ fn delete_text_row(params: DeleteTextRow) {
         .delete_row(DeleteRowIn {
             table_name: "keyword_lookup".to_string(),
             row_id: params.row_id.to_string(),
-        })
-        .unwrap();
-}
-
-struct UpdateSingleFts5Row<'a> {
-    row_id: &'a str,
-    new_value: Option<&'a str>,
-    db: &'a LiveForever,
-}
-
-fn update_single_fts5_row(params: UpdateSingleFts5Row) {
-    params
-        .db
-        .sync_fts5_row(SyncFts5RowIn {
-            source_table_name: "keyword_lookup".to_string(),
-            row_id: params.row_id.to_string(),
-            column_name: "keyword".to_string(),
-            new_value: params.new_value.map(|s| s.to_string()),
         })
         .unwrap();
 }
