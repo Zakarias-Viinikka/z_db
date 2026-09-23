@@ -16,3 +16,7 @@ declaration, without hand-writing the connection-access boilerplate each time.
 Not covered yet: the byte-payload vs typed-struct split (mascot.rs/web_mascot.rs
 take Vec<u8>, android/testing take typed structs directly). That's a separate
 axis, added after the connection-access macro works.
+
+Note: this macro generates the db methods, but it does NOT update the web
+output. When a method is added or changed here, web_output/worker.js has to
+be updated by hand to include the new command.

@@ -6,3 +6,8 @@
 #2. Copy the entire web_output/ folder into your web project and make it visible to Trunk or whatever is relevant
 
 #3. call worker_wrapper.js to send commands to the database worker and receive responses.
+
+#NOTE: rebuilding the wasm does NOT update worker.js's command list.
+# worker.js hand-maps every command name to a LiveForever method. When a
+# method is added or changed in macro_core.rs, add it to serializedCommands
+# (or noInputCommands) in worker.js by hand, or the worker won't forward it.
