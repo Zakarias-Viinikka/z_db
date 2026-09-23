@@ -11,3 +11,11 @@
 # worker.js hand-maps every command name to a LiveForever method. When a
 # method is added or changed in macro_core.rs, add it to serializedCommands
 # (or noInputCommands) in worker.js by hand, or the worker won't forward it.
+
+#4. the calling side lives in db_helper.rs (this folder). Copy it into your web
+#   project's src/ and add `mod db_helper;` to lib.rs. It declares the
+#   javascript_im_begging_you extern, the tell_worker_to_do helper, and one
+#   pub async fn per command. Each fn hardcodes the command string that
+#   worker.js expects and serializes/deserializes payloads via protocol.
+#   It needs these deps in your Cargo.toml:
+#     js-sys, wasm-bindgen, wasm-bindgen-futures, protocol (path)

@@ -50,25 +50,32 @@ const serializedCommands = {
   insert_data: (msg) => db_manager.insert_data(msg[1]),
   edit_col_in_row: (msg) => db_manager.edit_col_in_row(msg[1]),
   edit_row: (msg) => db_manager.edit_col_in_row(msg[1]), // alias
+  edit_col_in_row_where: (msg) => db_manager.edit_col_in_row_where(msg[1]),
   delete_row: (msg) => db_manager.delete_row(msg[1]),
   swap_columns: (msg) => db_manager.swap_columns(msg[1]),
   create_index: (msg) => db_manager.create_index(msg[1]),
   check_index: (msg) => db_manager.check_index(msg[1]),
   add_column: (msg) => db_manager.add_column(msg[1]),
   remove_column: (msg) => db_manager.remove_column(msg[1]),
+  fundamentally_edit_existing_col: (msg) => db_manager.fundamentally_edit_existing_col(msg[1]),
   export_tables: (msg) => db_manager.export_tables(msg[1]),
   create_table_from_export: (msg) => db_manager.create_table_from_export(msg[1]),
   copy_table: (msg) => db_manager.copy_table(msg[1]),
+  create_foreign_table: (msg) => db_manager.create_foreign_table(msg[1]),
   create_fts5_table: (msg) => db_manager.create_fts5_table(msg[1]),
   search_fts5: (msg) => db_manager.search_fts5(msg[1]),
   rebuild_fts5_index: (msg) => db_manager.rebuild_fts5_index(msg[1]),
   force_drop_table: (msg) => db_manager.force_drop_table(msg[1]),
+  count_all_rows: (msg) => db_manager.count_all_rows(msg[1]),
 };
 
 // These commands take no serialized payload.
 const noInputCommands = {
   list_tables: () => db_manager.list_tables(),
   export_database: () => db_manager.export_database(new Uint8Array(0)),
+  begin_all_or_nothing: () => db_manager.begin_all_or_nothing(),
+  everything_went_perfectly: () => db_manager.everything_went_perfectly(),
+  regret_everything: () => db_manager.regret_everything(),
 };
 
 self.onmessage = async (event) => {
