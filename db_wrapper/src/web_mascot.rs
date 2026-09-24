@@ -11,7 +11,7 @@ macro_rules! unwrap_or_bail {
     ($result:expr) => {
         match $result {
             Ok(v) => v,
-            Err(e) => return e.to_payload(),
+            Err(e) => return Err::<(), DbError>(e).to_payload(),
         }
     };
 }
@@ -108,4 +108,4 @@ impl LiveForever {
     }
 }
 
-create_the_entire_universe!(LiveForever);
+create_the_entire_universe!(LiveForever, wasm_bindgen);
