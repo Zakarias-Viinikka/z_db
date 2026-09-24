@@ -19,3 +19,8 @@
 #   worker.js expects and serializes/deserializes payloads via protocol.
 #   It needs these deps in your Cargo.toml:
 #     js-sys, wasm-bindgen, wasm-bindgen-futures, protocol (path)
+
+#NOTE: worker_wrapper.js has a hardcoded connection name in the initialize
+# call at the bottom of the file (default: 'leptos_db'). Each project that
+# copies this web_output/ folder should change that string to its own name.
+# If two projects use the same name, they share the same OPFS database.
