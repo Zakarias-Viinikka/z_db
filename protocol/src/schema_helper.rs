@@ -7,6 +7,7 @@ use crate::row_col::{self, Col};
 // get_colum_name that the enum "points" to
 // get_type cuz why not? might be useful
 
+#[derive(Debug)]
 pub enum TypeOfCol {
     Text,
     Integer,
@@ -68,3 +69,7 @@ impl DestructDbReturnCol for SchemaColumn<Vec<u8>> {
         }
     }
 }
+
+//db doesn't support null
+// think i need to make all my normal impl stuff return potentially 2 variants. because null for a number is not the same as null for a string, but also
+// null is not the same as an empty string.
