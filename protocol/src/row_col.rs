@@ -4,16 +4,19 @@ use crate::error::DbError;
 
 #[derive(Serialize, Deserialize, Debug, Clone, uniffi::Enum, PartialEq)]
 pub enum Col {
-    Null,
+    Null(StructRepresentingNull),
     Integer(i64),
     Real(f64),
     Text(String),
     Blob(Vec<u8>),
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record, PartialEq)]
+pub struct StructRepresentingNull {}
+
 pub fn col_to_string(col: &Col) -> Result<String, DbError> {
     match col {
-        Col::Null => Err(DbError::IllegalInput("Cannot swap NULL value".to_string())),
+        Col::Null(_) => Err(DbError::IllegalInput("Cannot swap NULL value".to_string())),
         Col::Integer(i) => Ok(i.to_string()),
         Col::Real(f) => Ok(f.to_string()),
         Col::Text(s) => Ok(s.clone()),
@@ -31,7 +34,7 @@ impl Row {
         self.cols
             .iter()
             .map(|col| match col {
-                Col::Null => String::new(),
+                Col::Null(_) => String::new(),
                 Col::Integer(i) => i.to_string(),
                 Col::Real(f) => f.to_string(),
                 Col::Text(s) => s.clone(),
