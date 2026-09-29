@@ -17,4 +17,6 @@ pub enum DbError {
     SerializeError(String),
     #[error("bad code: {0}")]
     BadCode(String),
+    #[error("Col destruct failed: {0}")]
+    ColDestructFail(String),
 }
