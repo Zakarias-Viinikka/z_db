@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use crate::row_col::{self, Col};
+use crate::row_col::Col;
 
 //enum for columns
 // method for destructing that takes the enum + col to destruct
@@ -22,19 +22,28 @@ pub struct SchemaTable {
 pub struct SchemaColumn<T> {
     pub name: &'static str,
     pub type_of_col: &'static TypeOfCol,
+    pub can_be_null: bool,
     pub _marker: PhantomData<T>,
 }
 
+const PANIC_EXPLANATION: &str = "this should only fail to unwrap if there's mistake in the schema or if a migration hasn't been done correctly afaik";
 pub trait DestructDbReturnCol {
     type Output;
-    fn destruct_db_col(&self, db_col: Col) -> Result<Self::Output, String>;
+    fn try_destruct_db_col(&self, db_col: Col) -> Result<Option<Self::Output>, String>;
+    fn destruct_db_col(&self, db_col: Col) -> Option<Self::Output>;
 }
 
 impl DestructDbReturnCol for SchemaColumn<i64> {
     type Output = i64;
-    fn destruct_db_col(&self, db_col: Col) -> Result<Self::Output, String> {
+
+    fn destruct_db_col(&self, db_col: Col) -> Option<Self::Output> {
+        self.try_destruct_db_col(db_col).expect(PANIC_EXPLANATION)
+    }
+
+    fn try_destruct_db_col(&self, db_col: Col) -> Result<Option<Self::Output>, String> {
         match db_col {
-            Col::Integer(value_as_i64) => Ok(value_as_i64),
+            Col::Integer(value_as_i64) => Ok(Some(value_as_i64)),
+            Col::Null(_) => Ok(None),
             _ => Err("illegal".into()),
         }
     }
@@ -42,9 +51,15 @@ impl DestructDbReturnCol for SchemaColumn<i64> {
 
 impl DestructDbReturnCol for SchemaColumn<f64> {
     type Output = f64;
-    fn destruct_db_col(&self, db_col: Col) -> Result<Self::Output, String> {
+
+    fn destruct_db_col(&self, db_col: Col) -> Option<Self::Output> {
+        self.try_destruct_db_col(db_col).expect(PANIC_EXPLANATION)
+    }
+
+    fn try_destruct_db_col(&self, db_col: Col) -> Result<Option<Self::Output>, String> {
         match db_col {
-            Col::Real(value_as_f64) => Ok(value_as_f64),
+            Col::Real(value_as_f64) => Ok(Some(value_as_f64)),
+            Col::Null(_) => Ok(None),
             _ => Err("illegal".into()),
         }
     }
@@ -52,9 +67,15 @@ impl DestructDbReturnCol for SchemaColumn<f64> {
 
 impl DestructDbReturnCol for SchemaColumn<String> {
     type Output = String;
-    fn destruct_db_col(&self, db_col: Col) -> Result<Self::Output, String> {
+
+    fn destruct_db_col(&self, db_col: Col) -> Option<Self::Output> {
+        self.try_destruct_db_col(db_col).expect(PANIC_EXPLANATION)
+    }
+
+    fn try_destruct_db_col(&self, db_col: Col) -> Result<Option<Self::Output>, String> {
         match db_col {
-            Col::Text(value_as_string) => Ok(value_as_string),
+            Col::Text(value_as_string) => Ok(Some(value_as_string)),
+            Col::Null(_) => Ok(None),
             _ => Err("illegal".into()),
         }
     }
@@ -62,9 +83,15 @@ impl DestructDbReturnCol for SchemaColumn<String> {
 
 impl DestructDbReturnCol for SchemaColumn<Vec<u8>> {
     type Output = Vec<u8>;
-    fn destruct_db_col(&self, db_col: Col) -> Result<Self::Output, String> {
+
+    fn destruct_db_col(&self, db_col: Col) -> Option<Self::Output> {
+        self.try_destruct_db_col(db_col).expect(PANIC_EXPLANATION)
+    }
+
+    fn try_destruct_db_col(&self, db_col: Col) -> Result<Option<Self::Output>, String> {
         match db_col {
-            Col::Blob(value_as_bytes) => Ok(value_as_bytes),
+            Col::Blob(value_as_bytes) => Ok(Some(value_as_bytes)),
+            Col::Null(_) => Ok(None),
             _ => Err("illegal".into()),
         }
     }

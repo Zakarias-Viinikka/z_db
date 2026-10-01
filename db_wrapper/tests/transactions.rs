@@ -6,7 +6,7 @@ use common::*;
 use db_wrapper::testing_mascot::LiveForever;
 use protocol::new_table::id_column;
 use protocol::payload::*;
-use protocol::row_col::Col;
+use protocol::row_col::{Col, StructRepresentingNull};
 
 // ============================================================
 // TABLE MACROS
@@ -136,7 +136,7 @@ fn error_mid_transaction_then_rollback_leaves_nothing() {
         table_name: "users".to_string(),
         values: vec![ColumnValue {
             column_name: "name".to_string(),
-            value: Col::Null,
+            value: Col::Null(StructRepresentingNull {}),
         }],
     });
     assert!(result.is_err());

@@ -135,7 +135,7 @@ pub fn not_null_unique_col(column_type: ColumnType, column_name: &str) -> Column
 
 #[derive(serde::Deserialize, serde::Serialize, Debug, Clone, uniffi::Record)]
 pub struct ForeignKeyDef {
-    pub column: String,            // which column in this table
-    pub referenced_table: String,  // other table name
-    pub referenced_column: String, // column in other table
+    pub column_name: String,            // which column in this table
+    pub referenced_table_name: String,  // other table name
+    pub referenced_column_name: String, // column in other table
 }

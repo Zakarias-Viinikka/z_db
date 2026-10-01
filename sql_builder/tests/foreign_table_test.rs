@@ -17,9 +17,9 @@ mod tests {
 
     fn fk(column: &str, referenced_table: &str, referenced_column: &str) -> ForeignKeyDef {
         ForeignKeyDef {
-            column: column.to_string(),
-            referenced_table: referenced_table.to_string(),
-            referenced_column: referenced_column.to_string(),
+            column_name: column.to_string(),
+            referenced_table_name: referenced_table.to_string(),
+            referenced_column_name: referenced_column.to_string(),
         }
     }
 

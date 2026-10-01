@@ -62,6 +62,18 @@ pub struct GetDataOut {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct GetSingleColIn {
+    pub table_name: String,
+    pub arguments: SelectArguments,
+    pub column_to_read: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct GetSingleColOut {
+    pub value: row_col::Col,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
 pub struct GetDataOrderedIn {
     pub table_name: String,
     pub arguments: SelectArguments,

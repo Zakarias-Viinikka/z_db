@@ -372,6 +372,16 @@ macro_rules! create_the_entire_universe {
                 unwrap_or_bail!(::db::migration::fundamentally_edit_existing_col(&*conn, input));
                 return_nothing!()
             }
+
+            pub fn get_single_col(
+                &self,
+                data: method_input_type!(GetSingleColIn),
+            ) -> method_return_type!(GetSingleColOut) {
+                let input: GetSingleColIn = decode_input!(data);
+                let conn = unwrap_or_bail!(self.get_conn());
+                let col = unwrap_or_bail!(::db::black_magic_read::get_single_col(&*conn, &input));
+                finish_output!(GetSingleColOut { value: col })
+            }
         }
     };
 }

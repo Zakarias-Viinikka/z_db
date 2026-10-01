@@ -45,6 +45,7 @@ const serializedCommands = {
   delete_table: (msg) => db_manager.drop_table(msg[1]), // alias for old command name
   check_table: (msg) => db_manager.check_table(msg[1]),
   get_data: (msg) => db_manager.get_data(msg[1]),
+  get_single_col: (msg) => db_manager.get_single_col(msg[1]),
   get_data_ordered: (msg) => db_manager.get_data_ordered(msg[1]),
   get_data_by_order: (msg) => db_manager.get_data_ordered(msg[1]), // alias
   insert_data: (msg) => db_manager.insert_data(msg[1]),

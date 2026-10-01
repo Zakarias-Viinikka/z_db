@@ -188,3 +188,8 @@ pub async fn search_fts5(input: SearchFts5In) -> Result<SearchFts5Out, DbError> 
     let bytes = tell_worker_to_do("search_fts5", Some(input.to_payload())).await?;
     SearchFts5Out::un_payloadify(&bytes)
 }
+
+pub async fn get_single_col(input: GetSingleColIn) -> Result<GetSingleColOut, DbError> {
+    let bytes = tell_worker_to_do("get_single_col", Some(input.to_payload())).await?;
+    GetSingleColOut::un_payloadify(&bytes)
+}

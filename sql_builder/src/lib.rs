@@ -96,9 +96,9 @@ pub fn generate_create_foreign_table_sql(
         .map(|fk| {
             format!(
                 "FOREIGN KEY ({}) REFERENCES {}({})",
-                quote_ident(&fk.column),
-                quote_ident(&fk.referenced_table),
-                quote_ident(&fk.referenced_column)
+                quote_ident(&fk.column_name),
+                quote_ident(&fk.referenced_table_name),
+                quote_ident(&fk.referenced_column_name)
             )
         })
         .collect();
@@ -267,7 +267,7 @@ pub fn generate_get_data_by_order_sql(
 
 fn col_to_sql_literal(value: &row_col::Col) -> String {
     match value {
-        row_col::Col::Null => "NULL".to_string(),
+        row_col::Col::Null(_) => "NULL".to_string(),
         row_col::Col::Integer(i) => i.to_string(),
         row_col::Col::Real(f) => f.to_string(),
         row_col::Col::Text(s) => format!("'{}'", sanitize(s)),
@@ -403,18 +403,9 @@ pub fn create_fts5_triggers_sql_builder(
     let source_table = quote_ident(source_table_name);
     let fts_table = quote_ident(fts_table_name);
     let column = quote_ident(column_name);
-    let insert_trigger = quote_ident(&format!(
-        "{}_{}_insert",
-        fts_table_name, column_name
-    ));
-    let update_trigger = quote_ident(&format!(
-        "{}_{}_update",
-        fts_table_name, column_name
-    ));
-    let delete_trigger = quote_ident(&format!(
-        "{}_{}_delete",
-        fts_table_name, column_name
-    ));
+    let insert_trigger = quote_ident(&format!("{}_{}_insert", fts_table_name, column_name));
+    let update_trigger = quote_ident(&format!("{}_{}_update", fts_table_name, column_name));
+    let delete_trigger = quote_ident(&format!("{}_{}_delete", fts_table_name, column_name));
 
     format!(
         "CREATE TRIGGER {insert_trigger} AFTER INSERT ON {source_table} BEGIN INSERT INTO {fts_table}(rowid, {column}) VALUES (new.rowid, new.{column}); END;
