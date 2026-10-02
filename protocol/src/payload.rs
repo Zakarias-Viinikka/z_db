@@ -264,29 +264,10 @@ pub struct CreateForeignTableIn {
     pub foreign_keys: Vec<ForeignKeyDef>,
 }
 
-// Describes the filters for one column, used when counting rows.
-// To count rows where "name" is "x":
-// ```
-// ColumnFilter {
-//     col_name: "name".into(),
-//     arguments: SelectArguments::Single(SelectArgument::XEqualY {
-//         x: "name".into(),
-//         y: "x".into(),
-//     }),
-//     join: None,
-// }
-// ```
-#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
-pub struct ColumnFilter {
-    pub col_name: String,
-    pub arguments: SelectArguments,
-    pub join: Option<JoinType>,
-}
-
 #[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
 pub struct CountRowsIn {
     pub table_name: String,
-    pub filters: Vec<ColumnFilter>,
+    pub arguments: SelectArguments,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
@@ -300,3 +281,8 @@ pub struct CountAllRowsIn {
 }
 
 pub type CountAllRowsOut = CountRowsOut;
+
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct DeleteAllRowsIn {
+    pub table_name: String,
+}

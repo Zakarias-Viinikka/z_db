@@ -85,6 +85,11 @@ pub async fn delete_row(input: DeleteRowIn) -> Result<(), DbError> {
     Result::<(), DbError>::un_payloadify(&bytes)?
 }
 
+pub async fn delete_all_rows(input: DeleteAllRowsIn) -> Result<(), DbError> {
+    let bytes = tell_worker_to_do("delete_all_rows", Some(input.to_payload())).await?;
+    Result::<(), DbError>::un_payloadify(&bytes)?
+}
+
 pub async fn edit_col_in_row(input: EditColInRowIn) -> Result<(), DbError> {
     let bytes = tell_worker_to_do("edit_col_in_row", Some(input.to_payload())).await?;
     Result::<(), DbError>::un_payloadify(&bytes)?
@@ -182,6 +187,11 @@ pub async fn export_tables(input: ExportTablesIn) -> Result<ExportTablesOut, DbE
 pub async fn count_all_rows(input: CountAllRowsIn) -> Result<CountAllRowsOut, DbError> {
     let bytes = tell_worker_to_do("count_all_rows", Some(input.to_payload())).await?;
     CountAllRowsOut::un_payloadify(&bytes)
+}
+
+pub async fn count_rows(input: CountRowsIn) -> Result<CountRowsOut, DbError> {
+    let bytes = tell_worker_to_do("count_rows", Some(input.to_payload())).await?;
+    CountRowsOut::un_payloadify(&bytes)
 }
 
 pub async fn search_fts5(input: SearchFts5In) -> Result<SearchFts5Out, DbError> {

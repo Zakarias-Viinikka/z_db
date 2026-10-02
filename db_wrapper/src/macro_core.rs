@@ -382,6 +382,29 @@ macro_rules! create_the_entire_universe {
                 let col = unwrap_or_bail!(::db::black_magic_read::get_single_col(&*conn, &input));
                 finish_output!(GetSingleColOut { value: col })
             }
+
+            pub fn delete_all_rows(
+                &self,
+                data: method_input_type!(DeleteAllRowsIn),
+            ) -> method_return_type!(()) {
+                let input: DeleteAllRowsIn = decode_input!(data);
+                let conn = unwrap_or_bail!(self.get_conn());
+                unwrap_or_bail!(::db::black_magic_extension::delete_all_rows(
+                    &*conn,
+                    &input.table_name,
+                ));
+                return_nothing!()
+            }
+
+            pub fn count_rows(
+                &self,
+                data: method_input_type!(CountRowsIn),
+            ) -> method_return_type!(CountRowsOut) {
+                let input: CountRowsIn = decode_input!(data);
+                let conn = unwrap_or_bail!(self.get_conn());
+                let out = unwrap_or_bail!(::db::black_magic_extension::count_rows(&*conn, &input));
+                finish_output!(out)
+            }
         }
     };
 }

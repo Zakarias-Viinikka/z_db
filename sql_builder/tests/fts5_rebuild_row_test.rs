@@ -20,8 +20,8 @@ mod tests {
     #[test]
     fn trigger_identifiers_are_escaped() {
         let sql = create_fts5_triggers_sql_builder(r#"a"b"#, r#"fts5_a"b"#, r#"c"d"#);
-        assert!(sql.contains(r#"CREATE TRIGGER \"fts5_a\"\"b_c\"\"d_insert\""#));
-        assert!(sql.contains(r#"AFTER INSERT ON \"a\"\"b\""#));
-        assert!(sql.contains(r#"INSERT INTO \"fts5_a\"\"b\"(rowid, \"c\"\"d\")"#));
+        assert!(sql.contains(r#"CREATE TRIGGER "fts5_a""b_c""d_insert""#));
+        assert!(sql.contains(r#"AFTER INSERT ON "a""b""#));
+        assert!(sql.contains(r#"INSERT INTO "fts5_a""b"(rowid, "c""d")"#));
     }
 }

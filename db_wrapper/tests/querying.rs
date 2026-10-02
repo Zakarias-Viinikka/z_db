@@ -150,14 +150,10 @@ fn count_rows_with_filter(params: CountRowsWithFilter) -> u64 {
         params.conn,
         &CountRowsIn {
             table_name: "users".into(),
-            filters: vec![ColumnFilter {
-                col_name: params.column_name.into(),
-                arguments: SelectArguments::Single(SelectArgument::XEqualY {
-                    x: params.column_name.into(),
-                    y: params.value.into(),
-                }),
-                join: None,
-            }],
+            arguments: SelectArguments::Single(SelectArgument::XEqualY {
+                x: params.column_name.into(),
+                y: params.value.into(),
+            }),
         },
     )
     .unwrap()

@@ -419,3 +419,15 @@ CREATE TRIGGER {delete_trigger} AFTER DELETE ON {source_table} BEGIN INSERT INTO
         column = column,
     )
 }
+
+pub fn generate_delete_all_rows_sql(table_name: &str) -> String {
+    format!("DELETE FROM {};", quote_ident(table_name))
+}
+
+pub fn generate_count_rows_sql(table_name: &str, arguments: &SelectArguments) -> String {
+    format!(
+        "SELECT COUNT(*) FROM {}{};",
+        quote_ident(table_name),
+        to_sql_condition(arguments)
+    )
+}

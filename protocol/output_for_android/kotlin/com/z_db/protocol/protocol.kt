@@ -1347,49 +1347,6 @@ public object FfiConverterTypeColumnDef: FfiConverterRustBuffer<ColumnDef> {
 
 
 
-data class ColumnFilter (
-    var `colName`: kotlin.String
-    , 
-    var `arguments`: SelectArguments
-    , 
-    var `join`: JoinType?
-    
-){
-    
-
-    
-
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeColumnFilter: FfiConverterRustBuffer<ColumnFilter> {
-    override fun read(buf: ByteBuffer): ColumnFilter {
-        return ColumnFilter(
-            FfiConverterString.read(buf),
-            FfiConverterTypeSelectArguments.read(buf),
-            FfiConverterOptionalTypeJoinType.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: ColumnFilter) = (
-            FfiConverterString.allocationSize(value.`colName`) +
-            FfiConverterTypeSelectArguments.allocationSize(value.`arguments`) +
-            FfiConverterOptionalTypeJoinType.allocationSize(value.`join`)
-    )
-
-    override fun write(value: ColumnFilter, buf: ByteBuffer) {
-            FfiConverterString.write(value.`colName`, buf)
-            FfiConverterTypeSelectArguments.write(value.`arguments`, buf)
-            FfiConverterOptionalTypeJoinType.write(value.`join`, buf)
-    }
-}
-
-
-
 data class ColumnValue (
     var `columnName`: kotlin.String
     , 
@@ -1502,7 +1459,7 @@ public object FfiConverterTypeCountAllRowsIn: FfiConverterRustBuffer<CountAllRow
 data class CountRowsIn (
     var `tableName`: kotlin.String
     , 
-    var `filters`: List<ColumnFilter>
+    var `arguments`: SelectArguments
     
 ){
     
@@ -1520,18 +1477,18 @@ public object FfiConverterTypeCountRowsIn: FfiConverterRustBuffer<CountRowsIn> {
     override fun read(buf: ByteBuffer): CountRowsIn {
         return CountRowsIn(
             FfiConverterString.read(buf),
-            FfiConverterSequenceTypeColumnFilter.read(buf),
+            FfiConverterTypeSelectArguments.read(buf),
         )
     }
 
     override fun allocationSize(value: CountRowsIn) = (
             FfiConverterString.allocationSize(value.`tableName`) +
-            FfiConverterSequenceTypeColumnFilter.allocationSize(value.`filters`)
+            FfiConverterTypeSelectArguments.allocationSize(value.`arguments`)
     )
 
     override fun write(value: CountRowsIn, buf: ByteBuffer) {
             FfiConverterString.write(value.`tableName`, buf)
-            FfiConverterSequenceTypeColumnFilter.write(value.`filters`, buf)
+            FfiConverterTypeSelectArguments.write(value.`arguments`, buf)
     }
 }
 
@@ -1793,6 +1750,39 @@ public object FfiConverterTypeCreateTableOut: FfiConverterRustBuffer<CreateTable
 
     override fun write(value: CreateTableOut, buf: ByteBuffer) {
             FfiConverterOptionalTypeDbError.write(value.`result`, buf)
+    }
+}
+
+
+
+data class DeleteAllRowsIn (
+    var `tableName`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeDeleteAllRowsIn: FfiConverterRustBuffer<DeleteAllRowsIn> {
+    override fun read(buf: ByteBuffer): DeleteAllRowsIn {
+        return DeleteAllRowsIn(
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: DeleteAllRowsIn) = (
+            FfiConverterString.allocationSize(value.`tableName`)
+    )
+
+    override fun write(value: DeleteAllRowsIn, buf: ByteBuffer) {
+            FfiConverterString.write(value.`tableName`, buf)
     }
 }
 
@@ -4152,38 +4142,6 @@ public object FfiConverterOptionalTypeDbError: FfiConverterRustBuffer<DbExceptio
 /**
  * @suppress
  */
-public object FfiConverterOptionalTypeJoinType: FfiConverterRustBuffer<JoinType?> {
-    override fun read(buf: ByteBuffer): JoinType? {
-        if (buf.get().toInt() == 0) {
-            return null
-        }
-        return FfiConverterTypeJoinType.read(buf)
-    }
-
-    override fun allocationSize(value: JoinType?): ULong {
-        if (value == null) {
-            return 1UL
-        } else {
-            return 1UL + FfiConverterTypeJoinType.allocationSize(value)
-        }
-    }
-
-    override fun write(value: JoinType?, buf: ByteBuffer) {
-        if (value == null) {
-            buf.put(0)
-        } else {
-            buf.put(1)
-            FfiConverterTypeJoinType.write(value, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
 public object FfiConverterSequenceString: FfiConverterRustBuffer<List<kotlin.String>> {
     override fun read(buf: ByteBuffer): List<kotlin.String> {
         val len = buf.getInt()
@@ -4230,34 +4188,6 @@ public object FfiConverterSequenceTypeColumnDef: FfiConverterRustBuffer<List<Col
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterTypeColumnDef.write(it, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
-public object FfiConverterSequenceTypeColumnFilter: FfiConverterRustBuffer<List<ColumnFilter>> {
-    override fun read(buf: ByteBuffer): List<ColumnFilter> {
-        val len = buf.getInt()
-        return List<ColumnFilter>(len) {
-            FfiConverterTypeColumnFilter.read(buf)
-        }
-    }
-
-    override fun allocationSize(value: List<ColumnFilter>): ULong {
-        val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypeColumnFilter.allocationSize(it) }.sum()
-        return sizeForLength + sizeForItems
-    }
-
-    override fun write(value: List<ColumnFilter>, buf: ByteBuffer) {
-        buf.putInt(value.size)
-        value.iterator().forEach {
-            FfiConverterTypeColumnFilter.write(it, buf)
         }
     }
 }

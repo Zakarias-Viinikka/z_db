@@ -52,7 +52,6 @@ const serializedCommands = {
   edit_col_in_row: (msg) => db_manager.edit_col_in_row(msg[1]),
   edit_row: (msg) => db_manager.edit_col_in_row(msg[1]), // alias
   edit_col_in_row_where: (msg) => db_manager.edit_col_in_row_where(msg[1]),
-  delete_row: (msg) => db_manager.delete_row(msg[1]),
   swap_columns: (msg) => db_manager.swap_columns(msg[1]),
   create_index: (msg) => db_manager.create_index(msg[1]),
   check_index: (msg) => db_manager.check_index(msg[1]),
@@ -67,6 +66,9 @@ const serializedCommands = {
   search_fts5: (msg) => db_manager.search_fts5(msg[1]),
   rebuild_fts5_index: (msg) => db_manager.rebuild_fts5_index(msg[1]),
   force_drop_table: (msg) => db_manager.force_drop_table(msg[1]),
+  delete_row: (msg) => db_manager.delete_row(msg[1]),
+  delete_all_rows: (msg) => db_manager.delete_all_rows(msg[1]),
+  count_rows: (msg) => db_manager.count_rows(msg[1]),
   count_all_rows: (msg) => db_manager.count_all_rows(msg[1]),
 };
 
