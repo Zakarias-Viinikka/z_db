@@ -25,6 +25,11 @@ async fn tell_worker_to_do(cmd: &str, payload: Option<Vec<u8>>) -> Result<Vec<u8
     let result_in_js_form: Array = raw
         .dyn_into()
         .map_err(|_| DbError::CureFail("response was not an array".into()))?;
+
+    if response_is_error(&result_in_js_form) {
+        return Err(extract_error(&result_in_js_form));
+    }
+
     let js_form_of_rust_vecu8: js_sys::Uint8Array = result_in_js_form
         .get(1)
         .dyn_into()
@@ -35,6 +40,22 @@ async fn tell_worker_to_do(cmd: &str, payload: Option<Vec<u8>>) -> Result<Vec<u8
         .copy_to(&mut rust_vecu8_with_same_length_as_js_version_of_vecu8_but_every_u8_is_zero);
     let vecu8_final = rust_vecu8_with_same_length_as_js_version_of_vecu8_but_every_u8_is_zero;
     Ok(vecu8_final)
+}
+
+fn response_is_error(result_in_js_form: &Array) -> bool {
+    result_in_js_form
+        .get(0)
+        .as_string()
+        .map(|s| s == "error")
+        .unwrap_or(false)
+}
+
+fn extract_error(result_in_js_form: &Array) -> DbError {
+    let msg = result_in_js_form
+        .get(1)
+        .as_string()
+        .unwrap_or_else(|| "unknown worker error".into());
+    DbError::CureFail(msg)
 }
 
 // no input, output
