@@ -164,6 +164,18 @@ pub fn delete_row(
     Ok(())
 }
 
+pub fn delete_row_where(
+    conn: &rusqlite::Connection,
+    table_name: &str,
+    arguments: &SelectArguments,
+) -> Result<(), DbError> {
+    let sql = generate_delete_where_sql(table_name, arguments)?;
+    conn.execute(&sql, []).map_err(|e| {
+        DbError::SqlExecuteFail(format!("delete_row_where failed: {}, sql: {}", e, sql))
+    })?;
+    Ok(())
+}
+
 pub fn create_index(
     conn: &rusqlite::Connection,
     table_name: &str,

@@ -146,6 +146,12 @@ pub struct DeleteRowIn {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct DeleteRowWhereIn {
+    pub table_name: String,
+    pub arguments: SelectArguments,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
 pub struct SwapColumnsIn {
     pub table_name: String,
     pub row_id_1: String,

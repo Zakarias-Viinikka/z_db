@@ -1826,6 +1826,44 @@ public object FfiConverterTypeDeleteRowIn: FfiConverterRustBuffer<DeleteRowIn> {
 
 
 
+data class DeleteRowWhereIn (
+    var `tableName`: kotlin.String
+    , 
+    var `arguments`: SelectArguments
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeDeleteRowWhereIn: FfiConverterRustBuffer<DeleteRowWhereIn> {
+    override fun read(buf: ByteBuffer): DeleteRowWhereIn {
+        return DeleteRowWhereIn(
+            FfiConverterString.read(buf),
+            FfiConverterTypeSelectArguments.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: DeleteRowWhereIn) = (
+            FfiConverterString.allocationSize(value.`tableName`) +
+            FfiConverterTypeSelectArguments.allocationSize(value.`arguments`)
+    )
+
+    override fun write(value: DeleteRowWhereIn, buf: ByteBuffer) {
+            FfiConverterString.write(value.`tableName`, buf)
+            FfiConverterTypeSelectArguments.write(value.`arguments`, buf)
+    }
+}
+
+
+
 data class DropTableIn (
     var `tableName`: kotlin.String
     

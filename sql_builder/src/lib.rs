@@ -1,3 +1,6 @@
+use std::fmt::Arguments;
+
+use protocol::error::DbError;
 use protocol::new_table::ColumnDef;
 use protocol::new_table::ForeignKeyDef;
 use protocol::payload::JoinType;
@@ -167,6 +170,33 @@ pub fn generate_insert_sql(table_name: &str, values: Vec<(String, row_col::Col)>
 
 pub fn generate_delete_sql(table_name: &str, id: &str) -> String {
     format!("DELETE FROM {} WHERE id = {};", quote_ident(table_name), id)
+}
+
+pub fn generate_delete_where_sql(
+    table_name: &str,
+    arguments: &SelectArguments,
+) -> Result<String, DbError> {
+    if would_delete_everything(arguments) {
+        return Err(DbError::SqlExecuteFail(
+            "generate_delete_where_sql: refusing unbounded DELETE; use generate_delete_all_rows_sql instead"
+                .to_string(),
+        ));
+    }
+
+    Ok(format!(
+        "DELETE FROM {}{};",
+        quote_ident(table_name),
+        to_sql_condition(arguments)
+    ))
+}
+
+fn would_delete_everything(arguments: &SelectArguments) -> bool {
+    match arguments {
+        SelectArguments::Single(arg) => matches!(arg, SelectArgument::All),
+        SelectArguments::Two { first, second, .. } => {
+            matches!(first, SelectArgument::All) && matches!(second, SelectArgument::All)
+        }
+    }
 }
 
 pub fn generate_update_sql_typed(

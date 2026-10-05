@@ -106,6 +106,11 @@ pub async fn delete_row(input: DeleteRowIn) -> Result<(), DbError> {
     Result::<(), DbError>::un_payloadify(&bytes)?
 }
 
+pub async fn delete_row_where(input: DeleteRowWhereIn) -> Result<(), DbError> {
+    let bytes = tell_worker_to_do("delete_row_where", Some(input.to_payload())).await?;
+    Result::<(), DbError>::un_payloadify(&bytes)?
+}
+
 pub async fn delete_all_rows(input: DeleteAllRowsIn) -> Result<(), DbError> {
     let bytes = tell_worker_to_do("delete_all_rows", Some(input.to_payload())).await?;
     Result::<(), DbError>::un_payloadify(&bytes)?

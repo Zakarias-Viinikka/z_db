@@ -81,6 +81,20 @@ macro_rules! create_the_entire_universe {
                 return_nothing!()
             }
 
+            pub fn delete_row_where(
+                &self,
+                data: method_input_type!(DeleteRowWhereIn),
+            ) -> method_return_type!(()) {
+                let input: DeleteRowWhereIn = decode_input!(data);
+                let conn = unwrap_or_bail!(self.get_conn());
+                unwrap_or_bail!(::db::black_magic::delete_row_where(
+                    &*conn,
+                    &input.table_name,
+                    &input.arguments,
+                ));
+                return_nothing!()
+            }
+
             pub fn edit_col_in_row(
                 &self,
                 data: method_input_type!(EditColInRowIn),
@@ -405,6 +419,8 @@ macro_rules! create_the_entire_universe {
                 let out = unwrap_or_bail!(::db::black_magic_extension::count_rows(&*conn, &input));
                 finish_output!(out)
             }
+
+
         }
     };
 }

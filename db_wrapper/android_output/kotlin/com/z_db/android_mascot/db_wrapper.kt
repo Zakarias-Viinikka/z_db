@@ -50,6 +50,7 @@ import uniffi.protocol.CreateTableIn
 import uniffi.protocol.DbException
 import uniffi.protocol.DeleteAllRowsIn
 import uniffi.protocol.DeleteRowIn
+import uniffi.protocol.DeleteRowWhereIn
 import uniffi.protocol.DropTableIn
 import uniffi.protocol.EditColInRowIn
 import uniffi.protocol.EditColInRowWhereIn
@@ -72,6 +73,7 @@ import uniffi.protocol.FfiConverterTypeCreateTableIn
 import uniffi.protocol.FfiConverterTypeDbError
 import uniffi.protocol.FfiConverterTypeDeleteAllRowsIn
 import uniffi.protocol.FfiConverterTypeDeleteRowIn
+import uniffi.protocol.FfiConverterTypeDeleteRowWhereIn
 import uniffi.protocol.FfiConverterTypeDropTableIn
 import uniffi.protocol.FfiConverterTypeEditColInRowIn
 import uniffi.protocol.FfiConverterTypeEditColInRowWhereIn
@@ -118,6 +120,7 @@ import uniffi.protocol.RustBuffer as RustBufferCreateTableIn
 import uniffi.protocol.RustBuffer as RustBufferDbError
 import uniffi.protocol.RustBuffer as RustBufferDeleteAllRowsIn
 import uniffi.protocol.RustBuffer as RustBufferDeleteRowIn
+import uniffi.protocol.RustBuffer as RustBufferDeleteRowWhereIn
 import uniffi.protocol.RustBuffer as RustBufferDropTableIn
 import uniffi.protocol.RustBuffer as RustBufferEditColInRowIn
 import uniffi.protocol.RustBuffer as RustBufferEditColInRowWhereIn
@@ -805,6 +808,8 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_delete_row(
     ): Int
+    external fun uniffi_db_wrapper_checksum_method_liveforever_delete_row_where(
+    ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_drop_table(
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_edit_col_in_row(
@@ -893,6 +898,8 @@ internal object UniffiLib {
     external fun uniffi_db_wrapper_fn_method_liveforever_delete_all_rows(`ptr`: Long,`data`: RustBufferDeleteAllRowsIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     external fun uniffi_db_wrapper_fn_method_liveforever_delete_row(`ptr`: Long,`data`: RustBufferDeleteRowIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_db_wrapper_fn_method_liveforever_delete_row_where(`ptr`: Long,`data`: RustBufferDeleteRowWhereIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     external fun uniffi_db_wrapper_fn_method_liveforever_drop_table(`ptr`: Long,`data`: RustBufferDropTableIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
@@ -1087,6 +1094,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_db_wrapper_checksum_method_liveforever_delete_row() and 0xFFFF) != 37060) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_db_wrapper_checksum_method_liveforever_delete_row_where() and 0xFFFF) != 5784) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_db_wrapper_checksum_method_liveforever_drop_table() and 0xFFFF) != 33779) {
@@ -1483,6 +1493,8 @@ public interface LiveForeverInterface {
     
     fun `deleteRow`(`data`: DeleteRowIn)
     
+    fun `deleteRowWhere`(`data`: DeleteRowWhereIn)
+    
     fun `dropTable`(`data`: DropTableIn)
     
     fun `editColInRow`(`data`: EditColInRowIn)
@@ -1830,6 +1842,20 @@ open class LiveForever: Disposable, AutoCloseable, LiveForeverInterface
     
 
     
+    @Throws(DbException::class)override fun `deleteRowWhere`(`data`: DeleteRowWhereIn)
+        = 
+    callWithHandle {
+    uniffiRustCallWithError(DbExceptionExternalErrorHandler) { _status ->
+    UniffiLib.uniffi_db_wrapper_fn_method_liveforever_delete_row_where(
+        it,
+        
+        FfiConverterTypeDeleteRowWhereIn.lower(`data`),_status)
+}
+    }
+    
+    
+
+    
     @Throws(DbException::class)override fun `dropTable`(`data`: DropTableIn)
         = 
     callWithHandle {
@@ -2107,6 +2133,8 @@ public object FfiConverterTypeLiveForever: FfiConverter<LiveForever, Long> {
         buf.putLong(lower(value))
     }
 }
+
+
 
 
 

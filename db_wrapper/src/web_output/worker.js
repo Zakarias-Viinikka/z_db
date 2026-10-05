@@ -67,6 +67,7 @@ const serializedCommands = {
   rebuild_fts5_index: (msg) => db_manager.rebuild_fts5_index(msg[1]),
   force_drop_table: (msg) => db_manager.force_drop_table(msg[1]),
   delete_row: (msg) => db_manager.delete_row(msg[1]),
+  delete_row_where: (msg) => db_manager.delete_row_where(msg[1]),
   delete_all_rows: (msg) => db_manager.delete_all_rows(msg[1]),
   count_rows: (msg) => db_manager.count_rows(msg[1]),
   count_all_rows: (msg) => db_manager.count_all_rows(msg[1]),
