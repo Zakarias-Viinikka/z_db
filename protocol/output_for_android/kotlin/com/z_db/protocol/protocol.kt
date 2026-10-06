@@ -4043,6 +4043,19 @@ sealed class SelectArguments {
         companion object
     }
     
+    data class Three(
+        val `first`: com.z_db.protocol.SelectArgument, 
+        val `join`: com.z_db.protocol.JoinType, 
+        val `second`: com.z_db.protocol.SelectArgument, 
+        val `join2`: com.z_db.protocol.JoinType, 
+        val `third`: com.z_db.protocol.SelectArgument) : SelectArguments()
+        
+    {
+        
+
+        companion object
+    }
+    
 
     
 
@@ -4063,6 +4076,13 @@ public object FfiConverterTypeSelectArguments : FfiConverterRustBuffer<SelectArg
                 FfiConverterTypeSelectArgument.read(buf),
                 )
             2 -> SelectArguments.Two(
+                FfiConverterTypeSelectArgument.read(buf),
+                FfiConverterTypeJoinType.read(buf),
+                FfiConverterTypeSelectArgument.read(buf),
+                )
+            3 -> SelectArguments.Three(
+                FfiConverterTypeSelectArgument.read(buf),
+                FfiConverterTypeJoinType.read(buf),
                 FfiConverterTypeSelectArgument.read(buf),
                 FfiConverterTypeJoinType.read(buf),
                 FfiConverterTypeSelectArgument.read(buf),
@@ -4088,6 +4108,17 @@ public object FfiConverterTypeSelectArguments : FfiConverterRustBuffer<SelectArg
                 + FfiConverterTypeSelectArgument.allocationSize(value.`second`)
             )
         }
+        is SelectArguments.Three -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterTypeSelectArgument.allocationSize(value.`first`)
+                + FfiConverterTypeJoinType.allocationSize(value.`join`)
+                + FfiConverterTypeSelectArgument.allocationSize(value.`second`)
+                + FfiConverterTypeJoinType.allocationSize(value.`join2`)
+                + FfiConverterTypeSelectArgument.allocationSize(value.`third`)
+            )
+        }
     }
 
     override fun write(value: SelectArguments, buf: ByteBuffer) {
@@ -4102,6 +4133,15 @@ public object FfiConverterTypeSelectArguments : FfiConverterRustBuffer<SelectArg
                 FfiConverterTypeSelectArgument.write(value.`first`, buf)
                 FfiConverterTypeJoinType.write(value.`join`, buf)
                 FfiConverterTypeSelectArgument.write(value.`second`, buf)
+                Unit
+            }
+            is SelectArguments.Three -> {
+                buf.putInt(3)
+                FfiConverterTypeSelectArgument.write(value.`first`, buf)
+                FfiConverterTypeJoinType.write(value.`join`, buf)
+                FfiConverterTypeSelectArgument.write(value.`second`, buf)
+                FfiConverterTypeJoinType.write(value.`join2`, buf)
+                FfiConverterTypeSelectArgument.write(value.`third`, buf)
                 Unit
             }
         }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }

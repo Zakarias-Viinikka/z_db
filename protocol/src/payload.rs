@@ -47,6 +47,13 @@ pub enum SelectArguments {
         join: JoinType,
         second: SelectArgument,
     },
+    Three {
+        first: SelectArgument,
+        join: JoinType,
+        second: SelectArgument,
+        join2: JoinType,
+        third: SelectArgument,
+    },
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]

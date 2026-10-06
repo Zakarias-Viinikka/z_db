@@ -196,6 +196,16 @@ fn would_delete_everything(arguments: &SelectArguments) -> bool {
         SelectArguments::Two { first, second, .. } => {
             matches!(first, SelectArgument::All) && matches!(second, SelectArgument::All)
         }
+        SelectArguments::Three {
+            first,
+            second,
+            third,
+            ..
+        } => {
+            matches!(first, SelectArgument::All)
+                && matches!(second, SelectArgument::All)
+                && matches!(third, SelectArgument::All)
+        }
     }
 }
 
@@ -347,6 +357,46 @@ pub fn to_sql_condition(arguments: &SelectArguments) -> String {
                     JoinType::Or => "OR",
                 };
                 format!(" WHERE {} {} {}", a, joiner, b)
+            }
+        }
+        SelectArguments::Three {
+            first,
+            join,
+            second,
+            join2,
+            third,
+        } => {
+            let j1 = match join {
+                JoinType::And => "AND",
+                JoinType::Or => "OR",
+            };
+            let j2 = match join2 {
+                JoinType::And => "AND",
+                JoinType::Or => "OR",
+            };
+
+            let slots = [
+                (render_condition(first), None),
+                (render_condition(second), Some(j1)),
+                (render_condition(third), Some(j2)),
+            ];
+
+            let present: Vec<(String, &str)> = slots
+                .into_iter()
+                .filter_map(|(cond, joiner)| cond.map(|c| (c, joiner.unwrap_or(""))))
+                .collect();
+
+            if present.is_empty() {
+                String::new()
+            } else {
+                let mut out = present[0].0.clone();
+                for (cond, joiner) in &present[1..] {
+                    out.push(' ');
+                    out.push_str(joiner);
+                    out.push(' ');
+                    out.push_str(cond);
+                }
+                format!(" WHERE {}", out)
             }
         }
     }
