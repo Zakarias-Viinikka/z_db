@@ -101,6 +101,13 @@ pub async fn insert_data(input: InsertDataIn) -> Result<(), DbError> {
     Result::<(), DbError>::un_payloadify(&bytes)?
 }
 
+pub async fn insert_data_and_get_col(
+    input: InsertDataAndGetColIn,
+) -> Result<InsertDataAndGetColOut, DbError> {
+    let bytes = tell_worker_to_do("insert_data_and_get_col", Some(input.to_payload())).await?;
+    InsertDataAndGetColOut::un_payloadify(&bytes)
+}
+
 pub async fn delete_row(input: DeleteRowIn) -> Result<(), DbError> {
     let bytes = tell_worker_to_do("delete_row", Some(input.to_payload())).await?;
     Result::<(), DbError>::un_payloadify(&bytes)?

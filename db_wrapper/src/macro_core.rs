@@ -57,6 +57,21 @@ macro_rules! create_the_entire_universe {
                 return_nothing!()
             }
 
+            pub fn insert_data_and_get_col(
+                &self,
+                data: method_input_type!(InsertDataAndGetColIn),
+            ) -> method_return_type!(InsertDataAndGetColOut) {
+                let input: InsertDataAndGetColIn = decode_input!(data);
+                let conn = unwrap_or_bail!(self.get_conn());
+                let value = unwrap_or_bail!(::db::black_magic::insert_into_table_and_get_col(
+                    &*conn,
+                    &input.table_name,
+                    input.values,
+                    &input.column_to_return,
+                ));
+                finish_output!(InsertDataAndGetColOut { value })
+            }
+
             pub fn drop_table(
                 &self,
                 data: method_input_type!(DropTableIn),

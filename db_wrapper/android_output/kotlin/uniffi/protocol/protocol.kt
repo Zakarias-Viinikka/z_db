@@ -2411,6 +2411,82 @@ public object FfiConverterTypeGetSingleColOut: FfiConverterRustBuffer<GetSingleC
 
 
 
+data class InsertDataAndGetColIn (
+    var `tableName`: kotlin.String
+    , 
+    var `values`: List<ColumnValue>
+    , 
+    var `columnToReturn`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeInsertDataAndGetColIn: FfiConverterRustBuffer<InsertDataAndGetColIn> {
+    override fun read(buf: ByteBuffer): InsertDataAndGetColIn {
+        return InsertDataAndGetColIn(
+            FfiConverterString.read(buf),
+            FfiConverterSequenceTypeColumnValue.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: InsertDataAndGetColIn) = (
+            FfiConverterString.allocationSize(value.`tableName`) +
+            FfiConverterSequenceTypeColumnValue.allocationSize(value.`values`) +
+            FfiConverterString.allocationSize(value.`columnToReturn`)
+    )
+
+    override fun write(value: InsertDataAndGetColIn, buf: ByteBuffer) {
+            FfiConverterString.write(value.`tableName`, buf)
+            FfiConverterSequenceTypeColumnValue.write(value.`values`, buf)
+            FfiConverterString.write(value.`columnToReturn`, buf)
+    }
+}
+
+
+
+data class InsertDataAndGetColOut (
+    var `value`: Col
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeInsertDataAndGetColOut: FfiConverterRustBuffer<InsertDataAndGetColOut> {
+    override fun read(buf: ByteBuffer): InsertDataAndGetColOut {
+        return InsertDataAndGetColOut(
+            FfiConverterTypeCol.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: InsertDataAndGetColOut) = (
+            FfiConverterTypeCol.allocationSize(value.`value`)
+    )
+
+    override fun write(value: InsertDataAndGetColOut, buf: ByteBuffer) {
+            FfiConverterTypeCol.write(value.`value`, buf)
+    }
+}
+
+
+
 data class InsertDataIn (
     var `tableName`: kotlin.String
     , 

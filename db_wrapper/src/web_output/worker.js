@@ -49,6 +49,7 @@ const serializedCommands = {
   get_data_ordered: (msg) => db_manager.get_data_ordered(msg[1]),
   get_data_by_order: (msg) => db_manager.get_data_ordered(msg[1]), // alias
   insert_data: (msg) => db_manager.insert_data(msg[1]),
+  insert_data_and_get_col: (msg) => db_manager.insert_data_and_get_col(msg[1]),
   edit_col_in_row: (msg) => db_manager.edit_col_in_row(msg[1]),
   edit_row: (msg) => db_manager.edit_col_in_row(msg[1]), // alias
   edit_col_in_row_where: (msg) => db_manager.edit_col_in_row_where(msg[1]),

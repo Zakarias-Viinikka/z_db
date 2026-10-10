@@ -85,6 +85,8 @@ import uniffi.protocol.FfiConverterTypeGetDataOrderedIn
 import uniffi.protocol.FfiConverterTypeGetDataOut
 import uniffi.protocol.FfiConverterTypeGetSingleColIn
 import uniffi.protocol.FfiConverterTypeGetSingleColOut
+import uniffi.protocol.FfiConverterTypeInsertDataAndGetColIn
+import uniffi.protocol.FfiConverterTypeInsertDataAndGetColOut
 import uniffi.protocol.FfiConverterTypeInsertDataIn
 import uniffi.protocol.FfiConverterTypeListTablesOut
 import uniffi.protocol.FfiConverterTypeRebuildFts5In
@@ -97,6 +99,8 @@ import uniffi.protocol.GetDataOrderedIn
 import uniffi.protocol.GetDataOut
 import uniffi.protocol.GetSingleColIn
 import uniffi.protocol.GetSingleColOut
+import uniffi.protocol.InsertDataAndGetColIn
+import uniffi.protocol.InsertDataAndGetColOut
 import uniffi.protocol.InsertDataIn
 import uniffi.protocol.ListTablesOut
 import uniffi.protocol.RebuildFts5In
@@ -132,6 +136,8 @@ import uniffi.protocol.RustBuffer as RustBufferGetDataOrderedIn
 import uniffi.protocol.RustBuffer as RustBufferGetDataOut
 import uniffi.protocol.RustBuffer as RustBufferGetSingleColIn
 import uniffi.protocol.RustBuffer as RustBufferGetSingleColOut
+import uniffi.protocol.RustBuffer as RustBufferInsertDataAndGetColIn
+import uniffi.protocol.RustBuffer as RustBufferInsertDataAndGetColOut
 import uniffi.protocol.RustBuffer as RustBufferInsertDataIn
 import uniffi.protocol.RustBuffer as RustBufferListTablesOut
 import uniffi.protocol.RustBuffer as RustBufferRebuildFts5In
@@ -832,6 +838,8 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_insert_data(
     ): Int
+    external fun uniffi_db_wrapper_checksum_method_liveforever_insert_data_and_get_col(
+    ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_list_tables(
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_rebuild_fts5_index(
@@ -923,6 +931,8 @@ internal object UniffiLib {
     ): RustBufferGetSingleColOut.ByValue
     external fun uniffi_db_wrapper_fn_method_liveforever_insert_data(`ptr`: Long,`data`: RustBufferInsertDataIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
+    external fun uniffi_db_wrapper_fn_method_liveforever_insert_data_and_get_col(`ptr`: Long,`data`: RustBufferInsertDataAndGetColIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBufferInsertDataAndGetColOut.ByValue
     external fun uniffi_db_wrapper_fn_method_liveforever_list_tables(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBufferListTablesOut.ByValue
     external fun uniffi_db_wrapper_fn_method_liveforever_rebuild_fts5_index(`ptr`: Long,`data`: RustBufferRebuildFts5In.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -1130,6 +1140,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_db_wrapper_checksum_method_liveforever_insert_data() and 0xFFFF) != 12765) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_db_wrapper_checksum_method_liveforever_insert_data_and_get_col() and 0xFFFF) != 56059) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_db_wrapper_checksum_method_liveforever_list_tables() and 0xFFFF) != 59841) {
@@ -1516,6 +1529,8 @@ public interface LiveForeverInterface {
     fun `getSingleCol`(`data`: GetSingleColIn): GetSingleColOut
     
     fun `insertData`(`data`: InsertDataIn)
+    
+    fun `insertDataAndGetCol`(`data`: InsertDataAndGetColIn): InsertDataAndGetColOut
     
     fun `listTables`(): ListTablesOut
     
@@ -2013,6 +2028,21 @@ open class LiveForever: Disposable, AutoCloseable, LiveForeverInterface
     
 
     
+    @Throws(DbException::class)override fun `insertDataAndGetCol`(`data`: InsertDataAndGetColIn): InsertDataAndGetColOut {
+            return FfiConverterTypeInsertDataAndGetColOut.lift(
+    callWithHandle {
+    uniffiRustCallWithError(DbExceptionExternalErrorHandler) { _status ->
+    UniffiLib.uniffi_db_wrapper_fn_method_liveforever_insert_data_and_get_col(
+        it,
+        
+        FfiConverterTypeInsertDataAndGetColIn.lower(`data`),_status)
+}
+    }
+    )
+    }
+    
+
+    
     @Throws(DbException::class)override fun `listTables`(): ListTablesOut {
             return FfiConverterTypeListTablesOut.lift(
     callWithHandle {
@@ -2133,6 +2163,10 @@ public object FfiConverterTypeLiveForever: FfiConverter<LiveForever, Long> {
         buf.putLong(lower(value))
     }
 }
+
+
+
+
 
 
 
