@@ -1,3 +1,5 @@
+
+@new
 web_internal_db
 Rust-side client for the z_db OPFS worker. Lets a web app (Leptos) talk to
 the sqlite database that lives inside a browser worker.
@@ -31,6 +33,11 @@ html
 That auto-initializes the worker and puts the global function on the page.
 Until it does, every db_helper call fails.
 
+worker_wrapper.js hardcodes the connection name 'leptos_db' in its
+initialize call at the bottom of the file. Each project that copies
+web_output/ should change that string to its own name. If two projects
+use the same name, they share the same OPFS database.
+
 Using db_helper
 rust
 use web_internal_db::db_helper;
@@ -46,17 +53,14 @@ Every fn is async and returns Result<Out, DbError>. Call them inside
 spawn_local.
 
 Command names must match worker.js
-Each db_helper fn hardcodes the command string that worker.js expects
-(e.g. "list_tables"). worker.js has a hand-maintained map of command
-names to LiveForever methods. If you add a method to the db crate, you
-must add it in both places:
-
-db_wrapper/src/macro_core.rs — the method
+worker.js and db_helper.rs need manual updating even if macro_core is up
+to date.
 
 db_wrapper/src/web_output/worker.js — the command name, in
 serializedCommands or noInputCommands
 
 web_internal_db/src/db_helper.rs — the async fn
 
-Nothing enforces that they match. If a name in db_helper doesn't exist in
-worker.js, the worker returns ['error', ...] and the call fails.
+Nothing enforces that the names match. If a name in db_helper doesn't
+exist in worker.js, the worker returns ['error', ...] and the call fails.
+@end

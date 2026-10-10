@@ -1,3 +1,4 @@
+
 use crate::error::DbError;
 use crate::new_table;
 use crate::new_table::ForeignKeyDef;
@@ -103,6 +104,18 @@ pub struct InsertDataIn {
 #[derive(Serialize, Deserialize, Debug, uniffi::Record)]
 pub struct InsertDataOut {
     pub result: Option<DbError>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct InsertDataAndGetColIn {
+    pub table_name: String,
+    pub values: Vec<ColumnValue>,
+    pub column_to_return: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct InsertDataAndGetColOut {
+    pub value: row_col::Col,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]

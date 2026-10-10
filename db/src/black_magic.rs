@@ -1,3 +1,4 @@
+
 use protocol::error::DbError;
 use protocol::new_table::ColumnDef;
 use protocol::payload::*;
@@ -110,6 +111,51 @@ pub fn insert_into_table(
     })?;
 
     Ok(())
+}
+
+pub fn insert_into_table_and_get_col(
+    conn: &rusqlite::Connection,
+    table_name: &str,
+    values: Vec<ColumnValue>,
+    column_to_return: &str,
+) -> Result<Col, DbError> {
+    let values: Vec<(String, Col)> = values
+        .into_iter()
+        .map(|cv| (cv.column_name, cv.value))
+        .collect();
+
+    let sql = generate_insert_sql_returning(table_name, values, column_to_return);
+
+    let mut stmt = conn
+        .prepare(&sql)
+        .map_err(|e| DbError::SqlExecuteFail(e.to_string()))?;
+
+    let mut query = stmt
+        .query([])
+        .map_err(|e| DbError::SqlExecuteFail(e.to_string()))?;
+
+    let row = query
+        .next()
+        .map_err(|e| DbError::SqlExecuteFail(e.to_string()))?
+        .ok_or_else(|| {
+            DbError::SqlExecuteFail(format!(
+                "insert_into_table_and_get_col: RETURNING produced no row, sql: {}",
+                sql
+            ))
+        })?;
+
+    let col = match row
+        .get_ref(0)
+        .map_err(|e| DbError::SqlExecuteFail(e.to_string()))?
+    {
+        rusqlite::types::ValueRef::Null => Col::Null(StructRepresentingNull {}),
+        rusqlite::types::ValueRef::Integer(n) => Col::Integer(n),
+        rusqlite::types::ValueRef::Real(f) => Col::Real(f),
+        rusqlite::types::ValueRef::Text(t) => Col::Text(String::from_utf8_lossy(t).into_owned()),
+        rusqlite::types::ValueRef::Blob(b) => Col::Blob(b.to_vec()),
+    };
+
+    Ok(col)
 }
 
 pub fn drop_table(conn: &rusqlite::Connection, table_name: &str) -> Result<(), DbError> {

@@ -1,3 +1,4 @@
+
 use std::fmt::Arguments;
 
 use protocol::error::DbError;
@@ -165,6 +166,29 @@ pub fn generate_insert_sql(table_name: &str, values: Vec<(String, row_col::Col)>
         quote_ident(table_name),
         columns.join(", "),
         quoted_values.join(", ")
+    )
+}
+
+// Same as generate_insert_sql, but appends RETURNING <col> so the caller can
+// read back a value from the row that was just inserted, in one statement.
+pub fn generate_insert_sql_returning(
+    table_name: &str,
+    values: Vec<(String, row_col::Col)>,
+    column_to_return: &str,
+) -> String {
+    let columns: Vec<String> = values.iter().map(|(col, _)| quote_ident(col)).collect();
+
+    let quoted_values: Vec<String> = values
+        .iter()
+        .map(|(_, value)| col_to_sql_literal(value))
+        .collect();
+
+    format!(
+        "INSERT INTO {} ({}) VALUES ({}) RETURNING {};",
+        quote_ident(table_name),
+        columns.join(", "),
+        quoted_values.join(", "),
+        quote_ident(column_to_return)
     )
 }
 
