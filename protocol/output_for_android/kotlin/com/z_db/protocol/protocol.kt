@@ -1147,6 +1147,39 @@ public object FfiConverterTypeAddColumnIn: FfiConverterRustBuffer<AddColumnIn> {
 
 
 
+data class AreWeInMiddleOfTransactionOut (
+    var `value`: kotlin.Boolean
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeAreWeInMiddleOfTransactionOut: FfiConverterRustBuffer<AreWeInMiddleOfTransactionOut> {
+    override fun read(buf: ByteBuffer): AreWeInMiddleOfTransactionOut {
+        return AreWeInMiddleOfTransactionOut(
+            FfiConverterBoolean.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: AreWeInMiddleOfTransactionOut) = (
+            FfiConverterBoolean.allocationSize(value.`value`)
+    )
+
+    override fun write(value: AreWeInMiddleOfTransactionOut, buf: ByteBuffer) {
+            FfiConverterBoolean.write(value.`value`, buf)
+    }
+}
+
+
+
 data class CheckIndexIn (
     var `tableName`: kotlin.String
     , 

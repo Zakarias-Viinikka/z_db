@@ -312,3 +312,8 @@ pub type CountAllRowsOut = CountRowsOut;
 pub struct DeleteAllRowsIn {
     pub table_name: String,
 }
+
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct AreWeInMiddleOfTransactionOut {
+    pub value: bool,
+}

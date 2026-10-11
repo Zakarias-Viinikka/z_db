@@ -34,6 +34,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import java.util.concurrent.atomic.AtomicBoolean
 import uniffi.protocol.AddColumnIn
+import uniffi.protocol.AreWeInMiddleOfTransactionOut
 import uniffi.protocol.CheckIndexIn
 import uniffi.protocol.CheckIndexOut
 import uniffi.protocol.CheckTableIn
@@ -57,6 +58,7 @@ import uniffi.protocol.EditColInRowWhereIn
 import uniffi.protocol.ExportTablesIn
 import uniffi.protocol.ExportTablesOut
 import uniffi.protocol.FfiConverterTypeAddColumnIn
+import uniffi.protocol.FfiConverterTypeAreWeInMiddleOfTransactionOut
 import uniffi.protocol.FfiConverterTypeCheckIndexIn
 import uniffi.protocol.FfiConverterTypeCheckIndexOut
 import uniffi.protocol.FfiConverterTypeCheckTableIn
@@ -108,6 +110,7 @@ import uniffi.protocol.RemoveColumnIn
 import uniffi.protocol.SearchFts5In
 import uniffi.protocol.SwapColumnsIn
 import uniffi.protocol.RustBuffer as RustBufferAddColumnIn
+import uniffi.protocol.RustBuffer as RustBufferAreWeInMiddleOfTransactionOut
 import uniffi.protocol.RustBuffer as RustBufferCheckIndexIn
 import uniffi.protocol.RustBuffer as RustBufferCheckIndexOut
 import uniffi.protocol.RustBuffer as RustBufferCheckTableIn
@@ -788,6 +791,8 @@ internal object IntegrityCheckingUniffiLib {
     }
     external fun uniffi_db_wrapper_checksum_method_liveforever_add_column(
     ): Int
+    external fun uniffi_db_wrapper_checksum_method_liveforever_are_we_in_middle_of_transaction(
+    ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_begin_all_or_nothing(
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_check_index(
@@ -881,6 +886,8 @@ internal object UniffiLib {
     ): Long
     external fun uniffi_db_wrapper_fn_method_liveforever_add_column(`ptr`: Long,`data`: RustBufferAddColumnIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
+    external fun uniffi_db_wrapper_fn_method_liveforever_are_we_in_middle_of_transaction(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBufferAreWeInMiddleOfTransactionOut.ByValue
     external fun uniffi_db_wrapper_fn_method_liveforever_begin_all_or_nothing(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     external fun uniffi_db_wrapper_fn_method_liveforever_check_index(`ptr`: Long,`data`: RustBufferCheckIndexIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -1065,6 +1072,9 @@ private fun uniffiCheckContractApiVersion(lib: IntegrityCheckingUniffiLib) {
 @Suppress("UNUSED_PARAMETER")
 private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if ((lib.uniffi_db_wrapper_checksum_method_liveforever_add_column() and 0xFFFF) != 64117) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_db_wrapper_checksum_method_liveforever_are_we_in_middle_of_transaction() and 0xFFFF) != 45524) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_db_wrapper_checksum_method_liveforever_begin_all_or_nothing() and 0xFFFF) != 18291) {
@@ -1480,6 +1490,8 @@ public interface LiveForeverInterface {
     
     fun `addColumn`(`data`: AddColumnIn)
     
+    fun `areWeInMiddleOfTransaction`(): AreWeInMiddleOfTransactionOut
+    
     fun `beginAllOrNothing`()
     
     fun `checkIndex`(`data`: CheckIndexIn): CheckIndexOut
@@ -1669,6 +1681,20 @@ open class LiveForever: Disposable, AutoCloseable, LiveForeverInterface
 }
     }
     
+    
+
+    
+    @Throws(DbException::class)override fun `areWeInMiddleOfTransaction`(): AreWeInMiddleOfTransactionOut {
+            return FfiConverterTypeAreWeInMiddleOfTransactionOut.lift(
+    callWithHandle {
+    uniffiRustCallWithError(DbExceptionExternalErrorHandler) { _status ->
+    UniffiLib.uniffi_db_wrapper_fn_method_liveforever_are_we_in_middle_of_transaction(
+        it,
+        _status)
+}
+    }
+    )
+    }
     
 
     
@@ -2163,6 +2189,8 @@ public object FfiConverterTypeLiveForever: FfiConverter<LiveForever, Long> {
         buf.putLong(lower(value))
     }
 }
+
+
 
 
 

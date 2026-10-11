@@ -314,6 +314,14 @@ macro_rules! create_the_entire_universe {
                 return_nothing!()
             }
 
+            pub fn are_we_in_middle_of_transaction(
+                &self,
+            ) -> method_return_type!(AreWeInMiddleOfTransactionOut) {
+                let conn = unwrap_or_bail!(self.get_conn());
+                let value = ::db::transactions::are_we_in_middle_of_transaction(&*conn);
+                finish_output!(AreWeInMiddleOfTransactionOut { value })
+            }
+
             pub fn count_all_rows(
                 &self,
                 data: method_input_type!(CountAllRowsIn),

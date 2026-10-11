@@ -81,6 +81,7 @@ const noInputCommands = {
   begin_all_or_nothing: () => db_manager.begin_all_or_nothing(),
   everything_went_perfectly: () => db_manager.everything_went_perfectly(),
   regret_everything: () => db_manager.regret_everything(),
+  are_we_in_middle_of_transaction: () => db_manager.are_we_in_middle_of_transaction(),
 };
 
 self.onmessage = async (event) => {

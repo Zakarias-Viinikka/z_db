@@ -85,6 +85,11 @@ pub async fn regret_everything() -> Result<(), DbError> {
     Result::<(), DbError>::un_payloadify(&bytes)?
 }
 
+pub async fn are_we_in_middle_of_transaction() -> Result<AreWeInMiddleOfTransactionOut, DbError> {
+    let bytes = tell_worker_to_do("are_we_in_middle_of_transaction", None).await?;
+    AreWeInMiddleOfTransactionOut::un_payloadify(&bytes)
+}
+
 // input, no output
 pub async fn create_table(input: CreateTableIn) -> Result<(), DbError> {
     let bytes = tell_worker_to_do("create_table", Some(input.to_payload())).await?;
