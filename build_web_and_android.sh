@@ -3,7 +3,7 @@ set -e
 
 cd "$(dirname "$0")"
 
-# protocol
+# --- protocol (android) ---
 cd protocol
 cargo ndk -o ./output_for_android/jniLibs -t arm64-v8a build --release
 cargo run --bin uniffi-bindgen -- generate \
@@ -14,7 +14,7 @@ cargo run --bin uniffi-bindgen -- generate \
     --no-format
 cd ..
 
-# db_wrapper
+# --- db_wrapper (android) ---
 cd db_wrapper
 cargo ndk -o ./android_output/jniLibs -t arm64-v8a build --release --features android
 cargo run --package protocol --bin uniffi-bindgen -- generate \
@@ -23,4 +23,7 @@ cargo run --package protocol --bin uniffi-bindgen -- generate \
     --out-dir ./android_output/kotlin \
     --config ./uniffi.toml \
     --no-format
+
+# --- db_wrapper (web) ---
+wasm-pack build --target web --out-dir src/web_output --out-name db_wrapper --no-typescript --no-pack --features web
 cd ..
