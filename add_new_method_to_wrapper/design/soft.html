@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Notion style</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: #fbfbfa; color: #37352f;
+  font-family: -apple-system, "Inter", system-ui, sans-serif;
+  font-size: 16px; line-height: 1.6;
+}
+.wrap { max-width: 760px; margin: 0 auto; padding: 40px 24px 80px; }
+h1 { font-size: 26px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.02em; }
+.sub { color: #9b9a97; font-size: 14px; margin: 0 0 32px; }
+
+.section { margin-bottom: 28px; }
+.section h2 { font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #9b9a97; margin: 0 0 12px; }
+
+.row { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
+label { min-width: 130px; color: #787774; font-size: 14px; }
+input[type=text], select, textarea {
+  background: #fff; border: 1px solid #e9e9e7; color: #37352f;
+  border-radius: 8px; padding: 9px 12px; font: inherit; font-size: 14px;
+  width: 100%; transition: border-color .15s;
+}
+input[type=text]:focus, textarea:focus, select:focus { outline: none; border-color: #37352f; }
+textarea { font-family: "JetBrains Mono", monospace; font-size: 13px; min-height: 200px; resize: vertical; background: #fdfdfc; }
+
+.check { color: #28a745; }
+.cross { color: #d9534f; }
+
+.buttons { display: flex; gap: 10px; margin: 24px 0 12px; }
+button {
+  background: #37352f; color: #fff; border: none; padding: 10px 18px;
+  border-radius: 8px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer;
+}
+button:hover { background: #4a4740; }
+button.ghost { background: transparent; border: 1px solid #e9e9e7; color: #787774; }
+button.ghost:hover { background: #f7f7f6; color: #37352f; }
+button:disabled { opacity: .4; cursor: not-allowed; }
+
+.understood {
+  background: #f7f7f6; border-radius: 8px; padding: 16px 18px;
+  font-size: 14px; color: #787774; margin-top: 14px;
+}
+.understood b { color: #37352f; font-weight: 600; }
+.understood div { margin-bottom: 4px; }
+
+.phase { font-size: 14px; color: #9b9a97; margin: 16px 0 10px; }
+
+.log {
+  background: #fff; border: 1px solid #e9e9e7; border-radius: 8px;
+  padding: 16px 18px; font-family: "JetBrains Mono", monospace;
+  font-size: 12.5px; line-height: 1.7; max-height: 220px; overflow: auto; color: #787774;
+}
+.log .err { color: #d9534f; }
+.log .warn { color: #cb912f; }
+.log .ok { color: #28a745; }
+
+.report { margin-top: 20px; font-size: 14px; color: #787774; }
+.report code { color: #37352f; background: #f7f7f6; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>add new method to wrapper</h1>
+  <p class="sub">notion / things look — light, soft, paper-like</p>
+
+  <div class="section">
+    <h2>settings</h2>
+    <div class="row"><label>macro_core.rs</label><input type="text" value="~/ProgStuff/z_db/db_wrapper/src/macro_core.rs"><span class="check">✓</span></div>
+    <div class="row"><label>worker.js</label><input type="text" value="~/ProgStuff/z_db/db_wrapper/src/web_output/worker.js"><span class="check">✓</span></div>
+    <div class="row"><label>db_helper.rs</label><input type="text" value="~/ProgStuff/z_db/web_internal_db/src/db_helper.rs"><span class="check">✓</span></div>
+    <div class="row"><label>payload.rs</label><input type="text" value="~/ProgStuff/z_db/protocol/src/payload.rs"><span class="check">✓</span></div>
+  </div>
+
+  <div class="section">
+    <h2>insert position</h2>
+    <div class="row">
+      <select>
+        <option>append to bottom</option>
+        <option>create_table</option>
+        <option>insert_data</option>
+        <option>insert_data_and_get_col</option>
+      </select>
+      <button class="ghost">reload</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>paste one method</h2>
+    <textarea>pub fn zzz_test_hello(&self) -> method_return_type!(()) {
+    return_nothing!()
+}</textarea>
+    <div class="understood">
+      <div>name: <b>zzz_test_hello</b></div>
+      <div>input: <b>(none)</b></div>
+      <div>output: <b>(none)</b></div>
+      <div>JS table: <b>noInputCommands</b></div>
+      <div>db_helper section: <b>// no input, no output</b></div>
+    </div>
+  </div>
+
+  <div class="buttons">
+    <button>Check only</button>
+    <button>Check and apply</button>
+    <button class="ghost" disabled>Cancel</button>
+  </div>
+  <p class="phase">phase: running checks…</p>
+
+  <div class="log">
+    <div>$ cargo check -p db_wrapper --no-default-features --features testing</div>
+    <div>    Checking db_wrapper v0.1.0 (/home/zakke/ProgStuff/z_db/db_wrapper)</div>
+    <div class="warn">warning: unused import: `std::fmt::Arguments`</div>
+    <div>    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.12s</div>
+    <div class="ok">'testing mascot' passed</div>
+  </div>
+
+  <div class="report">
+    wrote <code>zzz_test_hello</code> to <code>macro_core.rs</code>, <code>worker.js</code>, <code>db_helper.rs</code>
+  </div>
+</div>
+</body>
+</html>

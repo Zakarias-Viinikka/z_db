@@ -9,19 +9,21 @@ use crate::egui_setup::{
 pub fn run() -> eframe::Result<()> {
     let options = config::normal_menu();
 
-    let egui_drawing_for_eternity_main = drawing_requirements::NecessaryStructForEgui {};
+    let egui_drawing_for_eternity_main = drawing_requirements::NecessaryStructForEgui {
+        state: every_page_ever::MainPages::HomePage::HomePageState::new(),
+    };
 
     let post_init_options = get_all_post_init_options();
 
     eframe::run_native(
-        "hello",
+        "add new method to wrapper",
         options,
         // The |cc| { ... } below is a closure. eframe calls it ONE time.
         // It's called after the window exists, before the first frame is drawn.
         // There is no Ui yet. cc.egui_ctx is the Context, and it exists here.
         Box::new(move |cc| {
             // runs ONE time
-            cc.egui_ctx.set_visuals(eframe::egui::Visuals::light());
+            every_page_ever::MainPages::HomePage::view::install_primer_theme(&cc.egui_ctx);
             draw_once_on_startup(&cc.egui_ctx, post_init_options);
             // runs ONE time. Hands the App to eframe.
             // After this, eframe calls App::ui every frame, forever.

@@ -7,7 +7,7 @@ An android project using z_db needs two things from the z_db build:
   folders the generator wrote — db_wrapper.kt under com/z_db/android_mascot/,
   protocol.kt under uniffi/protocol/
 
-Both come from build_all_android.sh in z_db.
+Both come from build_web_and_android.sh in z_db.
 
 ZakkeN/android_app/update.sh is the reference for a script that installs
 them into an android project. Three things it handles that a script like

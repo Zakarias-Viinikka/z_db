@@ -1,4 +1,5 @@
 use eframe::egui;
+use every_page_ever::MainPages::HomePage::HomePageState;
 
 /*
  *** Egui requires a struct that implements eframe::App ***
@@ -24,14 +25,26 @@ use eframe::egui;
  *
  */
 
-pub struct NecessaryStructForEgui {}
+pub struct NecessaryStructForEgui {
+    pub state: HomePageState,
+}
 
 impl eframe::App for NecessaryStructForEgui {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ui, |ui| {
-            let ctx = CtxForActuallyDrawing { ui: ui };
+            let ctx = CtxForActuallyDrawing {
+                ui,
+                state: &mut self.state,
+            };
             (Self::literally_draw_the_page)(ctx);
         });
+    }
+
+    fn on_exit(&mut self) {
+        // The worker thread might still be running a check. Give it the
+        // cancel signal; the guard's Drop will restore the file even if
+        // the process exits right after.
+        self.state.request_cancel();
     }
 }
 
@@ -40,15 +53,12 @@ pub trait LiterallyDrawThePage {
 }
 
 impl LiterallyDrawThePage for NecessaryStructForEgui {
-    fn literally_draw_the_page<'a>(ctx: CtxForActuallyDrawing<'a>) {
-        ctx.ui.label("Hello");
-        ctx.ui.separator();
-        if ctx.ui.button("Click me").clicked() {
-            // do nothing
-        }
+    fn literally_draw_the_page(ctx: CtxForActuallyDrawing) {
+        every_page_ever::MainPages::HomePage::view::draw(ctx.ui, ctx.state);
     }
 }
 
 pub struct CtxForActuallyDrawing<'a> {
     pub ui: &'a mut egui::Ui,
+    pub state: &'a mut HomePageState,
 }

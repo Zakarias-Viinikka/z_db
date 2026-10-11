@@ -4,3 +4,5 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
+eframe.workspace = true
+app_core = { path = "../app_core" }

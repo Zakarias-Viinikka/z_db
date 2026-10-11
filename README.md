@@ -8,6 +8,10 @@ protocol is basically the shared stuff that everything depends on, which none of
 
 sql_builder is self explanatory. Takes parameters, produces sql statements.
 
+add_new_method_to_wrapper is a GUI for adding a new method to macro_core. It writes the matching entries into worker.js and db_helper.rs so the three files stay in sync.
+
+The usage is basically this: write into the text field a method — the same thing you'd manually put in macro_core. Then run Check and apply, then Build everything and check, and you are done.
+
 migration_helper — I don't remember.
 
 migration_template is self explanatory, but basically it exists because migrating isn't really a library. It's a "this is how I've added support for it in my crud library, but it expects the code to be written in a certain way."

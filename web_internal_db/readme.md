@@ -1,5 +1,3 @@
-
-@new
 web_internal_db
 Rust-side client for the z_db OPFS worker. Lets a web app (Leptos) talk to
 the sqlite database that lives inside a browser worker.
@@ -52,15 +50,8 @@ spawn_local(async move {
 Every fn is async and returns Result<Out, DbError>. Call them inside
 spawn_local.
 
-Command names must match worker.js
-worker.js and db_helper.rs need manual updating even if macro_core is up
-to date.
-
-db_wrapper/src/web_output/worker.js — the command name, in
-serializedCommands or noInputCommands
-
-web_internal_db/src/db_helper.rs — the async fn
-
-Nothing enforces that the names match. If a name in db_helper doesn't
-exist in worker.js, the worker returns ['error', ...] and the call fails.
-@end
+Updating macro_core manually means web_internal doesn't get updated.
+web_internal has a custom worker solution for a web client's internal db.
+Refer to SCRIPTS_EXPLAINED.md or the add_new_method_to_wrapper crate for
+details. Updating manually is possible but requires changes in
+macro_core.rs, worker.js, and db_helper.rs.
