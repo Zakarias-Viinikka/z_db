@@ -25,5 +25,7 @@ cargo run --package protocol --bin uniffi-bindgen -- generate \
     --no-format
 
 # --- db_wrapper (web) ---
-wasm-pack build --target web --out-dir src/web_output --out-name db_wrapper --no-typescript --no-pack --features web
+# RUSTFLAGS from local_cargo.sh sets -fuse-ld=mold, which rust-lld
+# doesn't understand. Clear it for the wasm build.
+RUSTFLAGS="" wasm-pack build --target web --out-dir src/web_output --out-name db_wrapper --no-typescript --no-pack --features web
 cd ..

@@ -77,15 +77,26 @@ pub fn draw(ui: &mut egui::Ui, state: &mut HomePageState) {
         .auto_shrink([false, false])
         .show(ui, |ui| {
             ui.set_width(ui.available_width());
-            draw_header(ui);
+            draw_header(ui, state);
             draw_banner(ui, state);
             draw_settings(ui, state);
             draw_section(ui, "insert position", |ui| draw_picker(ui, state));
             draw_section(ui, "paste one method", |ui| {
-                draw_paste_box(ui, state);
+                ui.horizontal_top(|ui| {
+                    let button_col_w = 200.0;
+                    let paste_w = (ui.available_width() - button_col_w - 12.0).max(200.0);
+                    ui.allocate_ui(egui::vec2(paste_w, ui.available_height()), |ui| {
+                        ui.set_width(paste_w);
+                        draw_paste_box(ui, state);
+                    });
+                    ui.add_space(12.0);
+                    ui.vertical(|ui| {
+                        ui.set_width(button_col_w);
+                        draw_buttons(ui, state);
+                    });
+                });
                 draw_understood(ui, state);
             });
-            draw_buttons(ui, state);
             draw_phase(ui, state);
             draw_progress(ui, state);
             draw_section(ui, "log", |ui| draw_log(ui, state));
@@ -116,19 +127,40 @@ fn draw_progress(ui: &mut egui::Ui, state: &HomePageState) {
     ui.add_space(8.0);
 }
 
-fn draw_header(ui: &mut egui::Ui) {
+fn draw_header(ui: &mut egui::Ui, state: &HomePageState) {
     ui.add_space(4.0);
-    ui.label(
-        egui::RichText::new("add new method to wrapper")
-            .size(20.0)
-            .color(TEXT_HEAD)
-            .strong(),
-    );
-    ui.label(
-        egui::RichText::new("handles the three-file web path for one pasted method")
-            .size(14.0)
-            .color(TEXT_DIM),
-    );
+
+    let (text, color, bg) = if state.settings.use_mock_paths {
+        (
+            "Test mode — mock files only, nothing important will be affected",
+            OK,
+            egui::Color32::from_rgb(0x0d, 0x2b, 0x12),
+        )
+    } else {
+        (
+            "Live mode — real files will be affected",
+            WARN,
+            egui::Color32::from_rgb(0x3a, 0x2d, 0x00),
+        )
+    };
+    ui.horizontal(|ui| {
+        // Center the badge across the panel width.
+        let full_w = ui.available_width();
+        let font = egui::FontId::proportional(14.0);
+        let galley = ui
+            .painter()
+            .layout_no_wrap(text.to_string(), font.clone(), color);
+        let pad = egui::vec2(14.0, 6.0);
+        let badge_w = galley.size().x + pad.x * 2.0;
+        let badge_h = galley.size().y + pad.y * 2.0;
+        let left = ((full_w - badge_w) / 2.0).max(0.0);
+        ui.add_space(left);
+        let (rect, _) = ui.allocate_exact_size(egui::vec2(badge_w, badge_h), egui::Sense::hover());
+        ui.painter().rect_filled(rect, 6.0, bg);
+        ui.painter()
+            .text(rect.center(), egui::Align2::CENTER_CENTER, text, font, color);
+    });
+
     ui.add_space(8.0);
 }
 
@@ -526,7 +558,8 @@ fn draw_buttons(ui: &mut egui::Ui, state: &mut HomePageState) {
     let cancelled = state.cancel_pressed();
     let ready = state.parsed.is_some() && state.scan_error.is_none();
 
-    ui.horizontal(|ui| {
+    ui.vertical(|ui| {
+        ui.spacing_mut().item_spacing.y = 8.0;
         let check_only_clicked = ui
             .add_enabled_ui(!running && ready, |ui| {
                 styled_button(ui, "Check only", GREEN_BTN, GREEN_BTN_HOVER, egui::Color32::WHITE)
@@ -594,16 +627,34 @@ fn draw_phase(ui: &mut egui::Ui, state: &HomePageState) {
 
 fn draw_log(ui: &mut egui::Ui, state: &mut HomePageState) {
     ui.horizontal(|ui| {
+        let mut copy = false;
+        let mut clear = false;
         if ghost_button(ui, "Copy log").clicked() {
+            copy = true;
+        }
+        if ghost_button(ui, "Clear").clicked() {
+            clear = true;
+        }
+        if clear {
+            state.log.clear();
+            state.stream_folder.clear();
+        }
+        if copy {
             let mut text = String::new();
             for line in &state.log {
                 text.push_str(&line.text);
                 text.push('\n');
             }
+            text.push_str(&state.stream_folder.lines.join("\n"));
+            if !state.stream_folder.current.is_empty() {
+                text.push('\n');
+                text.push_str(&state.stream_folder.current);
+            }
             ui.ctx().copy_text(text);
         }
+        let total = state.log.len() + state.stream_folder.lines.len();
         ui.label(
-            egui::RichText::new(format!("{} lines", state.log.len()))
+            egui::RichText::new(format!("{total} lines"))
                 .color(TEXT_DIM)
                 .size(13.0),
         );
@@ -618,7 +669,7 @@ fn draw_log(ui: &mut egui::Ui, state: &mut HomePageState) {
             ui.set_width(ui.available_width());
             egui::ScrollArea::vertical()
                 .id_salt("log_scroll")
-                .max_height(360.0)
+                .max_height(520.0)
                 .auto_shrink([false, false])
                 .stick_to_bottom(true)
                 .show(ui, |ui| {
@@ -663,15 +714,17 @@ fn classify_line(line: &str) -> egui::Color32 {
     } else if t.starts_with("warning") || t.starts_with("warning:") {
         WARN
     } else if t.starts_with("Compiling ")
-        || t.starts_with("Downloaded ")
+        || t.starts_with("Checking ")
+        || t.starts_with("Finished ")
+    {
+        OK
+    } else if t.starts_with("Downloaded ")
         || t.starts_with("Downloading ")
         || t.starts_with("Updating ")
         || t.starts_with("Blocking ")
         || t.starts_with("Adding ")
         || t.starts_with("Locking ")
         || t.starts_with("Building ")
-        || t.starts_with("Checking ")
-        || t.starts_with("Finished ")
     {
         DIM_LOG
     } else {
@@ -723,7 +776,8 @@ fn styled_button(
     let padding = egui::vec2(14.0, 8.0);
     let galley = ui.painter().layout_no_wrap(label.to_string(), font.clone(), text);
     let text_w = galley.size().x;
-    let desired = egui::vec2(text_w + padding.x * 2.0, font.size + padding.y * 2.0);
+    let desired_w = (text_w + padding.x * 2.0).max(ui.available_width());
+    let desired = egui::vec2(desired_w, font.size + padding.y * 2.0);
     let (rect, response) = ui.allocate_exact_size(desired, egui::Sense::click());
     let enabled = ui.is_enabled();
     let fill = if !enabled {

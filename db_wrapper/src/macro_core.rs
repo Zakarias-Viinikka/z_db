@@ -442,8 +442,6 @@ macro_rules! create_the_entire_universe {
                 let out = unwrap_or_bail!(::db::black_magic_extension::count_rows(&*conn, &input));
                 finish_output!(out)
             }
-
-
         }
     };
 }

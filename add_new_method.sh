@@ -1,4 +1,3 @@
 #!/usr/bin/env bash
-cd "$(dirname "$0")/add_new_method_to_wrapper"
-cargo build --release -p app
-exec ./target/release/app
+here="$(dirname "$0")"
+exec "$here/add_new_method_to_wrapper/local_cargo.sh" run --release --manifest-path "$here/add_new_method_to_wrapper/Cargo.toml" -p app

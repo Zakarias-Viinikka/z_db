@@ -42,6 +42,42 @@ fn resolve_cargo_wrapper(
     format!("\"{}\" {}", wrapper, rest)
 }
 
+/// Read any `export VAR="..."` or `export VAR=...` lines from a
+/// local_cargo.sh and return them as (name, value) pairs. Everything the
+/// app spawns — including the .sh scripts it calls — inherits these, so
+/// the RUSTFLAGS the wrapper sets apply whether the wrapper is invoked
+/// explicitly or not.
+fn env_from_local_cargo(start: &std::path::Path) -> Vec<(String, String)> {
+    let Some(path) = find_local_cargo(start) else {
+        return Vec::new();
+    };
+    let Ok(text) = std::fs::read_to_string(&path) else {
+        return Vec::new();
+    };
+    let mut out = Vec::new();
+    for line in text.lines() {
+        let line = line.trim();
+        let Some(rest) = line.strip_prefix("export ") else {
+            continue;
+        };
+        let Some((name, value)) = rest.split_once('=') else {
+            continue;
+        };
+        let name = name.trim();
+        if name.is_empty() {
+            continue;
+        }
+        let value = value.trim();
+        let value = value
+            .strip_prefix('"')
+            .and_then(|v| v.strip_suffix('"'))
+            .or_else(|| value.strip_prefix('\'').and_then(|v| v.strip_suffix('\'')))
+            .unwrap_or(value);
+        out.push((name.to_string(), value.to_string()));
+    }
+    out
+}
+
 pub fn run_check(
     command_line: &str,
     working_directory: &std::path::Path,
@@ -51,7 +87,8 @@ pub fn run_check(
     let resolved = resolve_cargo_wrapper(command_line, working_directory);
     emit(Event::RawStream(format!("$ {}\n", resolved)));
 
-    let mut child = Command::new("sh")
+    let mut child = Command::new("sh");
+    child
         .arg("-c")
         .arg(&resolved)
         .current_dir(working_directory)
@@ -59,7 +96,11 @@ pub fn run_check(
         .env("NO_COLOR", "1")
         .env("CARGO_TERM_PROGRESS_WHEN", "always")
         .env("CARGO_TERM_PROGRESS_WIDTH", "60")
-        .env("TERM", "xterm-256color")
+        .env("TERM", "xterm-256color");
+    for (name, value) in env_from_local_cargo(working_directory) {
+        child.env(name, value);
+    }
+    let mut child = child
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
