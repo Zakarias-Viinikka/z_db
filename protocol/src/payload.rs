@@ -90,6 +90,15 @@ pub struct GetDataOrderedIn {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
+pub struct GetDataOrderedAndSkipFirstXIn {
+    pub table_name: String,
+    pub arguments: SelectArguments,
+    pub columns_to_read: Vec<String>,
+    pub order_by: String,
+    pub skip_first_x: u64,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, uniffi::Record)]
 pub struct ColumnValue {
     pub column_name: String,
     pub value: row_col::Col,

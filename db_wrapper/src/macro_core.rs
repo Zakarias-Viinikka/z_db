@@ -442,6 +442,13 @@ macro_rules! create_the_entire_universe {
                 let out = unwrap_or_bail!(::db::black_magic_extension::count_rows(&*conn, &input));
                 finish_output!(out)
             }
+
+            pub fn get_data_ordered_and_skip_first_x(&self, data: method_input_type!(GetDataOrderedAndSkipFirstXIn)) -> method_return_type!(GetDataOut) {
+                let input: GetDataOrderedAndSkipFirstXIn = decode_input!(data);
+                let conn = unwrap_or_bail!(self.get_conn());
+                let rows = unwrap_or_bail!(::db::black_magic_read::get_data_ordered_and_skip_first_x(&*conn, &input));
+                finish_output!(GetDataOut { rows })
+            }
         }
     };
 }

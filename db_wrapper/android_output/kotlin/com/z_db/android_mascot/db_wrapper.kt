@@ -83,6 +83,7 @@ import uniffi.protocol.FfiConverterTypeExportTablesIn
 import uniffi.protocol.FfiConverterTypeExportTablesOut
 import uniffi.protocol.FfiConverterTypeFundamentallyEditExistingColIn
 import uniffi.protocol.FfiConverterTypeGetDataIn
+import uniffi.protocol.FfiConverterTypeGetDataOrderedAndSkipFirstXIn
 import uniffi.protocol.FfiConverterTypeGetDataOrderedIn
 import uniffi.protocol.FfiConverterTypeGetDataOut
 import uniffi.protocol.FfiConverterTypeGetSingleColIn
@@ -97,6 +98,7 @@ import uniffi.protocol.FfiConverterTypeSearchFts5In
 import uniffi.protocol.FfiConverterTypeSwapColumnsIn
 import uniffi.protocol.FundamentallyEditExistingColIn
 import uniffi.protocol.GetDataIn
+import uniffi.protocol.GetDataOrderedAndSkipFirstXIn
 import uniffi.protocol.GetDataOrderedIn
 import uniffi.protocol.GetDataOut
 import uniffi.protocol.GetSingleColIn
@@ -135,6 +137,7 @@ import uniffi.protocol.RustBuffer as RustBufferExportTablesIn
 import uniffi.protocol.RustBuffer as RustBufferExportTablesOut
 import uniffi.protocol.RustBuffer as RustBufferFundamentallyEditExistingColIn
 import uniffi.protocol.RustBuffer as RustBufferGetDataIn
+import uniffi.protocol.RustBuffer as RustBufferGetDataOrderedAndSkipFirstXIn
 import uniffi.protocol.RustBuffer as RustBufferGetDataOrderedIn
 import uniffi.protocol.RustBuffer as RustBufferGetDataOut
 import uniffi.protocol.RustBuffer as RustBufferGetSingleColIn
@@ -839,6 +842,8 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_get_data_ordered(
     ): Int
+    external fun uniffi_db_wrapper_checksum_method_liveforever_get_data_ordered_and_skip_first_x(
+    ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_get_single_col(
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_insert_data(
@@ -856,8 +861,6 @@ internal object IntegrityCheckingUniffiLib {
     external fun uniffi_db_wrapper_checksum_method_liveforever_search_fts5(
     ): Int
     external fun uniffi_db_wrapper_checksum_method_liveforever_swap_columns(
-    ): Int
-    external fun uniffi_db_wrapper_checksum_method_liveforever_zzz_test_hello(
     ): Int
     external fun uniffi_db_wrapper_checksum_constructor_liveforever_new(
     ): Int
@@ -936,6 +939,8 @@ internal object UniffiLib {
     ): RustBufferGetDataOut.ByValue
     external fun uniffi_db_wrapper_fn_method_liveforever_get_data_ordered(`ptr`: Long,`data`: RustBufferGetDataOrderedIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBufferGetDataOut.ByValue
+    external fun uniffi_db_wrapper_fn_method_liveforever_get_data_ordered_and_skip_first_x(`ptr`: Long,`data`: RustBufferGetDataOrderedAndSkipFirstXIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBufferGetDataOut.ByValue
     external fun uniffi_db_wrapper_fn_method_liveforever_get_single_col(`ptr`: Long,`data`: RustBufferGetSingleColIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBufferGetSingleColOut.ByValue
     external fun uniffi_db_wrapper_fn_method_liveforever_insert_data(`ptr`: Long,`data`: RustBufferInsertDataIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -953,8 +958,6 @@ internal object UniffiLib {
     external fun uniffi_db_wrapper_fn_method_liveforever_search_fts5(`ptr`: Long,`data`: RustBufferSearchFts5In.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBufferGetDataOut.ByValue
     external fun uniffi_db_wrapper_fn_method_liveforever_swap_columns(`ptr`: Long,`data`: RustBufferSwapColumnsIn.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
-    external fun uniffi_db_wrapper_fn_method_liveforever_zzz_test_hello(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     external fun ffi_db_wrapper_rustbuffer_alloc(`size`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
@@ -1150,6 +1153,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if ((lib.uniffi_db_wrapper_checksum_method_liveforever_get_data_ordered() and 0xFFFF) != 54005) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if ((lib.uniffi_db_wrapper_checksum_method_liveforever_get_data_ordered_and_skip_first_x() and 0xFFFF) != 61602) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if ((lib.uniffi_db_wrapper_checksum_method_liveforever_get_single_col() and 0xFFFF) != 52203) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -1175,9 +1181,6 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_db_wrapper_checksum_method_liveforever_swap_columns() and 0xFFFF) != 41881) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if ((lib.uniffi_db_wrapper_checksum_method_liveforever_zzz_test_hello() and 0xFFFF) != 53823) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_db_wrapper_checksum_constructor_liveforever_new() and 0xFFFF) != 57802) {
@@ -1545,6 +1548,8 @@ public interface LiveForeverInterface {
     
     fun `getDataOrdered`(`data`: GetDataOrderedIn): GetDataOut
     
+    fun `getDataOrderedAndSkipFirstX`(`data`: GetDataOrderedAndSkipFirstXIn): GetDataOut
+    
     fun `getSingleCol`(`data`: GetSingleColIn): GetSingleColOut
     
     fun `insertData`(`data`: InsertDataIn)
@@ -1562,8 +1567,6 @@ public interface LiveForeverInterface {
     fun `searchFts5`(`data`: SearchFts5In): GetDataOut
     
     fun `swapColumns`(`data`: SwapColumnsIn)
-    
-    fun `zzzTestHello`()
     
     companion object
 }
@@ -2034,6 +2037,21 @@ open class LiveForever: Disposable, AutoCloseable, LiveForeverInterface
     
 
     
+    @Throws(DbException::class)override fun `getDataOrderedAndSkipFirstX`(`data`: GetDataOrderedAndSkipFirstXIn): GetDataOut {
+            return FfiConverterTypeGetDataOut.lift(
+    callWithHandle {
+    uniffiRustCallWithError(DbExceptionExternalErrorHandler) { _status ->
+    UniffiLib.uniffi_db_wrapper_fn_method_liveforever_get_data_ordered_and_skip_first_x(
+        it,
+        
+        FfiConverterTypeGetDataOrderedAndSkipFirstXIn.lower(`data`),_status)
+}
+    }
+    )
+    }
+    
+
+    
     @Throws(DbException::class)override fun `getSingleCol`(`data`: GetSingleColIn): GetSingleColOut {
             return FfiConverterTypeGetSingleColOut.lift(
     callWithHandle {
@@ -2162,19 +2180,6 @@ open class LiveForever: Disposable, AutoCloseable, LiveForeverInterface
     
 
     
-    @Throws(DbException::class)override fun `zzzTestHello`()
-        = 
-    callWithHandle {
-    uniffiRustCallWithError(DbExceptionExternalErrorHandler) { _status ->
-    UniffiLib.uniffi_db_wrapper_fn_method_liveforever_zzz_test_hello(
-        it,
-        _status)
-}
-    }
-    
-    
-
-    
 
     
 
@@ -2211,6 +2216,8 @@ public object FfiConverterTypeLiveForever: FfiConverter<LiveForever, Long> {
         buf.putLong(lower(value))
     }
 }
+
+
 
 
 

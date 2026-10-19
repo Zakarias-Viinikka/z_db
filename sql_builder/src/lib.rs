@@ -329,6 +329,39 @@ pub fn generate_get_data_by_order_sql(
     )
 }
 
+pub fn generate_get_data_by_order_and_skip_first_x_sql(
+    table_name: impl AsRef<str>,
+    where_clause: impl AsRef<str>,
+    columns_to_read: &[impl AsRef<str>],
+    order_by: &str,
+    skip_first_x: u64,
+) -> String {
+    let valid_columns: Vec<&str> = columns_to_read
+        .iter()
+        .filter(|c| !c.as_ref().is_empty())
+        .map(|c| c.as_ref())
+        .collect();
+
+    let columns = if valid_columns.is_empty() {
+        "*".to_string()
+    } else {
+        valid_columns
+            .iter()
+            .map(|c| quote_ident(c))
+            .collect::<Vec<_>>()
+            .join(", ")
+    };
+
+    format!(
+        "SELECT {} FROM {}{} ORDER BY {} LIMIT -1 OFFSET {};",
+        columns,
+        quote_ident(table_name.as_ref()),
+        where_clause.as_ref(),
+        order_by,
+        skip_first_x
+    )
+}
+
 fn col_to_sql_literal(value: &row_col::Col) -> String {
     match value {
         row_col::Col::Null(_) => "NULL".to_string(),

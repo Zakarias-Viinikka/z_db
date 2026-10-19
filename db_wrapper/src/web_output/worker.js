@@ -72,6 +72,7 @@ const serializedCommands = {
   delete_all_rows: (msg) => db_manager.delete_all_rows(msg[1]),
   count_rows: (msg) => db_manager.count_rows(msg[1]),
   count_all_rows: (msg) => db_manager.count_all_rows(msg[1]),
+  get_data_ordered_and_skip_first_x: (msg) => db_manager.get_data_ordered_and_skip_first_x(msg[1]),
 };
 
 // These commands take no serialized payload.

@@ -25,6 +25,25 @@ pub fn read_from_db_ordered(
     query_rows(conn, &sql)
 }
 
+pub fn get_data_ordered_and_skip_first_x(
+    conn: &Connection,
+    ctx: &payload::GetDataOrderedAndSkipFirstXIn,
+) -> Result<Vec<Row>, DbError> {
+    let table_name = &ctx.table_name;
+    let columns_to_read = &ctx.columns_to_read;
+    let order_by = &ctx.order_by;
+    let skip_first_x = ctx.skip_first_x;
+    let where_clause = to_sql_condition(&ctx.arguments);
+    let sql = generate_get_data_by_order_and_skip_first_x_sql(
+        table_name,
+        &where_clause,
+        columns_to_read,
+        order_by,
+        skip_first_x,
+    );
+    query_rows(conn, &sql)
+}
+
 pub fn query_rows(conn: &Connection, sql: &str) -> Result<Vec<Row>, DbError> {
     let mut stmt = conn
         .prepare(sql)

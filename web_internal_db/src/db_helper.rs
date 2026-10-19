@@ -241,3 +241,10 @@ pub async fn get_single_col(input: GetSingleColIn) -> Result<GetSingleColOut, Db
     let bytes = tell_worker_to_do("get_single_col", Some(input.to_payload())).await?;
     GetSingleColOut::un_payloadify(&bytes)
 }
+pub async fn get_data_ordered_and_skip_first_x(
+    input: GetDataOrderedAndSkipFirstXIn,
+) -> Result<GetDataOut, DbError> {
+    let bytes = tell_worker_to_do("get_data_ordered_and_skip_first_x", Some(input.to_payload())).await?;
+    GetDataOut::un_payloadify(&bytes)
+}
+
