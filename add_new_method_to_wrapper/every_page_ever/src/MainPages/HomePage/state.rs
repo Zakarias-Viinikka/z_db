@@ -277,7 +277,7 @@ impl HomePageState {
             let result = app_core::runner::run_check(
                 &settings.build_everything_command,
                 &settings.working_directory,
-                cancel_for_thread,
+                cancel_for_thread.clone(),
                 &emit,
             );
             match result {
@@ -286,6 +286,43 @@ impl HomePageState {
                 }
                 Ok(outcome) if outcome.passed => {
                     emit(Event::Log(LogKind::Plain, "build everything: ok".into()));
+                    for script in &settings.post_build_scripts {
+                        let script_str = script.to_string_lossy().to_string();
+                        emit(Event::Phase(format!("post-build: {script_str}")));
+                        let outcome = app_core::runner::run_check(
+                            &script_str,
+                            &settings.working_directory,
+                            cancel_for_thread.clone(),
+                            &emit,
+                        );
+                        match outcome {
+                            Ok(o) if o.cancelled => {
+                                emit(Event::Log(
+                                    LogKind::Warning,
+                                    format!("post-build cancelled: {script_str}"),
+                                ));
+                                break;
+                            }
+                            Ok(o) if o.passed => {
+                                emit(Event::Log(
+                                    LogKind::Plain,
+                                    format!("post-build ok: {script_str}"),
+                                ));
+                            }
+                            Ok(_) => {
+                                emit(Event::Log(
+                                    LogKind::Error,
+                                    format!("post-build failed: {script_str}"),
+                                ));
+                            }
+                            Err(e) => {
+                                emit(Event::Log(
+                                    LogKind::Error,
+                                    format!("post-build error ({script_str}): {e}"),
+                                ));
+                            }
+                        }
+                    }
                 }
                 Ok(_) => {
                     emit(Event::Log(LogKind::Error, "build everything: failed".into()));

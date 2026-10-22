@@ -28,6 +28,12 @@ pub struct Settings {
     /// in `working_directory` through `sh -c`.
     #[serde(default = "default_build_everything")]
     pub build_everything_command: String,
+
+    /// Shell scripts that run, one after the other, after the "build
+    /// everything and check" command exits successfully. Each runs in
+    /// `working_directory` through `sh -c`, streamed into the same log.
+    #[serde(default)]
+    pub post_build_scripts: Vec<PathBuf>,
 }
 
 fn default_build_everything() -> String {
@@ -76,6 +82,7 @@ impl Settings {
             mock_root: zdb.join("add_new_method_to_wrapper/mock"),
             cache_root: default_cache_root(),
             build_everything_command: default_build_everything(),
+            post_build_scripts: Vec::new(),
         }
     }
 

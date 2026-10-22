@@ -83,13 +83,15 @@ pub fn draw(ui: &mut egui::Ui, state: &mut HomePageState) {
             draw_section(ui, "insert position", |ui| draw_picker(ui, state));
             draw_section(ui, "paste one method", |ui| {
                 ui.horizontal_top(|ui| {
-                    let button_col_w = 200.0;
-                    let paste_w = (ui.available_width() - button_col_w - 12.0).max(200.0);
+                    ui.spacing_mut().item_spacing.x = 0.0;
+                    let button_col_w = 280.0;
+                    let gap = 12.0;
+                    let paste_w = (ui.available_width() - button_col_w - gap).max(200.0);
                     ui.allocate_ui(egui::vec2(paste_w, ui.available_height()), |ui| {
                         ui.set_width(paste_w);
                         draw_paste_box(ui, state);
                     });
-                    ui.add_space(12.0);
+                    ui.add_space(gap);
                     ui.vertical(|ui| {
                         ui.set_width(button_col_w);
                         draw_buttons(ui, state);
@@ -380,6 +382,48 @@ fn draw_settings(ui: &mut egui::Ui, state: &mut HomePageState) {
                         )
                         .changed()
                     {
+                        changed = true;
+                    }
+
+                    ui.add_space(6.0);
+                    ui.separator();
+                    ui.add_space(6.0);
+
+                    ui.label(
+                        egui::RichText::new("post-build scripts (run after build succeeds)")
+                            .color(TEXT_DIM)
+                            .size(13.0),
+                    );
+                    let mut remove_script_at: Option<usize> = None;
+                    for (i, script) in state.settings.post_build_scripts.iter_mut().enumerate() {
+                        ui.horizontal(|ui| {
+                            let reserved = 90.0;
+                            let edit_w = (ui.available_width() - reserved).max(120.0);
+                            let mut s = script.to_string_lossy().to_string();
+                            if ui
+                                .add(egui::TextEdit::singleline(&mut s).desired_width(edit_w))
+                                .changed()
+                            {
+                                *script = PathBuf::from(s);
+                                changed = true;
+                            }
+                            let exists = script.exists();
+                            ui.label(
+                                egui::RichText::new(if exists { "✓" } else { "✗" })
+                                    .color(if exists { OK } else { ERR })
+                                    .strong(),
+                            );
+                            if ui.button("×").clicked() {
+                                remove_script_at = Some(i);
+                            }
+                        });
+                    }
+                    if let Some(i) = remove_script_at {
+                        state.settings.post_build_scripts.remove(i);
+                        changed = true;
+                    }
+                    if ui.button("add script").clicked() {
+                        state.settings.post_build_scripts.push(PathBuf::new());
                         changed = true;
                     }
                     ui.add_space(10.0);
@@ -774,10 +818,7 @@ fn styled_button(
 ) -> egui::Response {
     let font = egui::TextStyle::Button.resolve(ui.style());
     let padding = egui::vec2(14.0, 8.0);
-    let galley = ui.painter().layout_no_wrap(label.to_string(), font.clone(), text);
-    let text_w = galley.size().x;
-    let desired_w = (text_w + padding.x * 2.0).max(ui.available_width());
-    let desired = egui::vec2(desired_w, font.size + padding.y * 2.0);
+    let desired = egui::vec2(ui.available_width(), font.size + padding.y * 2.0);
     let (rect, response) = ui.allocate_exact_size(desired, egui::Sense::click());
     let enabled = ui.is_enabled();
     let fill = if !enabled {
@@ -796,6 +837,7 @@ fn styled_button(
         text.gamma_multiply(0.5)
     };
     ui.painter()
+        .with_clip_rect(rect)
         .text(rect.center(), egui::Align2::CENTER_CENTER, label, font, text_color);
     response
 }
