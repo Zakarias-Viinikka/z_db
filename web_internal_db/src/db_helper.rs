@@ -58,193 +58,179 @@ fn extract_error(result_in_js_form: &Array) -> DbError {
     DbError::CureFail(msg)
 }
 
+async fn no_input_no_output(cmd: &str) -> Result<(), DbError> {
+    let bytes = tell_worker_to_do(cmd, None).await?;
+    Result::<(), DbError>::un_payloadify(&bytes)?
+}
+
+async fn no_input_with_output<Out: Convert>(cmd: &str) -> Result<Out, DbError> {
+    let bytes = tell_worker_to_do(cmd, None).await?;
+    Out::un_payloadify(&bytes)
+}
+
+async fn input_no_output<In: Convert>(cmd: &str, input: In) -> Result<(), DbError> {
+    let bytes = tell_worker_to_do(cmd, Some(input.to_payload())).await?;
+    Result::<(), DbError>::un_payloadify(&bytes)?
+}
+
+async fn input_with_output<In: Convert, Out: Convert>(
+    cmd: &str,
+    input: In,
+) -> Result<Out, DbError> {
+    let bytes = tell_worker_to_do(cmd, Some(input.to_payload())).await?;
+    Out::un_payloadify(&bytes)
+}
+
 // no input, output
 pub async fn list_tables() -> Result<ListTablesOut, DbError> {
-    let bytes = tell_worker_to_do("list_tables", None).await?;
-    ListTablesOut::un_payloadify(&bytes)
+    no_input_with_output("list_tables").await
 }
 
 pub async fn export_database() -> Result<ExportDatabaseOut, DbError> {
-    let bytes = tell_worker_to_do("export_database", None).await?;
-    ExportDatabaseOut::un_payloadify(&bytes)
+    no_input_with_output("export_database").await
 }
 
 // no input, no output
 pub async fn begin_all_or_nothing() -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("begin_all_or_nothing", None).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    no_input_no_output("begin_all_or_nothing").await
 }
 
 pub async fn everything_went_perfectly() -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("everything_went_perfectly", None).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    no_input_no_output("everything_went_perfectly").await
 }
 
 pub async fn regret_everything() -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("regret_everything", None).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    no_input_no_output("regret_everything").await
 }
 
 pub async fn are_we_in_middle_of_transaction() -> Result<AreWeInMiddleOfTransactionOut, DbError> {
-    let bytes = tell_worker_to_do("are_we_in_middle_of_transaction", None).await?;
-    AreWeInMiddleOfTransactionOut::un_payloadify(&bytes)
+    no_input_with_output("are_we_in_middle_of_transaction").await
 }
 
 // input, no output
 pub async fn create_table(input: CreateTableIn) -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("create_table", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("create_table", input).await
 }
 
 pub async fn drop_table(input: DropTableIn) -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("drop_table", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("drop_table", input).await
 }
 
 pub async fn insert_data(input: InsertDataIn) -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("insert_data", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("insert_data", input).await
 }
 
 pub async fn insert_data_and_get_col(
     input: InsertDataAndGetColIn,
 ) -> Result<InsertDataAndGetColOut, DbError> {
-    let bytes = tell_worker_to_do("insert_data_and_get_col", Some(input.to_payload())).await?;
-    InsertDataAndGetColOut::un_payloadify(&bytes)
+    input_with_output("insert_data_and_get_col", input).await
 }
 
 pub async fn delete_row(input: DeleteRowIn) -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("delete_row", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("delete_row", input).await
 }
 
 pub async fn delete_row_where(input: DeleteRowWhereIn) -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("delete_row_where", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("delete_row_where", input).await
 }
 
 pub async fn delete_all_rows(input: DeleteAllRowsIn) -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("delete_all_rows", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("delete_all_rows", input).await
 }
 
 pub async fn edit_col_in_row(input: EditColInRowIn) -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("edit_col_in_row", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("edit_col_in_row", input).await
 }
 
 pub async fn edit_col_in_row_where(input: EditColInRowWhereIn) -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("edit_col_in_row_where", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("edit_col_in_row_where", input).await
 }
 
 pub async fn swap_columns(input: SwapColumnsIn) -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("swap_columns", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("swap_columns", input).await
 }
 
 pub async fn create_index(input: CreateIndexIn) -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("create_index", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("create_index", input).await
 }
 
 pub async fn add_column(input: AddColumnIn) -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("add_column", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("add_column", input).await
 }
 
 pub async fn remove_column(input: RemoveColumnIn) -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("remove_column", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("remove_column", input).await
 }
 
 pub async fn fundamentally_edit_existing_col(
     input: FundamentallyEditExistingColIn,
 ) -> Result<(), DbError> {
-    let bytes =
-        tell_worker_to_do("fundamentally_edit_existing_col", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("fundamentally_edit_existing_col", input).await
 }
 
 pub async fn create_table_from_export(input: CreateTableFromExportIn) -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("create_table_from_export", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("create_table_from_export", input).await
 }
 
 pub async fn copy_table(input: CopyTableIn) -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("copy_table", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("copy_table", input).await
 }
 
 pub async fn create_foreign_table(input: CreateForeignTableIn) -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("create_foreign_table", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("create_foreign_table", input).await
 }
 
 pub async fn create_fts5_table(input: CreateFts5TableIn) -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("create_fts5_table", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("create_fts5_table", input).await
 }
 
 pub async fn rebuild_fts5_index(input: RebuildFts5In) -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("rebuild_fts5_index", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("rebuild_fts5_index", input).await
 }
 
 pub async fn force_drop_table(input: DropTableIn) -> Result<(), DbError> {
-    let bytes = tell_worker_to_do("force_drop_table", Some(input.to_payload())).await?;
-    Result::<(), DbError>::un_payloadify(&bytes)?
+    input_no_output("force_drop_table", input).await
 }
 
 // input, output
 pub async fn get_data(input: GetDataIn) -> Result<GetDataOut, DbError> {
-    let bytes = tell_worker_to_do("get_data", Some(input.to_payload())).await?;
-    GetDataOut::un_payloadify(&bytes)
+    input_with_output("get_data", input).await
 }
 
 pub async fn get_data_ordered(input: GetDataOrderedIn) -> Result<GetDataOut, DbError> {
-    let bytes = tell_worker_to_do("get_data_ordered", Some(input.to_payload())).await?;
-    GetDataOut::un_payloadify(&bytes)
+    input_with_output("get_data_ordered", input).await
 }
 
 pub async fn check_table(input: CheckTableIn) -> Result<CheckTableOut, DbError> {
-    let bytes = tell_worker_to_do("check_table", Some(input.to_payload())).await?;
-    CheckTableOut::un_payloadify(&bytes)
+    input_with_output("check_table", input).await
 }
 
 pub async fn check_index(input: CheckIndexIn) -> Result<CheckIndexOut, DbError> {
-    let bytes = tell_worker_to_do("check_index", Some(input.to_payload())).await?;
-    CheckIndexOut::un_payloadify(&bytes)
+    input_with_output("check_index", input).await
 }
 
 pub async fn export_tables(input: ExportTablesIn) -> Result<ExportTablesOut, DbError> {
-    let bytes = tell_worker_to_do("export_tables", Some(input.to_payload())).await?;
-    ExportTablesOut::un_payloadify(&bytes)
+    input_with_output("export_tables", input).await
 }
 
 pub async fn count_all_rows(input: CountAllRowsIn) -> Result<CountAllRowsOut, DbError> {
-    let bytes = tell_worker_to_do("count_all_rows", Some(input.to_payload())).await?;
-    CountAllRowsOut::un_payloadify(&bytes)
+    input_with_output("count_all_rows", input).await
 }
 
 pub async fn count_rows(input: CountRowsIn) -> Result<CountRowsOut, DbError> {
-    let bytes = tell_worker_to_do("count_rows", Some(input.to_payload())).await?;
-    CountRowsOut::un_payloadify(&bytes)
+    input_with_output("count_rows", input).await
 }
 
 pub async fn search_fts5(input: SearchFts5In) -> Result<SearchFts5Out, DbError> {
-    let bytes = tell_worker_to_do("search_fts5", Some(input.to_payload())).await?;
-    SearchFts5Out::un_payloadify(&bytes)
+    input_with_output("search_fts5", input).await
 }
 
 pub async fn get_single_col(input: GetSingleColIn) -> Result<GetSingleColOut, DbError> {
-    let bytes = tell_worker_to_do("get_single_col", Some(input.to_payload())).await?;
-    GetSingleColOut::un_payloadify(&bytes)
+    input_with_output("get_single_col", input).await
 }
+
 pub async fn get_data_ordered_and_skip_first_x(
     input: GetDataOrderedAndSkipFirstXIn,
 ) -> Result<GetDataOut, DbError> {
-    let bytes = tell_worker_to_do("get_data_ordered_and_skip_first_x", Some(input.to_payload())).await?;
-    GetDataOut::un_payloadify(&bytes)
+    input_with_output("get_data_ordered_and_skip_first_x", input).await
 }
-
